@@ -1,5 +1,5 @@
 #include <HCSR04.h>
-
+//Ultrasonic inits
 //Initialize Ultrasonic Sensors and the pins it uses
 int trigPin1 = 10; //trigger pin connected to pin 11
 int echoPin1 = 11; //echo Pin connected to pin 12
@@ -16,6 +16,12 @@ UltraSonicDistanceSensor distanceSensor1(trigPin1, echoPin1);
 UltraSonicDistanceSensor distanceSensor2(trigPin2, echoPin2);
 
 bool car; //state variable if car is at parking lot entrance or not
+
+//LED setup
+//red = A0
+//yellow = A0 & A1
+//green = A1
+
 
 void setup() 
 {
@@ -38,7 +44,8 @@ void loop()
     if (car)
     {
         Serial.println("There is a car");
-    }else
+    }
+    else
     {
         Serial.println("There is not a car.");    
     }
