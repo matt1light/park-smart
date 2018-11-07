@@ -4,16 +4,16 @@
 
 //Ultrasonic initial settings
 //Initialize Ultrasonic Sensors and the pins it uses
-int trigPin1 = 10; //trigger pin connected to pin 11
-int echoPin1 = 11; //echo Pin connected to pin 12
-int trigPin2 = 12;
-int echoPin2 = 13;
+int trigPin1 = 6;//trigger pin for ultrasonic sensor 1 connected to pin 6
+int echoPin1 = 7;//echo Pin for ultrasonic sensor 1 connected to pin 7
+int trigPin2 = 8;//trigger pin for ultrasonic sensor 2 connected to pin 8
+int echoPin2 = 9;//echo Pin for ultrasonic sensor 2 connected to pin 9
 
-double d1, d2;
+double d1, d2;//distance values, one for each ultrasonic sensor
 
 int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds
 
-double dTrig = 7;
+double dTrig = 7;//Max triggering dectected distance
 
 UltraSonicDistanceSensor distanceSensor1(trigPin1, echoPin1);
 UltraSonicDistanceSensor distanceSensor2(trigPin2, echoPin2);
@@ -21,9 +21,10 @@ UltraSonicDistanceSensor distanceSensor2(trigPin2, echoPin2);
 bool car; //state variable if car is at parking lot entrance or not
 
 //LED setup
-#define redPort A0
-#define greenPort A1
-#define bluePort A2
+#define redPort 2 //LED red pin set to port 2
+#define greenPort 3 //LED green pin set to port 3
+#define bluePort 4 //LED blue pin set to port 4
+
 //colour definitions to be passed to light state
 int red = 0;
 int green = 1;
@@ -39,6 +40,8 @@ void setup()
 
 void loop()
 {
+
+    //Test code for LED
     lightState(red);
     delay(wait);
     lightState(green);
@@ -47,10 +50,10 @@ void loop()
     delay(wait);
     lightState(yellow);
     delay(wait);
-//    d1 = distanceSensor1.measureDistanceCm();
-//    d2 = distanceSensor2.measureDistanceCm();
+
 //    car = isCar(d1, d2); //test if car is there or not
-//    
+//   
+//Test code to see if car is present and display info for it 
 //    Serial.print("D1: ");
 //    Serial.print(d1);
 //    Serial.println("cm");
@@ -65,20 +68,23 @@ void loop()
 //    {
 //        Serial.println("There is not a car.");
 //    }
-//
+//delay for the car test
 //    delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
 
 }
 
 
-bool isCar(double d1, double d2)
+bool isCar()
 {
-  if (d1 <= dTrig && d2 <= dTrig)
-  {
-    return true;
-  }
-  return false;
+    d1 = distanceSensor1.measureDistanceCm();
+    d2 = distanceSensor2.measureDistanceCm();
+    if (d1 <= dTrig && d2 <= dTrig)
+    {
+        return true;
+    }
+    return false;
 }
+
 
 
 void lightState(int colour)
@@ -118,4 +124,10 @@ void lightState(int colour)
         digitalWrite(bluePort, LOW);
         Serial.println("not set");
     }
+}
+
+
+void updateLCD()
+{
+    
 }
