@@ -18,9 +18,9 @@ UltraSonicDistanceSensor distanceSensor2(trigPin2, echoPin2);
 bool car; //state variable if car is at parking lot entrance or not
 
 //LED setup
-//red = A0
-//yellow = A0 & A1
-//green = A1
+#define redPort A0
+#define greenPort A1
+#define bluePort A2
 
 
 void setup() 
