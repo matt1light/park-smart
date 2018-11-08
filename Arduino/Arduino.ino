@@ -31,11 +31,17 @@ int green = 1;
 int blue = 2;
 int yellow = 3;
 
+//LCD Setup
+LiquidCrystal lcd(19,18,17,16,15,14); //Declaration of lcd using LiquidCrystal library setup
 
 void setup()
 {
     //Initialize serial connection
     Serial.begin(9600);
+
+    //Initialize lcd interface and set dimentions
+    lcd.begin(16,2);
+    
 }
 
 void loop()
