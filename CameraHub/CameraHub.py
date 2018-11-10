@@ -41,6 +41,6 @@ class Image:
 testImage = Image("THISPHOTO", 3, datetime.datetime.now().strftime("%c"))
 testImage2 = Image("THATPHOTO", 3, datetime.datetime.now().strftime("%c"))
 images = [testImage, testImage2]
-hubImages = buildRequest(images)
-print(hubImages)
-# sendRequest(hubImages)
+builtRequest = buildRequest(images)
+print(builtRequest)
+# sendRequest(builtRequest)
