@@ -21,7 +21,7 @@ def buildRequest(hubImages):
 
 
 def sendRequest(builtRequest):
-    r = requests.post(serverAddress, builtRequest)
+    r = requests.post(imageEndpoint, builtRequest)
     print("Status code: " + r.status_code)
     if r.status_code == requests.codes.ok:
         print("Status code OK")
