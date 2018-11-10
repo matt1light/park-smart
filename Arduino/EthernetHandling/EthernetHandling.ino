@@ -19,8 +19,8 @@ IPAddress server(169,254,45,60);
 // Declare the client
 EthernetClient client;
 
-void setup() {
-  Serial.begin(9600);
+void setupEthernet(void){
+Serial.begin(9600);
   while(!Serial){}; // Wait until the serial port is able to connect.
 
   // Set up the Arduino with a static IP
@@ -38,8 +38,6 @@ void setup() {
   else{
     Serial.println("Failed to connect");
   }
-}
 
-void loop() {
-  while(1){}; // Do nothing for now
+  
 }
