@@ -3,7 +3,7 @@ import datetime
 import json
 
 # The IP address of the server is 10.0.0.41, port 80
-ipAddress = "http://10.0.0.41:80"
+serverAddress = "http://10.0.0.41:80"
 
 
 def buildRequest(hubImages):
@@ -14,12 +14,13 @@ def buildRequest(hubImages):
     builtRequest = json.dumps(imgData)
     print(builtRequest)
 
+
 def sendRequest(builtRequest):
-    return
+    r = requests.post(serverAddress, builtRequest)
+
 
 def captureImage(camID:int):
     return
-
 
 
 class Image:
@@ -32,4 +33,5 @@ class Image:
 testImage = Image("THISPHOTO", 3, datetime.datetime.now().strftime("%c"))
 testImage2 = Image("THATPHOTO", 3, datetime.datetime.now().strftime("%c"))
 images = [testImage, testImage2]
-buildRequest(images)
+hubImages = buildRequest(images)
+sendRequest(hubImages)
