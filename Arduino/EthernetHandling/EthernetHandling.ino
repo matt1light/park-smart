@@ -13,7 +13,8 @@ IPAddress ip(10,0,0,43);
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-IPAddress server(10,0,0,41);
+//IPAddress server(10,0,0,41);
+IPAddress server(169,254,45,60);
 
 // Declare the client
 EthernetClient client;
