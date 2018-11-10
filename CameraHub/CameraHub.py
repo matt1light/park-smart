@@ -9,7 +9,8 @@ ipAddress = "http://10.0.0.41:80"
 def buildRequest(hubImages):
     imgData = list()
     for img in hubImages:
-        imgData.append([img.photo, img.camID, img.time])
+        obj = {"photo":img.photo, "camID":img.camID, "time":img.time}
+        imgData.append(obj)
     builtRequest = json.dumps(imgData)
     print(builtRequest)
 
