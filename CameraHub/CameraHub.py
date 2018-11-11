@@ -42,9 +42,14 @@ def sendRequest(builtRequest):
 Capture an image from the Pi Camera and transform it into an image object.
 """
 def captureImage(camID:int):
-    # From what I've read, the picam saves images directly to a file? -- JF
+    currTime = datetime.datetime.now()
+    # From what I've read, the picam saves images directly to a file?
+    # So, I'm thinking, the method captures an image and saves it as a JPG,
+    # then loads that file and builds the Image? -- JF
     path = "somepath"
-    return Image(loadImage(path), camID, datetime.datetime.now().strftime("%c"))
+    # strftime converts a datetime into a string. The parameter is a formatting
+    # option. "string from time".
+    return Image(loadImage(path), camID, currTime.strftime("%c"))
 
 
 """
