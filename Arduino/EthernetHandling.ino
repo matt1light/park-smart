@@ -3,23 +3,31 @@
 
 // Partially adapted from the WebClient sample program.
 
+struct DisplayState{
+  int lightState[];
+  int screenState[];
+};
 // A6:8F:4E:6E:F5:B0; this is a valid but entirely arbitrary MAC address.
 // The shield does not come with a preset MAC so one needs to be set.
 byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 
 // 10.0.0.43 should be this device's static IP
-//byte ip[] = {192, 168, 0, 99};
 IPAddress ip(10,0,0,43);
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-IPAddress server(10,0,0,41);
+//IPAddress server(10,0,0,41);
+IPAddress server(169,254,45,60);
 
 // Declare the client
 EthernetClient client;
 
-void setup() {
-  Serial.begin(9600);
+<<<<<<< HEAD:Arduino/EthernetHandling/EthernetHandling.ino
+void startEthernet(void){
+=======
+void setupEthernet(void){
+>>>>>>> Arduino:Arduino/EthernetHandling.ino
+Serial.begin(9600);
   while(!Serial){}; // Wait until the serial port is able to connect.
 
   // Set up the Arduino with a static IP
@@ -37,11 +45,8 @@ void setup() {
   else{
     Serial.println("Failed to connect");
   }
-}
 
-void loop() {
-  while(1){}; // Do nothing for now
-  
+<<<<<<< HEAD:Arduino/EthernetHandling/EthernetHandling.ino
 struct DisplayState sendDisplayState(int displaySystemID){
   // Dummy function for now
   // NB: I don't know if we've altered the details of displaystate?
@@ -54,4 +59,10 @@ struct DisplayState sendDisplayState(int displaySystemID){
   memcpy(currentDisplay.lightState, currLS, sizeof currLS);
   memcpy(currentDisplay.screenState, currSS, sizeof currSS);
   return currentDisplay;
+=======
+  
+>>>>>>> Arduino:Arduino/EthernetHandling.ino
 }
+
+void setup(){}
+void loop(){}
