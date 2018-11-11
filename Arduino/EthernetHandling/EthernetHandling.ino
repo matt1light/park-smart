@@ -43,17 +43,8 @@ Serial.begin(9600);
   }
 }
 
-struct DisplayState sendDisplayState(int displaySystemID){
-  // Dummy function for now
-  // NB: I don't know if we've altered the details of displaystate?
-  // I'm going off the latest version of the class diagram.
-  struct DisplayState currentDisplay;
-  int currLS[] = {1,2,3};
-  int currSS[] = {44,45};
-  // memcpy copies data from a source into a memory block
-  memcpy(currentDisplay.lightState, currLS, sizeof currLS);
-  memcpy(currentDisplay.screenState, currSS, sizeof currSS);
-  return currentDisplay;
+void sendDisplayState(int displaySystemID){
+
 }
 
 void setup(){}
