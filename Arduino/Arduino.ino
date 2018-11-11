@@ -41,7 +41,8 @@ void setup()
 
     //Initialize lcd interface and set dimentions
     lcd.begin(16,2);
-    
+
+    setupEthernet();
 }
 
 void loop()
