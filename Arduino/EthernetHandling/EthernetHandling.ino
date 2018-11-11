@@ -8,7 +8,6 @@
 byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 
 // 10.0.0.43 should be this device's static IP
-//byte ip[] = {192, 168, 0, 99};
 IPAddress ip(10,0,0,43);
 
 // Define a server to connect to by IP address
@@ -21,6 +20,8 @@ EthernetClient client;
 
 void setup() {
   Serial.begin(9600);
+void startEthernet(void){
+Serial.begin(9600);
   while(!Serial){}; // Wait until the serial port is able to connect.
 
   // Set up the Arduino with a static IP
@@ -43,3 +44,6 @@ void setup() {
 void loop() {
   while(1){}; // Do nothing for now
 }
+
+void setup(){}
+void loop(){}
