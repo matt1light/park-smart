@@ -14,6 +14,8 @@ byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 // 10.0.0.43 should be this device's static IP
 IPAddress ip(10,0,0,43);
 
+int port = 8;
+
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
 IPAddress server(10,0,0,41);
@@ -33,14 +35,20 @@ void setupEthernet(void){
   Serial.println(Ethernet.localIP()); 
 
   // TODO: Work in lab with linux router and connect to a Pi or something
-  if(client.connect(server, 80)){
+  int connectionStatus = client.connect(server, 8);
+  if(connectionStatus == 1){
     Serial.print("Connected successfully to ");
     Serial.print(client.remoteIP());
-
+    Serial.print(" on port ");
+    Serial.print(port);
   }
   else{
-    Serial.println("Failed to connect");
+    Serial.print("Failed to connect on port ");
+    Serial.println(port);
+    Serial.print("Error code: ");
+    Serial.println(connectionStatus);
   }
+}
 
 struct DisplayState sendDisplayState(int displaySystemID){
   // Dummy function for now
@@ -56,5 +64,5 @@ struct DisplayState sendDisplayState(int displaySystemID){
   return currentDisplay;
 }
 
-void setup(){}
-void loop(){}
+//void setup(){}
+//void loop(){}
