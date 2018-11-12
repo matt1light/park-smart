@@ -1,0 +1,25 @@
+[
+  {
+    "model": "webApp.parkingLot",
+    "pk": 1,
+    "fields":{
+      "name": "Test Lot 1",
+      "description": ""
+    }
+  },
+  {
+    "model": "webApp.lotState",
+    "pk": 1,
+    "fields":{
+      "parking_lot": 1,
+      "activated": "True"
+    }
+  },
+  {
+    "model": "webApp.sector",
+    "pk": 100,
+    "fields":{
+      "lot_state": 1
+    }
+  }
+]
