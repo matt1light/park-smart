@@ -46,6 +46,7 @@ class Input(models.Model):
 class CameraHubInput(Input):
     ip_address = models.IntegerField()
     hubId = models.IntegerField()
+
 class Camera(models.Model):
     camera_hub = models.ForeignKey(CameraHubInput, related_name='cameras', on_delete=models.CASCADE)
     # this might not exist later but as is we want cameras to be represented as hubID.camID
