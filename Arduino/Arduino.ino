@@ -2,6 +2,8 @@
 #include <HCSR04.h>
 #include <LiquidCrystal.h>
 
+int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds
+
 ////Ultrasonic initial settings
 ////Initialize Ultrasonic Sensors and the pins it uses
 #define trigPin1 A5//trigger pin for ultrasonic sensor 1 connected to pin 6
@@ -10,8 +12,6 @@
 #define echoPin2 9//echo Pin for ultrasonic sensor 2 connected to pin 9
 
 double d1, d2;//distance values, one for each ultrasonic sensor
-
-int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds
 
 double dTrig = 7;//Max triggering dectected distance
 
@@ -25,6 +25,10 @@ bool car; //state variable if car is at parking lot entrance or not
 #define GREEN1 A1
 #define YELLOW2 A2
 #define GREEN2 A3
+
+//Arrray for Lights
+uint8_t yellowLED[] = {YELLOW1,YELLOW2};
+uint8_t greenLED[] = {GREEN1,GREEN2};
 
 //colour definitions to be passed to light state
 int off = 0;
@@ -61,19 +65,19 @@ void loop()
 
   //test for lcd update
   lcd.setCursor(0, 1);
-  numCars = 7;
+  numCars = 8;
   updateLCD(numCars);
     
       //Test code for LED
       delay(wait);
-      lightState(1,green);
-      lightState(2,green);
+      setLightState(0,green);
+      setLightState(1,green);
       delay(wait);
-      lightState(1,yellow);
-      lightState(2,yellow);
+      setLightState(0,yellow);
+      setLightState(1,yellow);
       delay(wait);
-      lightState(1,off);
-      lightState(2,off);
+      setLightState(0,off);
+      setLightState(1,off);
       delay(wait);
 
 
@@ -83,6 +87,7 @@ void loop()
   //        numCars+=1;
   //        updateLCD(numCars);
   //    }
+  
   //Test code to see if car is present and display info for it
   //    Serial.print("D1: ");
   //    Serial.print(d1);
@@ -116,53 +121,27 @@ bool isCar()
 }
 
 
-
-void lightState(int row, int colour)
+void setLightState(int row, int colour)
 {
-  if (row == 1)
-  {
     if (colour == green)//Light to be set to Green
     {
-      digitalWrite(GREEN1, HIGH);
-      digitalWrite(YELLOW1, LOW);
+      digitalWrite(greenLED[row], HIGH);
+      digitalWrite(yellowLED[row], LOW);
       Serial.println("green");
     }
     else if (colour == yellow)//Light to be set to yellow
     {
-      digitalWrite(GREEN1, LOW);
-      digitalWrite(YELLOW1, HIGH);
+      digitalWrite(greenLED[row], LOW);
+      digitalWrite(yellowLED[row], HIGH);
       Serial.println("yellow");
     }
     else if (colour == off) //Light is not set
     {
-      digitalWrite(GREEN1, LOW);
-      digitalWrite(YELLOW1, LOW);
+      digitalWrite(greenLED[row], LOW);
+      digitalWrite(yellowLED[row], LOW);
       Serial.println("not set");
     }
-  }
-
-  else if (row == 2)
-  {
-    if (colour == green)//Light to be set to Green
-    {
-      digitalWrite(GREEN2, HIGH);
-      digitalWrite(YELLOW2, LOW);
-      Serial.println("green");
-    }
-    else if (colour == yellow)//Light to be set to yellow
-    {
-      digitalWrite(GREEN2, LOW);
-      digitalWrite(YELLOW2, HIGH);
-      Serial.println("yellow");
-    }
-    else if(colour == off) //Light is not set
-    {
-      digitalWrite(GREEN2, LOW);
-      digitalWrite(YELLOW2, LOW);
-      Serial.println("not set");
-    }
-  }
-
+  
 }
 
 void updateLCD(int numCars)
