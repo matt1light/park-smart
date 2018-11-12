@@ -27,6 +27,7 @@ EthernetClient client;
 void setupEthernet(void){
   Serial.begin(9600);
   while(!Serial){}; // Wait until the serial port is able to connect.
+  delay(1000);
 
   // Set up the Arduino with a static IP
   Serial.println("Attempting to initialize Ethernet with static IP");
@@ -35,12 +36,13 @@ void setupEthernet(void){
   Serial.println(Ethernet.localIP()); 
 
   // TODO: Work in lab with linux router and connect to a Pi or something
-  int connectionStatus = client.connect(server, 8);
+  int connectionStatus = 999;
+  connectionStatus = client.connect(server, 8000);
   if(connectionStatus == 1){
     Serial.print("Connected successfully to ");
     Serial.print(client.remoteIP());
     Serial.print(" on port ");
-    Serial.print(port);
+    Serial.println(port);
   }
   else{
     Serial.print("Failed to connect on port ");
@@ -48,6 +50,7 @@ void setupEthernet(void){
     Serial.print("Error code: ");
     Serial.println(connectionStatus);
   }
+  
 }
 
 struct DisplayState sendDisplayState(int displaySystemID){
