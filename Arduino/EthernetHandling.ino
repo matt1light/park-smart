@@ -16,18 +16,14 @@ IPAddress ip(10,0,0,43);
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-//IPAddress server(10,0,0,41);
-IPAddress server(169,254,45,60);
+IPAddress server(10,0,0,41);
+//IPAddress server(169,254,45,60);
 
 // Declare the client
 EthernetClient client;
 
-<<<<<<< HEAD:Arduino/EthernetHandling/EthernetHandling.ino
-void startEthernet(void){
-=======
 void setupEthernet(void){
->>>>>>> Arduino:Arduino/EthernetHandling.ino
-Serial.begin(9600);
+  Serial.begin(9600);
   while(!Serial){}; // Wait until the serial port is able to connect.
 
   // Set up the Arduino with a static IP
@@ -46,7 +42,6 @@ Serial.begin(9600);
     Serial.println("Failed to connect");
   }
 
-<<<<<<< HEAD:Arduino/EthernetHandling/EthernetHandling.ino
 struct DisplayState sendDisplayState(int displaySystemID){
   // Dummy function for now
   // NB: I don't know if we've altered the details of displaystate?
@@ -59,9 +54,6 @@ struct DisplayState sendDisplayState(int displaySystemID){
   memcpy(currentDisplay.lightState, currLS, sizeof currLS);
   memcpy(currentDisplay.screenState, currSS, sizeof currSS);
   return currentDisplay;
-=======
-  
->>>>>>> Arduino:Arduino/EthernetHandling.ino
 }
 
 void setup(){}
