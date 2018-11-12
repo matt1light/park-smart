@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'inputAPI.apps.InputapiConfig',
     'outputAPI.apps.OutputapiConfig',
     'imageProcessor.apps.ImageprocessorConfig',
+    'mainModels.apps.MainmodelsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
