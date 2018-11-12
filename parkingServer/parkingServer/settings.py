@@ -31,6 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'inputAPI.apps.InputapiConfig',
+    'outputAPI.apps.OutputapiConfig',
+    'imageProcessor.apps.ImageProcessorConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -118,3 +121,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/camera_pictures'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'camera_pictures')
