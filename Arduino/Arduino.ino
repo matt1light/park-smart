@@ -1,3 +1,5 @@
+#include <ArduinoJson.h>
+
 #include <Ethernet.h>
 #include <HCSR04.h>
 #include <LiquidCrystal.h>
