@@ -58,17 +58,15 @@ void setupEthernet(void){
     Serial.println(port);
     Serial.print("Error code: ");
     Serial.println(connectionStatus);
-  }
-  //initDisplayState();
-  //serialize(currentDisplay);
-  
-  
+  } 
 }
 
 // Perform a GET request for a given endpoint
+void makeGetRequest(char* target){
   Serial.println("Trying a Get request");
   client.print("GET ");
   client.print(target);
+  client.println(" HTTP/1.1");
   client.println("Host: 10.0.0.41");
   client.println("Connection: close");
   client.println();
@@ -76,14 +74,12 @@ void setupEthernet(void){
 }
 
 void readIncomingBytes(void){
-  int bytesAvailable = client.available();
-  int len = bytesAvailable;
-  while(bytesAvailable <= len){
-    if (bytesAvailable > 80){
-      bytesAvailable = 80;
+  int len = client.available();
+  if(len > 0){
+    if (len > 80){
+      len = 80;
     }
-    readNBytes(bytesAvailable);
-    bytesAvailable -= len;
+    readNBytes(len);
   }
 }
 
