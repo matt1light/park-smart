@@ -47,7 +47,7 @@ void setup()
 
 void loop()
 {
-
+    readIncomingBytes();
     //Test code for LED
     lightState(red);
     delay(wait);

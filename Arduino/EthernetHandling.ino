@@ -1,6 +1,5 @@
 #include <Ethernet.h>
 #include <SPI.h>
-
 // Partially adapted from the WebClient sample program.
 
 struct DisplayState{
@@ -14,7 +13,7 @@ byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 // 10.0.0.43 should be this device's static IP
 IPAddress ip(10,0,0,43);
 
-int port = 8;
+int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
@@ -23,6 +22,8 @@ IPAddress server(10,0,0,41);
 
 // Declare the client
 EthernetClient client;
+
+unsigned long byteCount = 0;
 
 void setupEthernet(void){
   Serial.begin(9600);
@@ -35,7 +36,7 @@ void setupEthernet(void){
   Serial.print("IP address is ");
   Serial.println(Ethernet.localIP()); 
 
-  // TODO: Work in lab with linux router and connect to a Pi or something
+ 
   int connectionStatus = 999;
   connectionStatus = client.connect(server, 8000);
   if(connectionStatus == 1){
@@ -50,7 +51,31 @@ void setupEthernet(void){
     Serial.print("Error code: ");
     Serial.println(connectionStatus);
   }
+
+  sampleGetRequest();
+
   
+}
+
+void sampleGetRequest(void){
+  Serial.println("Trying a Get request");
+  client.println("GET index.html HTTP/1.1");
+  client.println("Host: 10.0.0.41");
+  client.println("Connection: close");
+  client.println();
+}
+
+void readIncomingBytes(void){
+  Serial.println("Checking buffer");
+  int len = client.available();
+  if (len > 0) {
+    byte buffer[80];
+    if (len > 80) len = 80;
+    client.read(buffer, len);
+    Serial.write(buffer, len); // show in the serial monitor (slows some boards)
+    
+    byteCount = byteCount + len; 
+  }
 }
 
 struct DisplayState sendDisplayState(int displaySystemID){
