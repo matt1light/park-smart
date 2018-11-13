@@ -53,7 +53,10 @@ void setupEthernet(void){
   }
 
   sampleGetRequest();
-
+  if(client.available() > 0){
+    Serial.println("Bytes available to read");
+    readIncomingBytes();
+  }
   
 }
 
@@ -63,19 +66,25 @@ void sampleGetRequest(void){
   client.println("Host: 10.0.0.41");
   client.println("Connection: close");
   client.println();
+  Serial.println("Get request completed");
 }
 
 void readIncomingBytes(void){
-  Serial.println("Checking buffer");
-  int len = client.available();
-  if (len > 0) {
-    byte buffer[80];
-    if (len > 80) len = 80;
-    client.read(buffer, len);
-    Serial.write(buffer, len); // show in the serial monitor (slows some boards)
-    
-    byteCount = byteCount + len; 
+  int bytesAvailable = client.available();
+  int len = bytesAvailable;
+  while(bytesAvailable <= len){
+    if (bytesAvailable > 80){
+      bytesAvailable = 80;
+    }
+    readNBytes(bytesAvailable);
+    bytesAvailable -= len;
   }
+}
+
+void readNBytes(int n){
+  byte buffer[n];
+  client.read(buffer, n);
+  Serial.write(buffer, n);
 }
 
 struct DisplayState sendDisplayState(int displaySystemID){

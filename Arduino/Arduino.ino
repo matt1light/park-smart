@@ -47,7 +47,7 @@ void setup()
 
 void loop()
 {
-    readIncomingBytes();
+    //readIncomingBytes();
     //Test code for LED
     lightState(red);
     delay(wait);
@@ -101,35 +101,35 @@ void lightState(int colour)
         digitalWrite(redPort, HIGH);
         digitalWrite(greenPort, LOW);
         digitalWrite(bluePort, LOW);
-        Serial.println("red");
+        //Serial.println("red");
     }   
     else if (colour == 1)//Light to be set to Green
     {
         digitalWrite(redPort, LOW);
         digitalWrite(greenPort, HIGH);
         digitalWrite(bluePort, LOW);
-        Serial.println("green");
+        //Serial.println("green");
     }
     else if (colour == 2)//Light to be set to blue
     {
         digitalWrite(redPort, LOW);
         digitalWrite(greenPort, LOW);
         digitalWrite(bluePort, HIGH);
-        Serial.println("blue");
+        //Serial.println("blue");
     }
     else if (colour == 3)//Light to be set to yellow
     {
         digitalWrite(redPort, HIGH);
         digitalWrite(greenPort, HIGH);
         digitalWrite(bluePort, LOW);
-        Serial.println("yellow");
+        //Serial.println("yellow");
     }
     else //Light is not set
     {
         digitalWrite(redPort, HIGH);
         digitalWrite(greenPort, LOW);
         digitalWrite(bluePort, LOW);
-        Serial.println("not set");
+        //Serial.println("not set");
     }
 }
 
