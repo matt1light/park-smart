@@ -29,6 +29,7 @@ EthernetClient client;
 
 struct DisplayState currentDisplay;
 
+// Initialize the connection between this machine and the server.
 void setupEthernet(void){
   Serial.begin(9600);
   while(!Serial){}; // Wait until the serial port is able to connect.
@@ -42,6 +43,10 @@ void setupEthernet(void){
   Serial.print("IP address is ");
   Serial.println(Ethernet.localIP()); 
 
+  // client.connect() returns an error code
+  // 1=success, -1=timeout, -2=invalid server, -3=truncated, -4=invalid response
+  // 0=something, but this case is undocumented.
+  int connectionStatus = client.connect(server, 8000);
   if(connectionStatus == 1){
     Serial.print("Connected successfully to ");
     Serial.print(client.remoteIP());
@@ -54,21 +59,16 @@ void setupEthernet(void){
     Serial.print("Error code: ");
     Serial.println(connectionStatus);
   }
-
-  sampleGetRequest();
-  if(client.available() > 0){
-    Serial.println("Bytes available to read");
-    readIncomingBytes();
-  }
   //initDisplayState();
   //serialize(currentDisplay);
   
   
 }
 
-void sampleGetRequest(void){
+// Perform a GET request for a given endpoint
   Serial.println("Trying a Get request");
-  client.println("GET index.html HTTP/1.1");
+  client.print("GET ");
+  client.print(target);
   client.println("Host: 10.0.0.41");
   client.println("Connection: close");
   client.println();

@@ -1,6 +1,6 @@
 #include <ArduinoJson.h>
-
 #include <Ethernet.h>
+
 #include <HCSR04.h>
 #include <LiquidCrystal.h>
 
@@ -45,20 +45,27 @@ void setup()
     lcd.begin(16,2);
 
     setupEthernet();
+  // ----------------------------------------------------------------------------
+  // TESTING SANDBOX
+  // ----------------------------------------------------------------------------
+  makeGetRequest("data/numbers.txt");
+  //initDisplayState();
+  //serialize(currentDisplay);
 }
 
 void loop()
 {
-    //readIncomingBytes();
-    //Test code for LED
-    lightState(red);
-    delay(wait);
-    lightState(green);
-    delay(wait);
-    lightState(blue);
-    delay(wait);
-    lightState(yellow);
-    delay(wait);
+  readIncomingBytes();
+  
+  //Test code for LED
+  lightState(red);
+  delay(wait);
+  lightState(green);
+  delay(wait);
+  lightState(blue);
+  delay(wait);
+  lightState(yellow);
+  delay(wait);
 
 //    car = isCar(d1, d2); //test if car is there or not
 //   
