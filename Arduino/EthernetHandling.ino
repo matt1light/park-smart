@@ -3,6 +3,7 @@
 
 // Partially adapted from the WebClient sample program.
 #define NUMROWS 3
+#define MAXBUFFSIZE 80
 
 struct DisplayState{
   int lightState[NUMROWS];
@@ -73,16 +74,23 @@ void makeGetRequest(char* target){
   Serial.println("Get request completed");
 }
 
+// Read some bytes from the incoming stream
 void readIncomingBytes(void){
+  // Check how much data is incoming
   int len = client.available();
+  // Only do anything if there is data to process
   if(len > 0){
-    if (len > 80){
-      len = 80;
+    // Cap the amount of data to read at once.
+    // TODO: Find out why? This is code from the sample
+    // Possibly packet size
+    if (len > MAXBUFFSIZE){
+      len = MAXBUFFSIZE;
     }
     readNBytes(len);
   }
 }
 
+// Read n bytes of data from the incoming buffer and print them to serial.
 void readNBytes(int n){
   byte buffer[n];
   client.read(buffer, n);
@@ -100,9 +108,6 @@ void initDisplayState(){
   currentDisplay.screenState[0] = 4;
   currentDisplay.screenState[1] = 5;
 }
-
-
-
 
 //void setup(){}
 //void loop(){}
