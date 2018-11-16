@@ -48,7 +48,8 @@ void setup()
   // ----------------------------------------------------------------------------
   // TESTING SANDBOX
   // ----------------------------------------------------------------------------
-  makeGetRequest("data/numbers.txt");
+  initDisplayState();
+  makeGetRequest();
   //initDisplayState();
   //serialize(currentDisplay);
 }
@@ -56,7 +57,9 @@ void setup()
 void loop()
 {
   readIncomingBytes();
-  
+  delay(250);
+
+  /*
   //Test code for LED
   lightState(red);
   delay(wait);
@@ -66,6 +69,7 @@ void loop()
   delay(wait);
   lightState(yellow);
   delay(wait);
+  */
 
 //    car = isCar(d1, d2); //test if car is there or not
 //   

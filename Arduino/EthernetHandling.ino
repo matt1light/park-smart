@@ -7,7 +7,8 @@
 
 struct DisplayState{
   int lightState[NUMROWS];
-  int screenState[2];
+  int currentCars;
+  int maxCars;
 };
 
 // ------------------------------------------------------------------------------
@@ -23,12 +24,17 @@ int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-IPAddress server(10,0,0,41);
+//IPAddress server(10,0,0,41);
+IPAddress server(172,17,150,223);
 
 // Declare the client
 EthernetClient client;
 
 struct DisplayState currentDisplay;
+int outputID = 1;
+
+char incomingBuffer[800]; // Size is currently arbitrary
+int bufferIndex = 0;
 
 // Initialize the connection between this machine and the server.
 void setupEthernet(void){
@@ -59,18 +65,22 @@ void setupEthernet(void){
     Serial.println(port);
     Serial.print("Error code: ");
     Serial.println(connectionStatus);
+
+    // TODO: Break this up into a function that returns the error code
   } 
 }
 
 // Perform a GET request for a given endpoint
-void makeGetRequest(char* target){
+// displayState/?=outputID
+//void makeGetRequest(char* target){
+void makeGetRequest(void){
   Serial.println("Trying a Get request");
-  client.print("GET ");
-  client.print(target);
+  client.print("GET displayState/?=");
+  client.print(outputID);
   client.println(" HTTP/1.1");
   client.println("Host: 10.0.0.41");
   client.println("Connection: close");
-  client.println();
+  client.println(); // Required newline to end the request
   Serial.println("Get request completed");
 }
 
@@ -95,6 +105,8 @@ void readNBytes(int n){
   byte buffer[n];
   client.read(buffer, n);
   Serial.write(buffer, n);
+  //memcpy(&incomingBuffer[bufferIndex], buffer, n*sizeof(byte));
+  //Serial.write(incomingBuffer);
 }
 
 // Create dummy values for the current displayState
@@ -105,8 +117,8 @@ void initDisplayState(){
   currentDisplay.lightState[0] = 1;
   currentDisplay.lightState[1] = 2;
   currentDisplay.lightState[2] = 1;
-  currentDisplay.screenState[0] = 4;
-  currentDisplay.screenState[1] = 5;
+  currentDisplay.currentCars = 5;
+  currentDisplay.maxCars = 6;
 }
 
 //void setup(){}
