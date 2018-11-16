@@ -1,4 +1,4 @@
-#include <HCSR04.h>
+//#include <HCSR04.h> // include ultrasonic sensor library
 
 
 double getDistanceStub(int sensor)

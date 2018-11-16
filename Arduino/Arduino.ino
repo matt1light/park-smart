@@ -5,7 +5,7 @@ int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds
 
 double d1, d2;//distance values, one for each ultrasonic sensor
 
-double dTrig = 6;//Max triggering dectected distance
+double dTrig = 5;//Max triggering detected distance
 
 bool car; //state variable if car is at parking lot entrance or not
 bool carFlag; //variable to keep track of if a car has been betwen the sensors before incrementing numCars
@@ -61,13 +61,14 @@ void loop()
 
       //test for lcd update
       lcd.setCursor(0, 1);
-      numCars = 8;
       updateLCD(numCars);
-
+      
       car = isCar(); //test if car is there or not
+      
       if (car && !carFlag)
       {
         Serial.println("There is a car");
+        Serial.println(carFlag);
         carFlag = true;
           
           numCars+=1;
@@ -75,9 +76,19 @@ void loop()
           lcd.setCursor(0,1);
           updateLCD(numCars);
           
-      }else if(!car)
+      }
+      else if(!car)
       {
+        Serial.println("There is not a car");
+        Serial.println(carFlag);
+        Serial.println(numCars);
         carFlag = false;
+      }
+      else
+      {
+        Serial.println("nope");
+        Serial.println(carFlag);
+        Serial.println(numCars);
       }
   
   //Test code to see if car is present and display info for it
@@ -97,16 +108,16 @@ void loop()
   //    }
 
       //Test code for LED
-      delay(wait);
+//      delay(wait);
       setLightState(0,green);
       setLightState(1,green);
-      delay(wait);
-      setLightState(0,yellow);
-      setLightState(1,yellow);
-      delay(wait);
-      setLightState(0,off);
-      setLightState(1,off);
-      delay(wait);
+//      delay(wait);
+//      setLightState(0,yellow);
+//      setLightState(1,yellow);
+//      delay(wait);
+//      setLightState(0,off);
+//      setLightState(1,off);
+//      delay(wait);
       
   //delay for the car test
    delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
@@ -116,8 +127,8 @@ void loop()
 
 bool isCar()
 {
-  d1 = getDistanceStub(1);
-  d2 = getDistanceStub(2);
+  d1 = getDistance(1);
+  d2 = getDistance(2);
   if (d1 <= dTrig && d2 <= dTrig)
   {
     return true;
@@ -152,7 +163,7 @@ void setLightState(int row, int colour)
 void updateLCD(int numCars)
 {
 
-  if (numCars <= MAXSPOTS)
+  if (numCars < MAXSPOTS)
   {
     freeSpots = MAXSPOTS - numCars;
     lcd.print(freeSpots);
