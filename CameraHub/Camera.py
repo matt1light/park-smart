@@ -17,4 +17,5 @@ class Camera:
         sleep(3)                    #Camera warm up time
         self.capture(path)          #Capture image and store in path
         self.stop_preview()
+        self.close()
         return
