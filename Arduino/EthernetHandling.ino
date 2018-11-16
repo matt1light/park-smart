@@ -7,8 +7,11 @@
 
 struct DisplayState{
   int lightState[NUMROWS];
+  /*
   int currentCars;
   int maxCars;
+  */
+  int emptySpots;
 };
 
 // ------------------------------------------------------------------------------
@@ -53,7 +56,7 @@ void setupEthernet(void){
   // client.connect() returns an error code
   // 1=success, -1=timeout, -2=invalid server, -3=truncated, -4=invalid response
   // 0=something, but this case is undocumented.
-  int connectionStatus = client.connect(server, 8000);
+  int connectionStatus = client.connect(server, port);
   if(connectionStatus == 1){
     Serial.print("Connected successfully to ");
     Serial.print(client.remoteIP());
@@ -113,12 +116,19 @@ void readNBytes(int n){
 void initDisplayState(){
   // NB: I don't know if we've altered the details of displaystate?
   // I'm going off the latest version of the class diagram.
-  
+  /*
   currentDisplay.lightState[0] = 1;
   currentDisplay.lightState[1] = 2;
   currentDisplay.lightState[2] = 1;
-  currentDisplay.currentCars = 5;
+  */
+  for(int i=0; i<NUMROWS; i++){
+    currentDisplay.lightState[i] = 0;
+  }
+  /*
+  currentDisplay.currentCars = 0;
   currentDisplay.maxCars = 6;
+  */
+  currentDisplay.emptySpots = 9999;
 }
 
 //void setup(){}

@@ -16,9 +16,11 @@ JsonObject serialize(struct DisplayState currDS){
   for(int i=0; i<NUMROWS; i++){
     lightState.add(currDS.lightState[i]);
   }
-
+  /*
   root["currentCars"] = (currDS.currentCars);
   root["maxCars"] = (currDS.maxCars); // maximum spots
+  */
+  root["emptySpots"] = currDS.emptySpots;
 
    root.printTo(Serial);
 //  return root;
@@ -33,7 +35,9 @@ void deserialize(char* json){
   for(int i=0; i<NUMROWS; i++){
     currentDisplay.lightState[i] = displayState[i];  
   }
-
+  /*
   currentDisplay.currentCars = root["currentCars"];
   currentDisplay.maxCars = root["maxCars"];
+  */
+  currentDisplay.emptySpots = root["emptySpots"];
 }
