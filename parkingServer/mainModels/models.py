@@ -8,8 +8,8 @@ class ParkingLot(models.Model):
 
 # lot state
 class LotState(models.Model):
-    parking_lot = models.ForeignKey(ParkingLot, related_name='lotState', on_delete=models.CASCADE)
-    activated = models.BooleanField()
+    parking_lot = models.ForeignKey(ParkingLot, related_name='lot_state', on_delete=models.CASCADE)
+    active = models.BooleanField()
 
 # lot-state sector
 class Sector(models.Model):
@@ -19,7 +19,7 @@ class Sector(models.Model):
 
 class Row(models.Model):
     lot_state = models.ForeignKey(LotState, related_name='rows', on_delete=models.CASCADE)
-    activated = models.BooleanField()
+    active = models.BooleanField()
 
 class Spot(models.Model):
     row = models.ForeignKey(Row, related_name='spots', null= True, on_delete=models.SET_NULL)
@@ -39,6 +39,8 @@ class SectorSpot(models.Model):
 
 class Image(models.Model):
     sector = models.ForeignKey(Sector, related_name='images', on_delete=models.SET_NULL, null=True)
+    photo = models.ImageField()
+    time_taken = models.DateTimeField()
 
 class Input(models.Model):
     parking_lot = models.ForeignKey(ParkingLot, related_name='inputs', on_delete=models.CASCADE)
@@ -56,4 +58,4 @@ class Output(models.Model):
     parking_lot = models.ForeignKey(ParkingLot, related_name='outputs', on_delete=models.CASCADE)
 
 class ArduinoOutput(Output):
-    ip_address = models.IntegerField()
+    ip_address = models.TextField()
