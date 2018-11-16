@@ -1,4 +1,4 @@
-#include <HCSR04.h>
+#include <HCSR04.h>// include ultrasonic sensor library
 
 ////Ultrasonic initial settings
 ////Initialize Ultrasonic Sensors and the pins it uses
