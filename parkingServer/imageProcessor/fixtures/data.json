@@ -1,6 +1,6 @@
 [
   {
-    "model": "webApp.parkingLot",
+    "model": "mainModels.parkingLot",
     "pk": 1,
     "fields":{
       "name": "Test Lot 1",
@@ -8,7 +8,7 @@
     }
   },
   {
-    "model": "webApp.lotState",
+    "model": "mainModels.lotState",
     "pk": 1,
     "fields":{
       "parking_lot": 1,
@@ -16,10 +16,12 @@
     }
   },
   {
-    "model": "webApp.sector",
+    "model": "mainModels.sector",
     "pk": 100,
     "fields":{
-      "lot_state": 1
+      "lot_state": 1,
+      "x_index": 0,
+      "y_index": 0
     }
   }
 ]

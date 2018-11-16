@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 from .models import ImageProcessor
-from webApp.models import Spot, Sector, SectorSpot, LotState
+from mainModels.models import Spot, Sector, SectorSpot, LotState
 import numpy as np
 
 # Create your tests here.
@@ -47,10 +47,10 @@ class ImageProcessorUnitTests(TestCase):
 
     def test_calibrate(self):
         # create new sector object
-        sector = Sector.objects.create(lot_state=LotState.objects.get(pk=1))
+        sector = Sector.objects.create(lot_state=LotState.objects.get(pk=1), x_index=0, y_index=0)
         # test2 has a picture with 5 cars thus should add 4 sector spots
         expected_number_of_spots = 5
-        image_name = "test_pics/test2"
+        image_name = "../test_resources/test_pics/test2"
         ImageProcessor.addSpotsToSector(image_name, sector)
         new_sector_spots = SectorSpot.objects.all()
 
