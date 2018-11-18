@@ -1,5 +1,5 @@
 from django.test import TestCase
-from rest_framework.test import APIClient
+from rest_framework.test import APIClient, APIRequestFactory
 from rest_framework import status
 import json
 
@@ -11,6 +11,7 @@ from mainModels.models import ArduinoOutput, ParkingLot, Output, LotState, Row, 
 class ViewTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
+        self.request_factory = APIRequestFactory()
 
         self.parking_lot = ParkingLot.objects.create(description = "", name= "")
         self.arduino_output = ArduinoOutput.objects.create(parking_lot=self.parking_lot, ip_address="1234")
@@ -26,7 +27,11 @@ class ViewTestCase(TestCase):
     def test_get_display_state_by_output_returns_correct_display_state(self):
         # simple display state
 
-        self.response = self.client.get(
+        # self.response = self.client.get(
+        #     '/displayState/',
+        #     {'output': 1})
+
+        request = self.request_factory.get(
             '/displayState/',
             {'output': 1})
 

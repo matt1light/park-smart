@@ -6,14 +6,14 @@ from rest_framework import status
 
 # Create your views here.
 
-class DisplayStateListView():
-    @staticmethod
-    def get_display_state(request):
-        outputId = request.GET.get('output', None)
-        if outputId is None:
-            return JsonResponse({'error': 'request requires output as a parameter'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            display_state = DisplayState(outputId)
-        except Exception as e:
-            return JsonResponse({'error': e}, status=status.HTTP_404_NOT_FOUND)
-        return JsonResponse(display_state.get_dict())
+def get_display_state(request):
+    outputId = request.GET.get('output', None)
+    print(outputId)
+    if outputId is None:
+        return JsonResponse({'error': 'request requires output as a parameter'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        display_state = DisplayState(outputId)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
+    print(outputId)
+    return JsonResponse(display_state.get_dict())
