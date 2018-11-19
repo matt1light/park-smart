@@ -27,10 +27,10 @@ class Spot(models.Model):
     full = models.BooleanField()
 
 class ImageCoordinates(models.Model):
-    x = models.IntegerField()
-    y = models.IntegerField()
-    w = models.IntegerField()
-    h = models.IntegerField()
+    left = models.IntegerField()
+    top = models.IntegerField()
+    right = models.IntegerField()
+    bottom = models.IntegerField()
 
 class SectorSpot(models.Model):
     sector = models.ForeignKey(Sector, related_name='sector_spots', on_delete=models.CASCADE)

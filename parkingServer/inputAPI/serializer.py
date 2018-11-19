@@ -19,7 +19,6 @@ class ImageCollectionSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         count = 0
-        print("in create")
         for image in validated_data.data:
             count +=1
             self.validate
