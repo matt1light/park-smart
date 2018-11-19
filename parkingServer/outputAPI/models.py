@@ -23,6 +23,9 @@ class DisplayState(object):
                 break
             active_spots = row.spots.filter(active=True)
             available_spots = active_spots.filter(full=False)
+            # print("row: " + str(row.pk))
+            # print("available: " + str(available_spots))
+            # print("active: " + str(active_spots))
 
             if available_spots.count() > YELLOW_MAX:
                 self.lightState.append(1)

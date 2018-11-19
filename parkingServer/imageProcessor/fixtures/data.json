@@ -12,7 +12,7 @@
     "pk": 1,
     "fields":{
       "parking_lot": 1,
-      "activated": "True"
+      "active": "True"
     }
   },
   {

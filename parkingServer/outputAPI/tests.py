@@ -27,11 +27,7 @@ class ViewTestCase(TestCase):
     def test_get_display_state_by_output_returns_correct_display_state(self):
         # simple display state
 
-        # self.response = self.client.get(
-        #     '/displayState/',
-        #     {'output': 1})
-
-        request = self.request_factory.get(
+        self.response = self.client.get(
             '/displayState/',
             {'output': 1})
 

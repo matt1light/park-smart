@@ -50,7 +50,7 @@ class ImageProcessorUnitTests(TestCase):
         sector = Sector.objects.create(lot_state=LotState.objects.get(pk=1), x_index=0, y_index=0)
         # test2 has a picture with 5 cars thus should add 4 sector spots
         expected_number_of_spots = 5
-        image_name = "../test_resources/test_pics/test2"
+        image_name = "../test_resources/test_pics/e2esituations/full-doc-20.jpg"
         ImageProcessor.addSpotsToSector(image_name, sector)
         new_sector_spots = SectorSpot.objects.all()
 
@@ -62,36 +62,10 @@ class ImageProcessorUnitTests(TestCase):
 
 
     # def test_get_coords_from_image(self):
-    #     image_location = 'test_pics/test1'
-    #     coordinates = [[570, 103, 593, 114],
-    #         [614, 107, 639, 121],
-    #         [446, 114, 497, 132],
-    #         [460, 119, 498, 133],
-    #         [320, 123, 361, 141],
-    #         [480, 129, 544, 154],
-    #         [189, 146, 209, 157],
-    #         [98, 152, 144, 186],
-    #         [178, 155, 225, 186],
-    #         [303, 164, 337, 189],
-    #         [345, 160, 375, 186],
-    #         [386, 160, 418, 189],
-    #         [421, 159, 460, 189],
-    #         [467, 134, 524, 172],
-    #         [467, 140, 513, 191],
-    #         [5, 152, 65, 189],
-    #         [225, 158, 260, 185],
-    #         [548, 159, 594, 208],
-    #         [240, 207, 295, 244],
-    #         [26, 209, 108, 272],
-    #         [96, 199, 165, 267],
-    #         [295, 206, 347, 266],
-    #         [407, 204, 478, 275],
-    #         [530, 207, 614, 271],
-    #         [232, 210, 294, 272],
-    #         [467, 220, 541, 270],
-    #         [287, 262, 348, 352],
-    #         [114, 255, 195, 337],
-    #         [71, 205, 145,270]]
+    #     image_location = '../test_resources/test_pics/test1.jpg'
+    #     coordinates = [
+    #
+    #     ]
     #
     #     test_data = [{
     #         'name': 'Test 1',
