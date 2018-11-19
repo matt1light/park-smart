@@ -1,4 +1,6 @@
+#include <ArduinoJson.h>
 #include <Ethernet.h>
+
 #include <HCSR04.h>
 #include <LiquidCrystal.h>
 
@@ -41,42 +43,21 @@ void setup()
 
     //Initialize lcd interface and set dimentions
     lcd.begin(16,2);
-    
+
+  // ----------------------------------------------------------------------------
+  // TESTING SANDBOX
+  // ----------------------------------------------------------------------------
+  initDisplayState();
+  int connected = setupEthernet();s
+  if(success == 1){
+    makeGetRequest();
+  }
 }
 
 void loop()
 {
-
-    //Test code for LED
-    lightState(red);
-    delay(wait);
-    lightState(green);
-    delay(wait);
-    lightState(blue);
-    delay(wait);
-    lightState(yellow);
-    delay(wait);
-
-//    car = isCar(d1, d2); //test if car is there or not
-//   
-//Test code to see if car is present and display info for it 
-//    Serial.print("D1: ");
-//    Serial.print(d1);
-//    Serial.println("cm");
-//    Serial.print("D2: ");
-//    Serial.print(d2);
-//    Serial.println("cm");
-//    if (car)
-//    {
-//        Serial.println("There is a car");
-//        }
-//    else
-//    {
-//        Serial.println("There is not a car.");
-//    }
-//delay for the car test
-//    delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
-
+  readIncomingBytes();
+  delay(250);
 }
 
 
@@ -100,35 +81,35 @@ void lightState(int colour)
         digitalWrite(redPort, HIGH);
         digitalWrite(greenPort, LOW);
         digitalWrite(bluePort, LOW);
-        Serial.println("red");
+        //Serial.println("red");
     }   
     else if (colour == 1)//Light to be set to Green
     {
         digitalWrite(redPort, LOW);
         digitalWrite(greenPort, HIGH);
         digitalWrite(bluePort, LOW);
-        Serial.println("green");
+        //Serial.println("green");
     }
     else if (colour == 2)//Light to be set to blue
     {
         digitalWrite(redPort, LOW);
         digitalWrite(greenPort, LOW);
         digitalWrite(bluePort, HIGH);
-        Serial.println("blue");
+        //Serial.println("blue");
     }
     else if (colour == 3)//Light to be set to yellow
     {
         digitalWrite(redPort, HIGH);
         digitalWrite(greenPort, HIGH);
         digitalWrite(bluePort, LOW);
-        Serial.println("yellow");
+        //Serial.println("yellow");
     }
     else //Light is not set
     {
         digitalWrite(redPort, HIGH);
         digitalWrite(greenPort, LOW);
         digitalWrite(bluePort, LOW);
-        Serial.println("not set");
+        //Serial.println("not set");
     }
 }
 
