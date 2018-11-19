@@ -27,7 +27,7 @@ int green = 1;
 int yellow = 2;
 
 //maximum number of spots in the lot
-const int MAXSPOTS = 12;
+const int MAXSPOTS = 8;
 int numCars = 0;
 
 
@@ -65,12 +65,10 @@ void loop()
       
       car = isCar(); //test if car is there or not
       
-      if (car && !carFlag)
+      if (car)
       {
         Serial.println("There is a car");
-        Serial.println(carFlag);
-        carFlag = true;
-          
+        
           numCars+=1;
           Serial.println(numCars);
           lcd.setCursor(0,1);
@@ -80,17 +78,9 @@ void loop()
       else if(!car)
       {
         Serial.println("There is not a car");
-        Serial.println(carFlag);
-        Serial.println(numCars);
-        carFlag = false;
-      }
-      else
-      {
-        Serial.println("nope");
-        Serial.println(carFlag);
         Serial.println(numCars);
       }
-  
+      
   //Test code to see if car is present and display info for it
   //    Serial.print("D1: ");
   //    Serial.print(d1);
