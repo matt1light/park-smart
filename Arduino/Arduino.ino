@@ -55,9 +55,7 @@ void setup()
   pinMode(YELLOW2,OUTPUT);
   pinMode(GREEN2, OUTPUT);
 
-  // ----------------------------------------------------------------------------
-  // TESTING SANDBOX
-  // ----------------------------------------------------------------------------
+  
   initDisplayState();
   int connected = setupEthernet();
   if(connected == 1){
