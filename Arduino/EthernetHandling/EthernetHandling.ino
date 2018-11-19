@@ -39,6 +39,11 @@ void setup() {
   }
 }
 
+<<<<<<< HEAD
 void loop() {
   while(1){}; // Do nothing for now
+=======
+void sendDisplayState(int displaySystemID){
+
+>>>>>>> parent of 5f658d8... Add stub sendDisplayState method
 }
