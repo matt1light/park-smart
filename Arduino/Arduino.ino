@@ -1,26 +1,16 @@
 #include <ArduinoJson.h>
 #include <Ethernet.h>
-
-#include <HCSR04.h>
 #include <LiquidCrystal.h>
 
 int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds
 
-////Ultrasonic initial settings
-////Initialize Ultrasonic Sensors and the pins it uses
-#define trigPin1 A5//trigger pin for ultrasonic sensor 1 connected to pin 6
-#define echoPin1 A4//echo Pin for ultrasonic sensor 1 connected to pin 7
-#define trigPin2 8//trigger pin for ultrasonic sensor 2 connected to pin 8
-#define echoPin2 9//echo Pin for ultrasonic sensor 2 connected to pin 9
-
 double d1, d2;//distance values, one for each ultrasonic sensor
 
-double dTrig = 7;//Max triggering dectected distance
-
-UltraSonicDistanceSensor distanceSensor1(trigPin1, echoPin1);
-UltraSonicDistanceSensor distanceSensor2(trigPin2, echoPin2);
+double dTrig = 6;//Max triggering dectected distance
 
 bool car; //state variable if car is at parking lot entrance or not
+bool carFlag; //variable to keep track of if a car has been betwen the sensors before incrementing numCars
+
 
 ////LED setup
 #define YELLOW1 A0
@@ -38,8 +28,10 @@ int green = 1;
 int yellow = 2;
 
 //maximum number of spots in the lot
-int maxSpots = 12;
+const int MAXSPOTS = 12;
 int numCars = 0;
+
+
 int freeSpots;
 
 //LCD Setup
@@ -54,6 +46,9 @@ void setup()
   //Initialize lcd interface and set dimentions
   lcd.begin(16, 2);
   lcd.print("Free spots:");
+  
+  numCars = 0;
+  carFlag = false;
 
   pinMode(YELLOW1,OUTPUT);
   pinMode(GREEN1, OUTPUT);
@@ -75,30 +70,26 @@ void loop()
   readIncomingBytes();
   delay(250);
 
-  //test for lcd update
-  lcd.setCursor(0, 1);
-  numCars = 8;
-  updateLCD(numCars);
-    
-      //Test code for LED
-      delay(wait);
-      setLightState(0,green);
-      setLightState(1,green);
-      delay(wait);
-      setLightState(0,yellow);
-      setLightState(1,yellow);
-      delay(wait);
-      setLightState(0,off);
-      setLightState(1,off);
-      delay(wait);
+      //test for lcd update
+      lcd.setCursor(0, 1);
+      numCars = 8;
+      updateLCD(numCars);
 
-
-  //    car = isCar(d1, d2); //test if car is there or not
-  //    if (car)
-  //    {
-  //        numCars+=1;
-  //        updateLCD(numCars);
-  //    }
+      car = isCar(); //test if car is there or not
+      if (car && !carFlag)
+      {
+        Serial.println("There is a car");
+        carFlag = true;
+          
+          numCars+=1;
+          Serial.println(numCars);
+          lcd.setCursor(0,1);
+          updateLCD(numCars);
+          
+      }else if(!car)
+      {
+        carFlag = false;
+      }
   
   //Test code to see if car is present and display info for it
   //    Serial.print("D1: ");
@@ -115,15 +106,29 @@ void loop()
   //    {
   //        Serial.println("There is not a car.");
   //    }
+
+      //Test code for LED
+      delay(wait);
+      setLightState(0,green);
+      setLightState(1,green);
+      delay(wait);
+      setLightState(0,yellow);
+      setLightState(1,yellow);
+      delay(wait);
+      setLightState(0,off);
+      setLightState(1,off);
+      delay(wait);
+      
   //delay for the car test
-  //    delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
+   delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
+
 }
 
 
 bool isCar()
 {
-  d1 = distanceSensor1.measureDistanceCm();
-  d2 = distanceSensor2.measureDistanceCm();
+  d1 = getDistanceStub(1);
+  d2 = getDistanceStub(2);
   if (d1 <= dTrig && d2 <= dTrig)
   {
     return true;
@@ -158,9 +163,9 @@ void setLightState(int row, int colour)
 void updateLCD(int numCars)
 {
 
-  if (numCars <= maxSpots)
+  if (numCars <= MAXSPOTS)
   {
-    freeSpots = maxSpots - numCars;
+    freeSpots = MAXSPOTS - numCars;
     lcd.print(freeSpots);
   }
   else
