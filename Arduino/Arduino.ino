@@ -58,39 +58,6 @@ void loop()
 {
   readIncomingBytes();
   delay(250);
-
-  /*
-  //Test code for LED
-  lightState(red);
-  delay(wait);
-  lightState(green);
-  delay(wait);
-  lightState(blue);
-  delay(wait);
-  lightState(yellow);
-  delay(wait);
-  */
-
-//    car = isCar(d1, d2); //test if car is there or not
-//   
-//Test code to see if car is present and display info for it 
-//    Serial.print("D1: ");
-//    Serial.print(d1);
-//    Serial.println("cm");
-//    Serial.print("D2: ");
-//    Serial.print(d2);
-//    Serial.println("cm");
-//    if (car)
-//    {
-//        Serial.println("There is a car");
-//        }
-//    else
-//    {
-//        Serial.println("There is not a car.");
-//    }
-//delay for the car test
-//    delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
-
 }
 
 
