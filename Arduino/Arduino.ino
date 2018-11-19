@@ -59,8 +59,8 @@ void setup()
   // TESTING SANDBOX
   // ----------------------------------------------------------------------------
   initDisplayState();
-  int connected = setupEthernet();s
-  if(success == 1){
+  int connected = setupEthernet();
+  if(connected == 1){
     makeGetRequest();
   }
 }
