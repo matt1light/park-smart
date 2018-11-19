@@ -127,8 +127,8 @@ void loop()
 
 bool isCar()
 {
-  d1 = getDistance(1);
-  d2 = getDistance(2);
+  d1 = getDistanceStub(1);
+  d2 = getDistanceStub(2);
   if (d1 <= dTrig && d2 <= dTrig)
   {
     return true;
