@@ -4,15 +4,30 @@ from rest_framework import generics, viewsets
 from rest_framework import status
 from rest_framework.views import APIView
 from django.http import JsonResponse
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from mainModels.models import Image, Sector
-from .serializers import ImageSerializer
+from .serializer import ImageSerializer, ImageCollectionSerializer
+import json
 
 # Create your views here.
 
-class CreateView(viewsets.ModelViewSet):
-    model = Image
+# class CreateView(viewsets.ModelViewSet):
+#     model = Image
+#     parser_classes = (JSONParser)
+#     serializer_class = ImageSerializer
+#
+#     def perform_create(self, serializer):
+#         print(self.request.data)
+#         print(self.request._files)
+#         serializer.save()
+
+
+class CreateView(generics.ListCreateAPIView):
+
+    queryset = Image.objects.all()
+
     parser_classes = (FormParser, MultiPartParser,)
     serializer_class = ImageSerializer
 
@@ -21,19 +36,40 @@ class CreateView(viewsets.ModelViewSet):
         print(self.request._files)
         serializer.save()
 
+class MultiImage(generics.ListCreateAPIView):
+    queryset = Image.objects.all()
 
-# class CreateView(generics.ListCreateAPIView):
-#
-#     queryset = Image.objects.all()
-#
-#     parser_classes = (FormParser, MultiPartParser,)
-#     serializer_class = ImageSerializer
-#
-#     def perform_create(self, serializer):
-#         print(self.request.data)
-#         print(self.request._files)
-#         serializer.save()
+    parser_classes = (FormParser, MultiPartParser,)
+    serializer_class = ImageCollectionSerializer
 
+    def perform_create(self, serializer):
+        # data_string = str(self.request.data['images']).replace("\'", "\"")
+        images = self.request.POST.getlist("images")
+        files = self.request._files
+        for str_image in images:
+            image = json.loads(str_image.replace("\'", "\""))
+            photo_name = image["photo"]
+            try:
+                photo = files.get(photo_name)
+            except Exception as e:
+                raise ValidationError(str(e))
+
+            sector = image['cameraId']
+            time_taken = image['time_taken']
+
+            data = {
+                'sector': sector,
+                'time_taken': time_taken,
+                'photo': photo
+            }
+            serial = ImageSerializer(data=data)
+            if serial.is_valid():
+                print(serial.save())
+            else:
+                raise ValidationError("One or more images failed validation")
+
+
+        # serializer.save()
 
 # class CreateMultipleView():
 #
