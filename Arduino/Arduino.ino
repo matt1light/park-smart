@@ -44,14 +44,14 @@ void setup()
     //Initialize lcd interface and set dimentions
     lcd.begin(16,2);
 
-    setupEthernet();
   // ----------------------------------------------------------------------------
   // TESTING SANDBOX
   // ----------------------------------------------------------------------------
   initDisplayState();
-  makeGetRequest();
-  //initDisplayState();
-  //serialize(currentDisplay);
+  int connected = setupEthernet();s
+  if(success == 1){
+    makeGetRequest();
+  }
 }
 
 void loop()

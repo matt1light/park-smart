@@ -28,8 +28,8 @@ int port = 8000;
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
 //IPAddress server(10,0,0,41);
-IPAddress server(172,17,150,223);
-
+//IPAddress server(172,17,150,223);
+IPAddress server(10,0,0,5);
 // Declare the client
 EthernetClient client;
 
@@ -40,7 +40,7 @@ char incomingBuffer[800]; // Size is currently arbitrary
 int bufferIndex = 0;
 
 // Initialize the connection between this machine and the server.
-void setupEthernet(void){
+int setupEthernet(void){
   Serial.begin(9600);
   while(!Serial){}; // Wait until the serial port is able to connect.
   delay(1000);
@@ -68,22 +68,18 @@ void setupEthernet(void){
     Serial.println(port);
     Serial.print("Error code: ");
     Serial.println(connectionStatus);
-
-    // TODO: Break this up into a function that returns the error code
   } 
+  return connectionStatus;
 }
 
 // Perform a GET request for a given endpoint
-// displayState/?=outputID
-//void makeGetRequest(char* target){
 void makeGetRequest(void){
   Serial.println("Trying a Get request");
-  client.print("GET displayState/?=");
+  client.print("GET /displayState/?output=");
   client.print(outputID);
   client.println(" HTTP/1.1");
-  client.println("Host: 10.0.0.41");
-  client.println("Connection: close");
-  client.println(); // Required newline to end the request
+  client.println("Host: 10.0.0.41:8000");
+  client.println("Cache-Control: no-cache");
   Serial.println("Get request completed");
 }
 
@@ -95,7 +91,7 @@ void readIncomingBytes(void){
   if(len > 0){
     // Cap the amount of data to read at once.
     // TODO: Find out why? This is code from the sample
-    // Possibly packet size
+    // Possibly to do with packet size.
     if (len > MAXBUFFSIZE){
       len = MAXBUFFSIZE;
     }
@@ -114,20 +110,9 @@ void readNBytes(int n){
 
 // Create dummy values for the current displayState
 void initDisplayState(){
-  // NB: I don't know if we've altered the details of displaystate?
-  // I'm going off the latest version of the class diagram.
-  /*
-  currentDisplay.lightState[0] = 1;
-  currentDisplay.lightState[1] = 2;
-  currentDisplay.lightState[2] = 1;
-  */
   for(int i=0; i<NUMROWS; i++){
     currentDisplay.lightState[i] = 0;
   }
-  /*
-  currentDisplay.currentCars = 0;
-  currentDisplay.maxCars = 6;
-  */
   currentDisplay.emptySpots = 9999;
 }
 
