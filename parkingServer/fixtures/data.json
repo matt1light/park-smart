@@ -1,0 +1,40 @@
+[
+  {
+    "model": "mainModels.parkingLot",
+    "pk": 1,
+    "fields":{
+      "name": "test_lot",
+      "description": "this is a test lot"
+    }
+  },
+  {
+    "model": "mainModels.output",
+    "pk": 1,
+    "fields":{
+      "parking_lot": 1
+    }
+  },
+  {
+    "model": "mainModels.lotState",
+    "pk": 1,
+    "fields":{
+      "parking_lot": 1
+    }
+  },
+  {
+    "model": "mainModels.row",
+    "pk": 1,
+    "fields":{
+      "lot_state": 1
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 1,
+    "fields":{
+      "row": 1,
+      "full": "False",
+      "active": "True"
+    }
+  }
+]
