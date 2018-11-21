@@ -27,9 +27,10 @@ int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-//IPAddress server(10,0,0,41);
+IPAddress server(10,0,0,41);
 //IPAddress server(172,17,150,223);
-IPAddress server(10,0,0,5);
+//IPAddress server(169,254,45,1);
+
 // Declare the client
 EthernetClient client;
 
@@ -75,12 +76,13 @@ int setupEthernet(void){
 // Perform a GET request for a given endpoint
 void makeGetRequest(void){
   Serial.println("Trying a Get request");
+ 
   client.print("GET /displayState/?output=");
   client.print(outputID);
   client.println(" HTTP/1.1");
   client.println("Host: 10.0.0.41:8000");
   client.println("Cache-Control: no-cache");
-  Serial.println("Get request completed");
+  
 }
 
 // Read some bytes from the incoming stream
@@ -115,6 +117,3 @@ void initDisplayState(){
   }
   currentDisplay.emptySpots = 9999;
 }
-
-//void setup(){}
-//void loop(){}
