@@ -6,8 +6,17 @@
 #define MAXBUFFSIZE 80
 #define MSGBUFFERSIZE 800
 
+// Connection status codes
+#define CONNECTION_SUCCESS 1
+#define CONNECTION_FAILURE_GENERIC 0
+#define CONNECTION_FAILURE_TIMEOUT -1
+#define CONNECTION_FAILURE_INVALID_SERVER -2
+#define CONNECTION_FAILURE_TRUNCATED -3
+#define CONNECTION_FAILURE_INVALID_RESPONSE -4
+
 struct DisplayState{
-  int lightState[NUMROWS];
+  char lightState[NUMROWS];
+  //int lightState[NUMROWS];
   /*
   int currentCars;
   int maxCars;
@@ -23,14 +32,14 @@ struct DisplayState{
 byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 
 // 10.0.0.43 should be this device's static IP
-IPAddress ip(10,0,0,43);
-int port = 8000;
+IPAddress ip(169,254,10,10);
+int port = 7000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-IPAddress server(10,0,0,41);
+//IPAddress server(10,0,0,41);
 //IPAddress server(172,17,150,223);
-//IPAddress server(169,254,45,1);
+IPAddress server(169,254,45,1);
 
 // Declare the client
 EthernetClient client;
@@ -59,7 +68,9 @@ int setupEthernet(void){
   // 1=success, -1=timeout, -2=invalid server, -3=truncated, -4=invalid response
   // 0=something, but this case is undocumented.
   int connectionStatus = client.connect(server, port);
-  if(connectionStatus == 1){
+  //Serial.print("Attempting to connect to ");
+  //Serial.print(client.remoteIP());
+  if(connectionStatus == CONNECTION_SUCCESS){
     Serial.print("Connected successfully to ");
     Serial.print(client.remoteIP());
     Serial.print(" on port ");

@@ -1,3 +1,5 @@
+#include <ArduinoJson.h>
+
 #include <LiquidCrystal.h>
 
 int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds
@@ -15,6 +17,10 @@ bool carFlag; //variable to keep track of if a car has been betwen the sensors b
 #define GREEN1 A1
 #define YELLOW2 A2
 #define GREEN2 A3
+
+#ifndef CONNECTION_SUCCESS
+  #define CONNECTION_SUCCESS 1
+#endif
 
 //Arrray for Lights
 uint8_t yellowLED[] = {YELLOW1, YELLOW2};
@@ -56,7 +62,7 @@ void setup()
 
   initDisplayState();
   int connected = setupEthernet();
-  if (connected == 1) {
+  if (connected == CONNECTION_SUCCESS) {
     makeGetRequest();
   }
 }
