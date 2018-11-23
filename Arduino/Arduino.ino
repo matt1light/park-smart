@@ -1,5 +1,3 @@
-#include <ArduinoJson.h>
-#include <Ethernet.h>
 #include <LiquidCrystal.h>
 
 int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds

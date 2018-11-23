@@ -4,6 +4,7 @@
 // Partially adapted from the WebClient sample program.
 #define NUMROWS 3
 #define MAXBUFFSIZE 80
+#define MSGBUFFERSIZE 800
 
 struct DisplayState{
   int lightState[NUMROWS];
@@ -27,16 +28,17 @@ int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-//IPAddress server(10,0,0,41);
+IPAddress server(10,0,0,41);
 //IPAddress server(172,17,150,223);
-IPAddress server(10,0,0,5);
+//IPAddress server(169,254,45,1);
+
 // Declare the client
 EthernetClient client;
 
 struct DisplayState currentDisplay;
 int outputID = 1;
 
-char incomingBuffer[800]; // Size is currently arbitrary
+char messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
 int bufferIndex = 0;
 
 // Initialize the connection between this machine and the server.
@@ -75,18 +77,21 @@ int setupEthernet(void){
 // Perform a GET request for a given endpoint
 void makeGetRequest(void){
   Serial.println("Trying a Get request");
+ 
   client.print("GET /displayState/?output=");
   client.print(outputID);
   client.println(" HTTP/1.1");
   client.println("Host: 10.0.0.41:8000");
   client.println("Cache-Control: no-cache");
-  Serial.println("Get request completed");
+  
 }
 
 // Read some bytes from the incoming stream
 void readIncomingBytes(void){
+  
   // Check how much data is incoming
   int len = client.available();
+  
   // Only do anything if there is data to process
   if(len > 0){
     // Cap the amount of data to read at once.
@@ -104,7 +109,18 @@ void readNBytes(int n){
   byte buffer[n];
   client.read(buffer, n);
   Serial.write(buffer, n);
-  //memcpy(&incomingBuffer[bufferIndex], buffer, n*sizeof(byte));
+  /*
+ 
+  if(bufferIndex+n < MSGBUFFERSIZE){
+    memcpy(&incomingBuffer[bufferIndex], buffer, n*sizeof(byte));
+    bufferIndex += n;
+  }
+  else{
+    Serial.println("Discarding packet; buffer would overflow);
+  }
+
+  */
+  
   //Serial.write(incomingBuffer);
 }
 
@@ -115,6 +131,3 @@ void initDisplayState(){
   }
   currentDisplay.emptySpots = 9999;
 }
-
-//void setup(){}
-//void loop(){}
