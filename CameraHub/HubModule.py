@@ -1,17 +1,16 @@
-import CameraHub
+from CameraHub import CameraHub
 
-while 1:
-    
+hub1 = CameraHub() 
     #Capture an Image for all cameras in the hub
-    for camera in hubCameras:
-        x = hubCameras.index(camera)
-        captureImage(x)
+for camera in hub1.hubCameras:
+    x = hub1.hubCameras.index(camera)
+    hub1.captureImage(x)
      
     #Build a request after all images have been captured 
-    buildRequest(hubImages)
+hub1.buildRequest()
     
     #Send request
-    sendRequest(builtRequest)
+print(hub1.builtRequest.data)
 
     #Delay
-    time.sleep(delay)
+#time.sleep(delay)
