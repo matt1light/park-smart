@@ -7,6 +7,13 @@
 #define trigPin2 8//trigger pin for ultrasonic sensor 2 connected to pin 8
 #define echoPin2 9//echo Pin for ultrasonic sensor 2 connected to pin 9
 
+void setUpUS()
+{
+  //Set up pin modes for ultrasonic sensors on the anaolg pins
+  pinMode(trigPin1, OUTPUT);
+  pinMode(echoPin1, INPUT);    
+}
+
 UltraSonicDistanceSensor distanceSensor1(trigPin1, echoPin1);
 UltraSonicDistanceSensor distanceSensor2(trigPin2, echoPin2);
 
