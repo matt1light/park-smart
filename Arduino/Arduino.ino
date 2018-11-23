@@ -90,15 +90,15 @@ void loop()
 
 bool isCar()
 {
-    if(isTesting){
-        d1 = getDistanceStub(1);
-        d2 = getDistanceStub(2);   
-    }
-    else
-    {
-        d1 = getDistance(1);
-        d2 = getDistance(2);        
-    }
+  if (isTesting) {
+    d1 = getDistanceStub(1);
+    d2 = getDistanceStub(2);
+  }
+  else
+  {
+    d1 = getDistance(1);
+    d2 = getDistance(2);
+  }
   if (d1 <= dTrig && d2 <= dTrig)
   {
     return true;
