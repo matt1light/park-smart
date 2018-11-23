@@ -10,6 +10,17 @@ bool car; //state variable if car is at parking lot entrance or not
 bool carFlag; //variable to keep track of if a car has been betwen the sensors before incrementing numCars
 
 
+//LCD Pin Setup
+#define rs 7
+#define en 6
+#define d4 5
+#define d5 4
+#define d6 3
+#define d7 2
+
+//LCD Setup
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
 ////LED setup
 #define YELLOW1 A0
 #define GREEN1 A1
@@ -25,10 +36,6 @@ int off = 0;
 int green = 1;
 int yellow = 2;
 
-
-//LCD Setup
-const int rs = 7, en = 6, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 
 //Temp holder for available spots to be displated on LCD
