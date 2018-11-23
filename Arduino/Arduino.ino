@@ -1,14 +1,17 @@
 #include <LiquidCrystal.h>
 
-int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds
+int wait = 2000; //delay frequency of ultrasonic sensor readings in milliseconds
 
 double d1, d2;//distance values, one for each ultrasonic sensor
 
 double dTrig = 5;//Max triggering detected distance
 
 bool car; //state variable if car is at parking lot entrance or not
-bool carFlag; //variable to keep track of if a car has been betwen the sensors before incrementing numCars
 
+//
+#ifndef NUMROWS
+#define NUMROWS 3
+#endif
 
 //LCD Pin Setup
 #define rs 7
@@ -28,20 +31,19 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #define GREEN2 A3
 
 //Arrray for Lights
-uint8_t yellowLED[] = {YELLOW1, YELLOW2};
-uint8_t greenLED[] = {GREEN1, GREEN2};
+uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
+uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 
 //colour definitions to be passed to light state
-int off = 0;
-int green = 1;
-int yellow = 2;
-
-
+#define off 0
+#define green 1
+#define yellow 2
 
 //Temp holder for available spots to be displated on LCD
-int availSpots;
+short availSpots;
 
 bool isTesting = false;
+
 
 void setup()
 {
@@ -57,9 +59,7 @@ void setup()
   pinMode(YELLOW2, OUTPUT);
   pinMode(GREEN2, OUTPUT);
 
-    setUpUS();
-
-
+  setUpUS();
 
   initDisplayState();
   int connected = setupEthernet();
@@ -71,17 +71,13 @@ void setup()
 void loop()
 {
   readIncomingBytes();
-  delay(250);
-
   car = isCar(); //test if car is there or not
 
   if (car)
   {
     lcd.setCursor(0, 1);
     updateLCD(availSpots);
-
   }
-
 
   //Test code for LED
   setLightState(0, green);
@@ -91,7 +87,6 @@ void loop()
   delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
 
 }
-
 
 bool isCar()
 {
@@ -111,26 +106,22 @@ bool isCar()
   return false;
 }
 
-
 void setLightState(int row, int colour)
 {
   if (colour == green)//Light to be set to Green
   {
     digitalWrite(greenLED[row], HIGH);
     digitalWrite(yellowLED[row], LOW);
-    Serial.println("green");
   }
   else if (colour == yellow)//Light to be set to yellow
   {
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], HIGH);
-    Serial.println("yellow");
   }
   else if (colour == off) //Light is not set
   {
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], LOW);
-    Serial.println("not set");
   }
 
 }
