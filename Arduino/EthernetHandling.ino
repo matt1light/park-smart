@@ -94,6 +94,7 @@ void makeGetRequest(void){
   client.println(" HTTP/1.1");
   client.println("Host: 10.0.0.41:8000");
   client.println("Cache-Control: no-cache");
+  client.println();
   
 }
 
