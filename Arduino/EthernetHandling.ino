@@ -3,7 +3,7 @@
 
 // Partially adapted from the WebClient sample program.
 #define NUMROWS 3
-#define MAXBUFFSIZE 80
+#define PACKETSIZE 128
 #define MSGBUFFERSIZE 800
 
 // Connection status codes
@@ -107,15 +107,17 @@ void readIncomingBytes(void){
   // Only do anything if there is data to process
   if(len > 0){
     // Cap the amount of data to read at once.
-    // TODO: Find out why? This is code from the sample
-    // Possibly to do with packet size.
-    if (len > MAXBUFFSIZE){
-      len = MAXBUFFSIZE;
+    // If the data would overflow the buffer, only read enough to fill it.
+    if(len >= MSGBUFFERSIZE){
+      Serial.println("Message exceeds allotted buffer size. Truncating message.");
+      len = MSGBUFFERSIZE;
     }
-    readNBytes(len);
+    // Read the message into the buffer
+    client.read(messageBuffer, len);
   }
 }
 
+/*
 // Read n bytes of data from the incoming buffer and print them to serial.
 void readNBytes(int n){
   byte buffer[n];
@@ -131,10 +133,11 @@ void readNBytes(int n){
     Serial.println("Discarding packet; buffer would overflow);
   }
 
-  */
+  
   
   //Serial.write(incomingBuffer);
 }
+*
 
 // Create dummy values for the current displayState
 void initDisplayState(){
