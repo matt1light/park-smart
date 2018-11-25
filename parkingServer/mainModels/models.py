@@ -25,6 +25,12 @@ class Spot(models.Model):
     row = models.ForeignKey(Row, related_name='spots', null= True, on_delete=models.SET_NULL)
     active = models.BooleanField()
     full = models.BooleanField()
+    last_park = models.DateTimeField(null=True)
+
+class ParkingEvent(models.Model):
+    spot = models.ForeignKey(Spot, related_name='parking_events', null=True, on_delete=models.SET_NULL)
+    parking_start = models.DateTimeField()
+    parking_end = models.DateTimeField()
 
 class ImageCoordinates(models.Model):
     left = models.IntegerField()

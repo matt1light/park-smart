@@ -4,8 +4,9 @@ from __future__ import unicode_literals
 from django.db import models
 from imageai.Detection import ObjectDetection
 import os
+import datetime
 
-from mainModels.models import Spot, SectorSpot, ParkingLot, Sector, ImageCoordinates, Image
+from mainModels.models import Spot, SectorSpot, ParkingLot, Sector, ImageCoordinates, Image, ParkingEvent
 
 # Non persistant static class
 # processor is not an object
@@ -42,15 +43,27 @@ class ImageProcessor(models.Model):
         # use object recognition to find coordinates
         detected_coords = ImageProcessor.getCoordsFromImageResnet(image_name)
         # for each coordinate in the detected coordinates
-        for coord in detected_coords:
+        for sector_spot in sector.sector_spots.all():
             # compare to the possible coordinates
-            for sector_spot in sector.sector_spots.all():
+            spot_full = False
+            spot = sector_spot.spot
+            for coord in detected_coords:
                 # if the coordinates intersect by more than the MIN_OVERLAP
-                if ImageProcessor.calculateOverlapPercentage(sector_spot.image_coordinates, coord) >= ImageProcessor.MIN_OVERLAP:
+                if ImageProcessor.calculateOverlapPercentage(sector_spot.image_coordinates, coord) >= ImageProcessor.MIN_OVERLAP and spot.full==False:
                     # update the spot to full and save it
-                    spot = sector_spot.spot
                     spot.full = True
-                    spot.save(update_fields=["full"])
+                    spot.last_park = datetime.datetime.now()
+                    spot.save(update_fields=["last_park", "full"])
+                    spot_full = True
+            # if the spot is empty in the picture but not in the database update the database entry
+            if not spot_full and spot.full:
+                ParkingEvent.objects.create(spot=spot,
+                                            parking_start=spot.last_park,
+                                            parking_end=datetime.datetime.now())
+
+                spot.full = False
+                spot.last_park = None
+                spot.save(update_fields=["last_park", "full"])
 
     @staticmethod
     def getCoordsFromImageResnet(image_name):
