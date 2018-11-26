@@ -77,6 +77,7 @@ void setup()
 void loop()
 {
   readIncomingBytes();
+  /*
   car = isCar(); //test if car is there or not
 
   if (car)
@@ -90,6 +91,8 @@ void loop()
   setLightState(1, green);
 
   //delay for the car test
+  
+  */
   delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
 
 }

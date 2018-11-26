@@ -32,14 +32,15 @@ struct DisplayState{
 byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 
 // 10.0.0.43 should be this device's static IP
-IPAddress ip(169,254,10,10);
-int port = 7000;
+//IPAddress ip(169,254,10,10);
+IPAddress ip(10,0,0,43);
+int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-//IPAddress server(10,0,0,41);
+IPAddress server(10,0,0,41);
 //IPAddress server(172,17,150,223);
-IPAddress server(169,254,45,1);
+//IPAddress server(169,254,45,1);
 
 // Declare the client
 EthernetClient client;
@@ -100,12 +101,13 @@ void makeGetRequest(void){
 
 // Read some bytes from the incoming stream
 void readIncomingBytes(void){
-  
+  //Serial.println("Reading data stream");
   // Check how much data is incoming
   int len = client.available();
   
   // Only do anything if there is data to process
   if(len > 0){
+    /*
     // Cap the amount of data to read at once.
     // If the data would overflow the buffer, only read enough to fill it.
     if(len >= MSGBUFFERSIZE){
@@ -114,17 +116,23 @@ void readIncomingBytes(void){
     }
     // Read the message into the buffer
     client.read(messageBuffer, len);
+    */
+     readNBytes(80);
+    }
+  
+  else{
+   // Serial.println("No data available to read");
   }
 }
 
-/*
+
 // Read n bytes of data from the incoming buffer and print them to serial.
 void readNBytes(int n){
   byte buffer[n];
   client.read(buffer, n);
   Serial.write(buffer, n);
   
- 
+ /*
   if(bufferIndex+n < MSGBUFFERSIZE){
     memcpy(&incomingBuffer[bufferIndex], buffer, n*sizeof(byte));
     bufferIndex += n;
@@ -132,12 +140,10 @@ void readNBytes(int n){
   else{
     Serial.println("Discarding packet; buffer would overflow");
   }
-
-  
-  
+  */
   //Serial.write(incomingBuffer);
 }
-*/
+
 
 // Create dummy values for the current displayState
 void initDisplayState(){
