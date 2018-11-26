@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from .models import ImageProcessor
 from mainModels.models import Spot, Sector, SectorSpot, LotState
-import numpy as np
+from .ImageProcessorServer import ImageProcessorServerImageAI
 
 # Create your tests here.
 
@@ -43,6 +43,8 @@ class ImageProcessorUnitTests(TestCase):
                 'full': True
             },
         ]
+        server = ImageProcessorServerImageAI()
+        self.imageProcessor = ImageProcessor(server)
         return
 
     def test_calibrate(self):
@@ -51,7 +53,7 @@ class ImageProcessorUnitTests(TestCase):
         # test2 has a picture with 5 cars thus should add 4 sector spots
         expected_number_of_spots = 5
         image_name = "../test_resources/test_pics/e2esituations/full-doc-20.jpg"
-        ImageProcessor.addSpotsToSector(image_name, sector)
+        self.imageProcessor.addSpotsToSector(image_name, sector)
         new_sector_spots = SectorSpot.objects.all()
 
         # assert that there have been spots added to the database table
@@ -77,7 +79,7 @@ class ImageProcessorUnitTests(TestCase):
     #     for row in test_data:
     #         # FIXME this test might have to be updated to round coordinates to be close but not quite what they are as this may not be a deterministic operation
     #
-    #         processed_coordinates = ImageProcessor.getCoordsFromImage(row['image_location'])
+    #         processed_coordinates = self.imageProcessor.getCoordsFromImage(row['image_location'])
     #         flattened_processed_coordinates = [val for sublist in processed_coordinates for val in sublist]
     #         flattened_expected_coordinates = [val for sublist in row['coordinates'] for val in sublist]
     #         self.assertCountEqual(flattened_expected_coordinates, flattened_processed_coordinates)
@@ -95,7 +97,7 @@ class ImageProcessorUnitTests(TestCase):
     #     }]
     #
     #     for row in test_data:
-    #         ImageProcessor.updateSectorByImage(row['image_location'], row['sector'])
+    #         self.imageProcessor.updateSectorByImage(row['image_location'], row['sector'])
     #         # check to see if the appropriate spots are updated
     #         for expected_spot in row['spots']:
     #             spot = Spot.objects.get(expected_spot['id'])
@@ -112,7 +114,7 @@ class ImageProcessorUnitTests(TestCase):
     #     }]
     #
     #     for row in test_data:
-    #         ImageProcessor.updateSector(row['sector'])
+    #         self.imageProcessor.updateSector(row['sector'])
     #
     #         for expected_spot in row['expected_spots']:
     #             spot = Spot.objects.get(expected_spot['id'])

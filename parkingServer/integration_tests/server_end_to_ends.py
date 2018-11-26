@@ -2,6 +2,7 @@ from mainModels.models import ParkingLot, LotState, Sector, Image, Row, Spot, Ar
 from imageProcessor.models import ImageProcessor
 from django.utils import timezone
 import json
+from imageProcessor.ImageProcessorServer import ImageProcessorServerImageAI
 
 from django.test import TestCase
 from rest_framework import status
@@ -25,7 +26,9 @@ class ImageInDisplayOut(TestCase):
         # dump this json
         cls.output = ArduinoOutput.objects.create(parking_lot=cls.parking_lot, ip_address="192.1.1.1")
         # calibrate
-        ImageProcessor.addSpotsToSector("../test_resources/test_pics/e2esituations/e2e3.jpg", cls.sector1)
+        server = ImageProcessorServerImageAI()
+        cls.processor = ImageProcessor(server)
+        cls.processor.addSpotsToSector("../test_resources/test_pics/e2esituations/e2e3.jpg", cls.sector1)
         # add spots to the two rows
         Spot.objects.filter(pk__range=(1,4)).update(row=cls.top_row)
         Spot.objects.filter(pk__range=(5,8)).update(row=cls.bottom_row)
@@ -59,7 +62,7 @@ class ImageInDisplayOut(TestCase):
 
 
         # force image processor to update sector
-        ImageProcessor.updateSector(self.sector1)
+        self.processor.updateSector(self.sector1)
 
         response = self.client.get(
             '/displayState/',
@@ -78,7 +81,7 @@ class ImageInDisplayOut(TestCase):
         input_response = self.send_image("../test_resources/test_pics/e2esituations/e2e4.jpg", self.sector1)
 
         # force image processor to update sector
-        ImageProcessor.updateSector(self.sector1)
+        self.processor.updateSector(self.sector1)
 
         response = self.client.get(
             '/displayState/',
@@ -97,7 +100,7 @@ class ImageInDisplayOut(TestCase):
         input_response = self.send_image("../test_resources/test_pics/e2esituations/empty.jpg", self.sector1)
 
         # force image processor to update sector
-        ImageProcessor.updateSector(self.sector1)
+        self.processor.updateSector(self.sector1)
 
         response = self.client.get(
             '/displayState/',
@@ -116,7 +119,7 @@ class ImageInDisplayOut(TestCase):
         input_response = self.send_image("../test_resources/test_pics/e2esituations/e2e3.jpg", self.sector1)
 
         # force image processor to update sector
-        ImageProcessor.updateSector(self.sector1)
+        self.processor.updateSector(self.sector1)
 
         response = self.client.get(
             '/displayState/',
