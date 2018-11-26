@@ -11,7 +11,7 @@ bool car; //state variable if car is at parking lot entrance or not
 
 //If number of rows is not defined in Ethernet handling than it will be here
 #ifndef NUMROWS
-#define NUMROWS 3
+    #define NUMROWS 3
 #endif
 
 //LCD Pin Setup
@@ -98,16 +98,20 @@ void loop()
 bool isCar()
 {
   if (isTesting) {
+    //If testung, use the stub file
     d1 = getDistanceStub(1);
     d2 = getDistanceStub(2);
   }
   else
   {
+    //if not testing, run with regular file
     d1 = getDistance(1);
     d2 = getDistance(2);
   }
+  //compare the distance detected by each ultrasonic sensor and compare it to the predetermined maximum
   if (d1 <= dTrig && d2 <= dTrig)
   {
+    //Set is car to true
     return true;
   }
   return false;
@@ -125,7 +129,7 @@ void setLightState(int row, int colour)
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], HIGH);
   }
-  else if (colour == OFF) //Light is not set
+  else if (colour == OFF) //Light is not set, turn off
   {
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], LOW);
@@ -135,5 +139,6 @@ void setLightState(int row, int colour)
 
 void updateLCD(int availableSpots)
 {
+  //Display the number of available cars
   lcd.print(availableSpots);
 }
