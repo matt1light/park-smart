@@ -62,7 +62,7 @@ class ImageInDisplayOut(TestCase):
 
 
         # force image processor to update sector
-        self.processor.updateSector(self.sector1)
+        self.processor.update_sector_with_latest(self.sector1)
 
         response = self.client.get(
             '/displayState/',
@@ -81,7 +81,7 @@ class ImageInDisplayOut(TestCase):
         input_response = self.send_image("../test_resources/test_pics/e2esituations/e2e4.jpg", self.sector1)
 
         # force image processor to update sector
-        self.processor.updateSector(self.sector1)
+        self.processor.update_sector_with_latest(self.sector1)
 
         response = self.client.get(
             '/displayState/',
@@ -100,7 +100,7 @@ class ImageInDisplayOut(TestCase):
         input_response = self.send_image("../test_resources/test_pics/e2esituations/empty.jpg", self.sector1)
 
         # force image processor to update sector
-        self.processor.updateSector(self.sector1)
+        self.processor.update_sector_with_latest(self.sector1)
 
         response = self.client.get(
             '/displayState/',
@@ -119,7 +119,7 @@ class ImageInDisplayOut(TestCase):
         input_response = self.send_image("../test_resources/test_pics/e2esituations/e2e3.jpg", self.sector1)
 
         # force image processor to update sector
-        self.processor.updateSector(self.sector1)
+        self.processor.update_sector_with_latest(self.sector1)
 
         response = self.client.get(
             '/displayState/',
