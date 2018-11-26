@@ -1,139 +1,139 @@
-#include <Ethernet.h>
-#include <HCSR04.h>
+#include <ArduinoJson.h>
+
 #include <LiquidCrystal.h>
 
-//Ultrasonic initial settings
-//Initialize Ultrasonic Sensors and the pins it uses
-int trigPin1 = 6;//trigger pin for ultrasonic sensor 1 connected to pin 6
-int echoPin1 = 7;//echo Pin for ultrasonic sensor 1 connected to pin 7
-int trigPin2 = 8;//trigger pin for ultrasonic sensor 2 connected to pin 8
-int echoPin2 = 9;//echo Pin for ultrasonic sensor 2 connected to pin 9
+int wait = 2000; //delay frequency of ultrasonic sensor readings in milliseconds
 
 double d1, d2;//distance values, one for each ultrasonic sensor
 
-int wait = 2500; //delay frequency of ultrasonic sensor readings in milliseconds
-
-double dTrig = 7;//Max triggering dectected distance
-
-UltraSonicDistanceSensor distanceSensor1(trigPin1, echoPin1);
-UltraSonicDistanceSensor distanceSensor2(trigPin2, echoPin2);
+double dTrig = 5;//Max triggering detected distance
 
 bool car; //state variable if car is at parking lot entrance or not
 
-//LED setup
-#define redPort 2 //LED red pin set to port 2
-#define greenPort 3 //LED green pin set to port 3
-#define bluePort 4 //LED blue pin set to port 4
+//
+#ifndef NUMROWS
+#define NUMROWS 3
+#endif
 
-//colour definitions to be passed to light state
-int red = 0;
-int green = 1;
-int blue = 2;
-int yellow = 3;
+//LCD Pin Setup
+#define rs 7
+#define en 6
+#define d4 5
+#define d5 4
+#define d6 3
+#define d7 2
 
 //LCD Setup
-LiquidCrystal lcd(19,18,17,16,15,14); //Declaration of lcd using LiquidCrystal library setup
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+////LED setup
+#define YELLOW1 A0
+#define GREEN1 A1
+#define YELLOW2 A2
+#define GREEN2 A3
+
+#ifndef CONNECTION_SUCCESS
+  #define CONNECTION_SUCCESS 1
+#endif
+
+//Arrray for Lights
+uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
+uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
+
+//colour definitions to be passed to light state
+#define off 0
+#define green 1
+#define yellow 2
+
+//Temp holder for available spots to be displated on LCD
+short availSpots;
+
+bool isTesting = false;
+
 
 void setup()
 {
-    //Initialize serial connection
-    Serial.begin(9600);
+  //Initialize serial connection
+  Serial.begin(9600);
 
-    //Initialize lcd interface and set dimentions
-    lcd.begin(16,2);
-    
+  //Initialize lcd interface and set dimentions
+  lcd.begin(16, 2);
+  lcd.print("Free spots:");
+
+  pinMode(YELLOW1, OUTPUT);
+  pinMode(GREEN1, OUTPUT);
+  pinMode(YELLOW2, OUTPUT);
+  pinMode(GREEN2, OUTPUT);
+
+  setUpUS();
+
+  initDisplayState();
+  int connected = setupEthernet();
+  if (connected == CONNECTION_SUCCESS) {
+    makeGetRequest();
+  }
 }
 
 void loop()
 {
+  readIncomingBytes();
+  car = isCar(); //test if car is there or not
 
-    //Test code for LED
-    lightState(red);
-    delay(wait);
-    lightState(green);
-    delay(wait);
-    lightState(blue);
-    delay(wait);
-    lightState(yellow);
-    delay(wait);
+  if (car)
+  {
+    lcd.setCursor(0, 1);
+    updateLCD(availSpots);
+  }
 
-//    car = isCar(d1, d2); //test if car is there or not
-//   
-//Test code to see if car is present and display info for it 
-//    Serial.print("D1: ");
-//    Serial.print(d1);
-//    Serial.println("cm");
-//    Serial.print("D2: ");
-//    Serial.print(d2);
-//    Serial.println("cm");
-//    if (car)
-//    {
-//        Serial.println("There is a car");
-//        }
-//    else
-//    {
-//        Serial.println("There is not a car.");
-//    }
-//delay for the car test
-//    delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
+  //Test code for LED
+  setLightState(0, green);
+  setLightState(1, green);
+
+  //delay for the car test
+  delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
 
 }
-
 
 bool isCar()
 {
-    d1 = distanceSensor1.measureDistanceCm();
-    d2 = distanceSensor2.measureDistanceCm();
-    if (d1 <= dTrig && d2 <= dTrig)
-    {
-        return true;
-    }
-    return false;
+  if (isTesting) {
+    d1 = getDistanceStub(1);
+    d2 = getDistanceStub(2);
+  }
+  else
+  {
+    d1 = getDistance(1);
+    d2 = getDistance(2);
+  }
+  if (d1 <= dTrig && d2 <= dTrig)
+  {
+    return true;
+  }
+  return false;
 }
 
-
-
-void lightState(int colour)
+void setLightState(int row, int colour)
 {
-    if (colour == 0) // Light to be set to red
-    {
-        digitalWrite(redPort, HIGH);
-        digitalWrite(greenPort, LOW);
-        digitalWrite(bluePort, LOW);
-        Serial.println("red");
-    }   
-    else if (colour == 1)//Light to be set to Green
-    {
-        digitalWrite(redPort, LOW);
-        digitalWrite(greenPort, HIGH);
-        digitalWrite(bluePort, LOW);
-        Serial.println("green");
-    }
-    else if (colour == 2)//Light to be set to blue
-    {
-        digitalWrite(redPort, LOW);
-        digitalWrite(greenPort, LOW);
-        digitalWrite(bluePort, HIGH);
-        Serial.println("blue");
-    }
-    else if (colour == 3)//Light to be set to yellow
-    {
-        digitalWrite(redPort, HIGH);
-        digitalWrite(greenPort, HIGH);
-        digitalWrite(bluePort, LOW);
-        Serial.println("yellow");
-    }
-    else //Light is not set
-    {
-        digitalWrite(redPort, HIGH);
-        digitalWrite(greenPort, LOW);
-        digitalWrite(bluePort, LOW);
-        Serial.println("not set");
-    }
+  if (colour == green)//Light to be set to Green
+  {
+    digitalWrite(greenLED[row], HIGH);
+    digitalWrite(yellowLED[row], LOW);
+  }
+  else if (colour == yellow)//Light to be set to yellow
+  {
+    digitalWrite(greenLED[row], LOW);
+    digitalWrite(yellowLED[row], HIGH);
+  }
+  else if (colour == off) //Light is not set
+  {
+    digitalWrite(greenLED[row], LOW);
+    digitalWrite(yellowLED[row], LOW);
+  }
+
 }
 
-
-void updateLCD()
+void updateLCD(int availableSpots)
 {
-    
+  lcd.print(availableSpots);
+
 }
