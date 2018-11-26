@@ -12,6 +12,7 @@ const int displayStateSize = (JSON_OBJECT_SIZE(2) + // current and max cars
 JsonObject serialize(struct DisplayState currDS){
   // Create a buffer to store the JSON object in
   DynamicJsonBuffer jb(displayStateSize);
+  // Create the JsonObject that elements will be added to
   JsonObject &root = jb.createObject();
   
   JsonArray &lightState = root.createNestedArray("displayState");
@@ -29,6 +30,7 @@ JsonObject serialize(struct DisplayState currDS){
 
 // Decode a JSON-formatted string and update the current displayState to match it
 void deserialize(char* json){
+  // Create a buffer to store the JSON object in
   DynamicJsonBuffer jsonBuffer(displayStateSize);
   JsonObject& root = jsonBuffer.parseObject(json);
 
@@ -36,9 +38,5 @@ void deserialize(char* json){
   for(int i=0; i<NUMROWS; i++){
     currentDisplay.lightState[i] = displayState[i];  
   }
-  /*
-  currentDisplay.currentCars = root["currentCars"];
-  currentDisplay.maxCars = root["maxCars"];
-  */
   currentDisplay.emptySpots = root["emptySpots"];
 }
