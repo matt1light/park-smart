@@ -43,6 +43,7 @@ uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 //colour definitions to be passed to light state
 #define OFF 0
 #define GREEN 1
+#define YELLOW 2
 
 //Available spots to be displated on LCD, recieved from the server pi
 short availSpots;
