@@ -13,4 +13,5 @@ CameraHub/.idea/codeStyles/codeStyleConfig.xml
 CameraHub/CameraHub.pyc
 CameraHub/Camera.pyc
 CameraHub/randomImage.jpeg
+**/*.pyc
 **/.idea
