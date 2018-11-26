@@ -16,28 +16,35 @@ class ImageProcessor(models.Model):
     class Meta:
         managed = False
 
+    # Creates spots based on the identified cars in an image and adds them to a specified sector
+    # Input: name of image to be processed, sector for spots to be added to
     @staticmethod
     def addSpotsToSector(image_name, sector):
         # get coordinates for new spots
         new_coords = ImageProcessor.getCoordsFromImageResnet(image_name)
-        print(new_coords)
         # for each spot create a SectorSpot and add the coordinates
         for new_spot_coords in new_coords:
             # create a spot with sectorspot id
-            s = Spot.objects.create(active=True, full=False)
+            spot = Spot.objects.create(active=True, full=False)
             # create an ImageCoord from new_spot_coords with sectorspot id
-            i = ImageCoordinates.objects.create(left=new_spot_coords[0],top=new_spot_coords[1],right=new_spot_coords[2], bottom=new_spot_coords[3])
+            image_coordinates = ImageCoordinates.objects.create(left=new_spot_coords[0],
+                                                                top=new_spot_coords[1],
+                                                                right=new_spot_coords[2],
+                                                                bottom=new_spot_coords[3])
             # create a sectorspot with the sector id
-            SectorSpot.objects.create(sector=sector, spot=s, image_coordinates=i)
+            SectorSpot.objects.create(sector=sector, spot=spot, image_coordinates=image_coordinates)
 
+    # Updates a sector's spot statuses based on it's most recent image
     @staticmethod
     def updateSector(sector):
         # get the latest image for this sector
         images = Image.objects.filter(sector=sector).order_by('-id')
         latest_image = images[0]
         image_path = latest_image.photo.url[1:]
+        # update the sector with the latest image
         ImageProcessor.updateSectorByImage(image_path, sector)
 
+    # Updates a sector's spot statuses with a picture input
     @staticmethod
     def updateSectorByImage(image_name, sector):
         # use object recognition to find coordinates
@@ -65,6 +72,7 @@ class ImageProcessor(models.Model):
                 spot.last_park = None
                 spot.save(update_fields=["last_park", "full"])
 
+    # Gets the coordinates of cars in an image, using the resnet ANN model
     @staticmethod
     def getCoordsFromImageResnet(image_name):
         execution_path = os.getcwd()
@@ -86,11 +94,12 @@ class ImageProcessor(models.Model):
 
         return coords
 
+    # Gets the coordinates of cars in an image, using google's vision API
     @staticmethod
     def getCoordsFromImageVisionAPI(image_name):
         ImageProcessor.localize_objects(image_name)
 
-
+    # Takes the input of the coordinates of two rectangles and determinest the percentage that they overlap
     @staticmethod
     def calculateOverlapPercentage(spot_coords, detected_coords):
         left1 = spot_coords.left
@@ -115,6 +124,7 @@ class ImageProcessor(models.Model):
         percentage = intersection/union
         return percentage
 
+    # vision api method to get coordinates of cars in an image
     @staticmethod
     def localize_objects(path):
         """Localize objects in the local image.
@@ -128,8 +138,6 @@ class ImageProcessor(models.Model):
 
         coords = []
 
-        print(os.getcwd())
-
         with open(path, 'rb') as image_file:
             content = image_file.read()
         image = vision.types.Image(content=content)
@@ -137,12 +145,7 @@ class ImageProcessor(models.Model):
         objects = client.object_localization(
             image=image, ).localized_object_annotations
 
-        print('Number of objects found: {}'.format(len(objects)))
         for object_ in objects:
-            print('\n{} (confidence: {})'.format(object_.name, object_.score))
-            print('Normalized bounding polygon vertices: ')
-            for vertex in object_.bounding_poly.normalized_vertices:
-                print(' - ({}, {})'.format(vertex.x, vertex.y))
             if object_.name == "Car" or object_.name == "Motorcycle":
                 vertices = object_.bounding_poly.normalized_vertices
                 left = vertices[0].x
@@ -152,5 +155,4 @@ class ImageProcessor(models.Model):
 
                 coords.append([left, right, top, bottom])
 
-        print(coords)
         return coords
