@@ -35,16 +35,16 @@ class ImageProcessor(models.Model):
             SectorSpot.objects.create(sector=sector, spot=spot, image_coordinates=image_coordinates)
 
     # Updates a sector's spot statuses based on it's most recent image
-    def updateSector(self, sector):
+    def update_sector_with_latest(self, sector):
         # get the latest image for this sector
         images = Image.objects.filter(sector=sector).order_by('-id')
         latest_image = images[0]
         image_path = latest_image.photo.url[1:]
         # update the sector with the latest image
-        self.updateSectorByImage(image_path, sector)
+        self.update_sector_by_image(image_path, sector)
 
     # Updates a sector's spot statuses with a picture input
-    def updateSectorByImage(self, image_name:str, sector):
+    def update_sector_by_image(self, image_name:str, sector):
         # use object recognition to find coordinates
         detected_coords = self.server.get_car_coordinates(image_name)
         # for each coordinate in the detected coordinates
