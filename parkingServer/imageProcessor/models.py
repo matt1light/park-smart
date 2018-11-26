@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-import datetime
+from django.utils import timezone
 
 from mainModels.models import Spot, SectorSpot, ParkingLot, Sector, ImageCoordinates, Image, ParkingEvent
 from .ImageProcessorServer import ImageProcessorServer
@@ -57,14 +57,14 @@ class ImageProcessor(models.Model):
                 if self.__calculateOverlapPercentage(sector_spot.image_coordinates, coord) >= self.MIN_OVERLAP and spot.full==False:
                     # update the spot to full and save it
                     spot.full = True
-                    spot.last_park = datetime.datetime.now()
+                    spot.last_park = timezone.now()
                     spot.save(update_fields=["last_park", "full"])
                     spot_full = True
             # if the spot is empty in the picture but not in the database update the database entry
             if not spot_full and spot.full:
                 ParkingEvent.objects.create(spot=spot,
                                             parking_start=spot.last_park,
-                                            parking_end=datetime.datetime.now())
+                                            parking_end=timezone.now())
 
                 spot.full = False
                 spot.last_park = None
