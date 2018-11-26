@@ -53,7 +53,7 @@ class ImageProcessorUnitTests(TestCase):
         # test2 has a picture with 5 cars thus should add 4 sector spots
         expected_number_of_spots = 5
         image_name = "../test_resources/test_pics/e2esituations/full-doc-20.jpg"
-        self.imageProcessor.addSpotsToSector(image_name, sector)
+        self.imageProcessor.calibrate_sector(image_name, sector)
         new_sector_spots = SectorSpot.objects.all()
 
         # assert that there have been spots added to the database table

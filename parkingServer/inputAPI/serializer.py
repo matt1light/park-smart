@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Image
+from .models import Image, Camera
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -7,9 +7,14 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ('photo', 'time_taken', 'sector')
 
 class ImageResourceSerializer(serializers.Serializer):
-    cameraId = serializers.IntegerField(required = True)
-    photo = serializers.CharField(required = True)
-    time_taken = serializers.DateTimeField(required = True)
+    photo = serializers.ImageField()
+    time_taken = serializers.DateField()
+    cameraID = serializers.CharField(max_length=30)
+
+    def create(self, validated_data):
+        camera = Camera.objects.filter(cameraID = validated_data['cameraID'])[0]
+        sector = camera.sector
+        return Image(sector=sector, photo=validated_data['photo'], time_take=validated_data['time_taken'])
 
 class ImageCollectionSerializer(serializers.Serializer):
     images = serializers.CharField()

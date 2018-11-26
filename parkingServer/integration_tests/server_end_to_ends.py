@@ -28,7 +28,7 @@ class ImageInDisplayOut(TestCase):
         # calibrate
         server = ImageProcessorServerImageAI()
         cls.processor = ImageProcessor(server)
-        cls.processor.addSpotsToSector("../test_resources/test_pics/e2esituations/e2e3.jpg", cls.sector1)
+        cls.processor.calibrate_sector("../test_resources/test_pics/e2esituations/e2e3.jpg", cls.sector1)
         # add spots to the two rows
         Spot.objects.filter(pk__range=(1,4)).update(row=cls.top_row)
         Spot.objects.filter(pk__range=(5,8)).update(row=cls.bottom_row)
@@ -50,7 +50,7 @@ class ImageInDisplayOut(TestCase):
         # self.client = APIClient()
         # self.output = ArduinoOutput.object.create(parking_lot=self.parking_lot, ip_address="192.1.1.1")
         # # calibrate
-        # ImageProcessor.addSpotsToSector("../test_resources/test_pics/e2esituations/e2e3.jpg", self.sector1)
+        # ImageProcessor.calibrate_sector("../test_resources/test_pics/e2esituations/e2e3.jpg", self.sector1)
         # # add spots to the two rows
         # Spot.objects.filter(pk__range=(1,4)).update(row=self.top_row)
         # Spot.objects.filter(pk__range=(5,8)).update(row=self.bottom_row)

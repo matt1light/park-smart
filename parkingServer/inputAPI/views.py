@@ -29,7 +29,7 @@ class CreateView(generics.ListCreateAPIView):
     queryset = Image.objects.all()
 
     parser_classes = (FormParser, MultiPartParser,)
-    serializer_class = ImageSerializer
+    serializer_class = ImageResourceSerializer
 
     def perform_create(self, serializer):
         print(self.request.data)
