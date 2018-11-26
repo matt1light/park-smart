@@ -8,7 +8,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from mainModels.models import Image, Sector
-from .serializer import ImageSerializer, ImageCollectionSerializer
+from .serializer import ImageSerializer, ImageCollectionSerializer, ImageResourceSerializer
 import json
 
 # Create your views here.
