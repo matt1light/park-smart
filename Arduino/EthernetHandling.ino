@@ -4,7 +4,7 @@
 // Partially adapted from the WebClient sample program.
 #define NUMROWS 3
 #define PACKETSIZE 128
-#define MSGBUFFERSIZE 800
+#define MSGBUFFERSIZE 640
 
 // Connection status codes
 #define CONNECTION_SUCCESS 1
@@ -47,7 +47,7 @@ EthernetClient client;
 struct DisplayState currentDisplay;
 int outputID = 1;
 
-char messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
+byte messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
 int bufferIndex = 0;
 
 // Initialize the connection between this machine and the server.
@@ -123,21 +123,21 @@ void readNBytes(int n){
   byte buffer[n];
   client.read(buffer, n);
   Serial.write(buffer, n);
-  /*
+  
  
   if(bufferIndex+n < MSGBUFFERSIZE){
     memcpy(&incomingBuffer[bufferIndex], buffer, n*sizeof(byte));
     bufferIndex += n;
   }
   else{
-    Serial.println("Discarding packet; buffer would overflow);
+    Serial.println("Discarding packet; buffer would overflow");
   }
 
   
   
   //Serial.write(incomingBuffer);
 }
-*
+*/
 
 // Create dummy values for the current displayState
 void initDisplayState(){
