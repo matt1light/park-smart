@@ -2,79 +2,87 @@ import requests
 import datetime
 import time
 import json
-import Camera
+from Camera import CameraStub
 from base64 import b64encode
 
-class CameraHub:
-    def __init__(self):
-
-        # The frequency(period) of photo updates in seconds
-        self.delay = 60
+class CameraHub: 
+    """
+    Each camera hub is an instance of this class which contains all pertinent attributes 
+    and operations of the camera hub
+    """
+    
+    def __init__(self, numCams, hubID):
 
         # The IP address of the server is 10.0.0.41, port 80
-        self.serverAddress = "http://10.0.0.41:80"
+        self.serverAddress = "http://172.17.130.14:7000"
 
         # Defining endpoints
-        self.imageEndpoint = self.serverAddress + "/Images"
+        self.imageEndpoint = self.serverAddress + "/image/"
 
         # Create an empty list to store images in
         self.hubImages = list()
 
         # Number of Cameras
-        self.numCams = 2
+        self.numCams = numCams
 
         # Camera Hub ID
-        self.camHubID = 1
+        self.camHubID = hubID
 
         # List of Cameras
         self.hubCameras = list()
         
-        #Last post request response code
-        self.responseCode = 0
+        # Stores POST request response for the last set of requests
+        self.responseCodes = list()
 
         # Create list of camera objects stored in hubCameras
 
-        #Instantiate Camera objects as same PiCamera for now
+        # Instantiate Camera objects as same PiCamera for now
         for x in range(self.numCams):
-            self.hubCameras.append(Camera.Camera(x))
+            self.hubCameras.append(CameraStub(x))
 
-        #built request
-        self.builtRequest = json.dumps({})
+        # Built request is a list of RequestData objects
+        self.builtRequest = list()
 
     
 
     """
-    Compiles all of the Images currently held in hubImages into a JSON blob.
-    Specifically, the format of the JSON is an array of objects, each object
-    representing an Image.
+    Compiles all of the Images currently held in hubImages into an array of RequestData objects, stored in builtRequest
     """
     def buildRequest(self):
-        imgData = []
+        imgFields = []
 
-        # Create a JSON object out of each image in hubImages
+        # Go through all hub images. Check if Image is a none object. If it is ignore it
         for img in self.hubImages:
             if img == None:
                 pass
-            else:
-                hubID = int(img.photoID.split('.')[0])
-                camID = int(img.photoID.split('.')[1])
+            else: # If it not a none object then read the image object data into builtRequest
+                hubID = int(img.cameraID.split('.')[0])
+                camID = int(img.cameraID.split('.')[1])
+                
+                # Check if the cameraID is invalid, if it is raise error
                 if (hubID != self.camHubID or camID < 0 or camID > len(self.hubCameras) - 1):
-                    raise ValueError("photoID is invalid")
+                    raise ValueError("cameraID is invalid")
                     
-                obj = {"photoID": img.photoID, "photo": img.photo, "time": img.time}
-                imgData.append(obj)
-            # Expected order of JSON elements: camera ID, photo object, timestamp
-
-        self.builtRequest = json.dumps(imgData)
+                # Parse the image data into the data attribute of RequestData
+                data = {"cameraID": img.cameraID, "time_taken": img.time}
+                
+                # Read the image file bytes into the files attribute of RequestData
+                files = {"image" + img.cameraID: img.photo}
+                
+                # Add the parsed data into the builtRequest list
+                self.builtRequest.append(RequestData(data, files))
+            
         return
 
 
     """
-    Send a JSON array containing Image objects to the proper endpoint of the server.
+    Send http POST request for each RequestData object in the builtRequest
     """
     def sendRequest(self):
-        r = requests.post(self.imageEndpoint, self.builtRequest)
-        self.responseCode = r.status_code
+        for postRequest in self.builtRequest:
+            r = requests.post(self.imageEndpoint, data = postRequest.data, files = postRequest.files)
+            self.responseCodes.append(r.status_code)
+        
         return
 
 
@@ -82,49 +90,57 @@ class CameraHub:
     Capture an image from the Pi Camera and transform it into an image object.
     """
     def captureImage(self, camID):
-        global hubImages
-        global camHubID
         
-        currTime = datetime.datetime.now().date()
-        # From what I've read, the picam saves images directly to a file?
-        # So, I'm thinking, the method captures an image and saves it as a JPG,
-        # then loads that file and builds the Image? -- JF
+        # Get the current time 
+        currTime = datetime.datetime.now()
+        
         path = "/home/pi/Desktop/image" + str(camID) + ".jpg"
+        #path = "C:/Users/mrolu/OneDrive/Desktop/randomImage.jpg"
         
-        #Call camera object to capture the image
-        if (camID < 0 or camID > len(self.hubCameras) - 1):
+        # Call camera object to capture the image
+        if (camID < 0 or camID > len(self.hubCameras) - 1): #If camID passed is invalid
             self.hubImages.append(None)
         else:
             self.hubCameras[camID].capture(path)
             
-            #Create a photo ID for the Image
-            photoID = str(self.camHubID) + "." + str(camID)
+            # Create a photo ID for the Image: first digit is the camHubID followed by a period and then the camera's index within the hub
+            cameraID = str(self.camHubID) + "." + str(camID)
             
-            # strftime converts a datetime into a string. The parameter is a formatting
-            # option. "string from time".    
-            self.hubImages.append(Image(self.loadImage(path), photoID, currTime.strftime("%c")))
+            # Create a new Image object for the photo and store it in hubImages
+            self.hubImages.append(Image(open(path, "rb"), cameraID, currTime))
         return
-
-
-    """
-    Load a .JPG file as bytes.
-    """
-    def loadImage(self, path):
-        with open(path, "rb") as imageFile:
-            bytes = imageFile.read()
-            base64_bytes = b64encode(bytes)
-            base64_string = base64_bytes.decode()
-            return base64_string
-    
+ 
 
 class Image:
-    def __init__(self, photo, photoID, time):
+    """
+    Image class represents a photo taken. Attributes store the bytes of 
+    
+    Attributes:
+        photo: Stores bytes of the photo file
+        cameraID: String of the camera ID. 
+        time_taken: Datetime object of the time the photo was taken
+    """
+    
+    def __init__(self, photo, cameraID, time):
         self.photo = photo
-        self.photoID = photoID
-        self.time = time
+        self.cameraID = cameraID
+        self.time_taken = time
 
+    # This method was overwritten to ensure that two photo objects with the same attributes are considered equal
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.photo == other.photo and self.photoID == other.photoID and self.time == other.time 
+            return self.photo == other.photo and self.cameraID == other.cameraID and self.time == other.time 
         else:
             return False
+
+class RequestData:
+    """
+    Request data contains the 2 required pieces of data to post a HTTP request for a single image
+    
+    Attributes:
+        data: Python dict containing time_taken and cameraID
+        files: dict containing bytes for the image
+    """
+    def __init__(self, data, files):
+        self.data = data
+        self.files = files
