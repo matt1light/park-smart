@@ -11,9 +11,11 @@ from .ImageProcessorServer import ImageProcessorServer
 # processor is not an object
 class ImageProcessor(models.Model):
     MIN_OVERLAP = 0.4
+
     class Meta:
         managed = False
 
+    # constructs a new image processor with a specified server to handle the ObjectRecognition
     def __init__(self, server:ImageProcessorServer):
         self.server = server
 
@@ -54,7 +56,7 @@ class ImageProcessor(models.Model):
             spot = sector_spot.spot
             for coord in detected_coords:
                 # if the coordinates intersect by more than the MIN_OVERLAP
-                if self.__calculateOverlapPercentage(sector_spot.image_coordinates, coord) >= self.MIN_OVERLAP and spot.full==False:
+                if self.__calculate_overlap_percentage(sector_spot.image_coordinates, coord) >= self.MIN_OVERLAP and spot.full==False:
                     # update the spot to full and save it
                     spot.full = True
                     spot.last_park = timezone.now()
@@ -73,7 +75,7 @@ class ImageProcessor(models.Model):
 
     # helper method
     # Takes the input of the coordinates of two rectangles and determinest the percentage that they overlap
-    def __calculateOverlapPercentage(self, spot_coords, detected_coords):
+    def __calculate_overlap_percentage(self, spot_coords, detected_coords):
         left1 = spot_coords.left
         left2 = detected_coords[0]
 
