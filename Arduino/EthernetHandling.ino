@@ -3,10 +3,20 @@
 
 // Partially adapted from the WebClient sample program.
 #define NUMROWS 3
-#define MAXBUFFSIZE 80
+#define PACKETSIZE 128
+#define MSGBUFFERSIZE 640
+
+// Connection status codes
+#define CONNECTION_SUCCESS 1
+#define CONNECTION_FAILURE_GENERIC 0
+#define CONNECTION_FAILURE_TIMEOUT -1
+#define CONNECTION_FAILURE_INVALID_SERVER -2
+#define CONNECTION_FAILURE_TRUNCATED -3
+#define CONNECTION_FAILURE_INVALID_RESPONSE -4
 
 struct DisplayState{
-  int lightState[NUMROWS];
+  char lightState[NUMROWS];
+  //int lightState[NUMROWS];
   /*
   int currentCars;
   int maxCars;
@@ -22,14 +32,14 @@ struct DisplayState{
 byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 
 // 10.0.0.43 should be this device's static IP
-IPAddress ip(10,0,0,43);
-int port = 8000;
+IPAddress ip(169,254,10,10);
+int port = 7000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-IPAddress server(10,0,0,41);
+//IPAddress server(10,0,0,41);
 //IPAddress server(172,17,150,223);
-//IPAddress server(169,254,45,1);
+IPAddress server(169,254,45,1);
 
 // Declare the client
 EthernetClient client;
@@ -37,7 +47,7 @@ EthernetClient client;
 struct DisplayState currentDisplay;
 int outputID = 1;
 
-char incomingBuffer[800]; // Size is currently arbitrary
+byte messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
 int bufferIndex = 0;
 
 // Initialize the connection between this machine and the server.
@@ -58,7 +68,9 @@ int setupEthernet(void){
   // 1=success, -1=timeout, -2=invalid server, -3=truncated, -4=invalid response
   // 0=something, but this case is undocumented.
   int connectionStatus = client.connect(server, port);
-  if(connectionStatus == 1){
+  //Serial.print("Attempting to connect to ");
+  //Serial.print(client.remoteIP());
+  if(connectionStatus == CONNECTION_SUCCESS){
     Serial.print("Connected successfully to ");
     Serial.print(client.remoteIP());
     Serial.print(" on port ");
@@ -82,33 +94,50 @@ void makeGetRequest(void){
   client.println(" HTTP/1.1");
   client.println("Host: 10.0.0.41:8000");
   client.println("Cache-Control: no-cache");
+  client.println();
   
 }
 
 // Read some bytes from the incoming stream
 void readIncomingBytes(void){
+  
   // Check how much data is incoming
   int len = client.available();
+  
   // Only do anything if there is data to process
   if(len > 0){
     // Cap the amount of data to read at once.
-    // TODO: Find out why? This is code from the sample
-    // Possibly to do with packet size.
-    if (len > MAXBUFFSIZE){
-      len = MAXBUFFSIZE;
+    // If the data would overflow the buffer, only read enough to fill it.
+    if(len >= MSGBUFFERSIZE){
+      Serial.println("Message exceeds allotted buffer size. Truncating message.");
+      len = MSGBUFFERSIZE;
     }
-    readNBytes(len);
+    // Read the message into the buffer
+    client.read(messageBuffer, len);
   }
 }
 
+/*
 // Read n bytes of data from the incoming buffer and print them to serial.
 void readNBytes(int n){
   byte buffer[n];
   client.read(buffer, n);
   Serial.write(buffer, n);
-  //memcpy(&incomingBuffer[bufferIndex], buffer, n*sizeof(byte));
+  
+ 
+  if(bufferIndex+n < MSGBUFFERSIZE){
+    memcpy(&incomingBuffer[bufferIndex], buffer, n*sizeof(byte));
+    bufferIndex += n;
+  }
+  else{
+    Serial.println("Discarding packet; buffer would overflow");
+  }
+
+  
+  
   //Serial.write(incomingBuffer);
 }
+*/
 
 // Create dummy values for the current displayState
 void initDisplayState(){
