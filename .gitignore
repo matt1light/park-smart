@@ -6,6 +6,9 @@ CameraHub/.idea/modules.xml
 CameraHub/.idea/vcs.xml
 CameraHub/.idea/workspace.xml
 CameraHub/.idea/codeStyles/codeStyleConfig.xml
+CameraHub/Camera.pyc
+CameraHub/RequestTest.py
+CameraHub/CameraHub.pyc
 CameraHub/CameraHub.pyc
 CameraHub/Camera.pyc
 CameraHub/randomImage.jpeg

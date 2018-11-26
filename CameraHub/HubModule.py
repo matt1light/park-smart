@@ -1,17 +1,25 @@
-import CameraHub
+from CameraHub import CameraHub
+import time
 
-while 1:
+#delay between Image captures
+delay = 60
+
+while (1):
+    # Create a Camera Hub object and initialize it
+    hub1 = CameraHub() 
     
-    #Capture an Image for all cameras in the hub
-    for camera in hubCameras:
-        x = hubCameras.index(camera)
-        captureImage(x)
-     
+    # Capture an Image for all cameras in the hub
+    for camera in hub1.hubCameras:
+        x = hub1.hubCameras.index(camera)
+        hub1.captureImage(x)
+         
     #Build a request after all images have been captured 
-    buildRequest(hubImages)
-    
+    hub1.buildRequest()
+        
     #Send request
-    sendRequest(builtRequest)
+    hub1.sendRequest()
+
+    #print(hub1.responseCode)
 
     #Delay
     time.sleep(delay)
