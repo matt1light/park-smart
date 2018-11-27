@@ -48,6 +48,13 @@ uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 //testing bool
 bool isTesting = false;
 
+struct DisplayState{
+  char lightState[NUMROWS];
+  int emptySpots;
+};
+
+DisplayState currentDisplay;
+
 void setup()
 {
   //Initialize serial connection
@@ -62,7 +69,7 @@ void setup()
   pinMode(YELLOW2, OUTPUT);
   pinMode(GREEN2, OUTPUT);
 
-
+ 
   initDisplayState();
   int connected = setupEthernet();
   if (connected == CONNECTION_SUCCESS) {
@@ -120,7 +127,7 @@ void setLightState(int row, int colour)
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], HIGH);
   }
-  else if (colour == off) //Light is not set, turn off
+  else if (colour == OFF) //Light is not set, turn off
   {
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], LOW);
