@@ -50,13 +50,6 @@ short availSpots;
 
 bool isTesting = false;
 
-struct DisplayState{
-  char lightState[NUMROWS];
-  int emptySpots;
-};
-
-struct DisplayState currentDisplay;
-
 void setup()
 {
   //Initialize serial connection
@@ -136,7 +129,7 @@ void setLightState(int row, int colour)
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], HIGH);
   }
-  else if (colour == OFF) //Light is not set, turn off
+  else if (colour == off) //Light is not set, turn off
   {
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], LOW);

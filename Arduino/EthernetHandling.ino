@@ -42,6 +42,12 @@ IPAddress server(SERVERIP);
 EthernetClient client;
 
 
+struct DisplayState{
+  char lightState[NUMROWS];
+  int emptySpots;
+};
+
+struct DisplayState currentDisplay;
 
 int outputID = 1;
 
