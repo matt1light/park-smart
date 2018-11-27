@@ -87,7 +87,7 @@ void loop()
     lcd.setCursor(0, 1);
     updateLCD(currentDisplay.emptySpots);
   }
-
+  
   //delay for the car test
   delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
 
@@ -115,7 +115,7 @@ bool isCar()
   return false;
 }
 
-void setLightState(int row, int colour)
+void setRowColour(int row, int colour)
 {
   if (colour == GREEN)//Light to be set to Green
   {
@@ -132,6 +132,14 @@ void setLightState(int row, int colour)
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], LOW);
   }
+}
+
+void updateLightState()
+{
+    for (int i =0; i<NUMROWS; i++)
+    {
+        setRowColour(i, currentDisplay.lightState[i]);
+    }
 }
 
 void updateLCD(int availableSpots)
