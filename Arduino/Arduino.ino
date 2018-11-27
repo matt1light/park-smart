@@ -1,4 +1,5 @@
 #include <ArduinoJson.h>
+
 #include <LiquidCrystal.h>
 
 int wait = 2000; //delay frequency of ultrasonic sensor readings in milliseconds
@@ -9,7 +10,7 @@ double dTrig = 5;//Max triggering detected distance
 
 bool car; //state variable if car is at parking lot entrance or not
 
-//If number of rows is not defined in Ethernet handling than it will be here
+//
 #ifndef NUMROWS
     #define NUMROWS 3
 #endif
@@ -31,7 +32,6 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #define YELLOW2 A2
 #define GREEN2 A3
 
-//If CONNECTION_SUCCESS is not defined in Ethernet handling than it will be here
 #ifndef CONNECTION_SUCCESS
   #define CONNECTION_SUCCESS 1
 #endif
@@ -41,14 +41,13 @@ uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
 uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 
 //colour definitions to be passed to light state
-#define OFF 0
-#define GREEN 1
-#define YELLOW 2
+#define off 0
+#define green 1
+#define yellow 2
 
-//Available spots to be displated on LCD, recieved from the server pi
+//Temp holder for available spots to be displated on LCD
 short availSpots;
 
-//bool for testing, is used to dictate using the stub or not 
 bool isTesting = false;
 
 
@@ -61,7 +60,6 @@ void setup()
   lcd.begin(16, 2);
   lcd.print("Free spots:");
 
-  //Pin set up for LEDs, set all pins to output
   pinMode(YELLOW1, OUTPUT);
   pinMode(GREEN1, OUTPUT);
   pinMode(YELLOW2, OUTPUT);
@@ -78,6 +76,7 @@ void setup()
 void loop()
 {
   readIncomingBytes();
+  /*
   car = isCar(); //test if car is there or not
 
   if (car)
@@ -86,11 +85,13 @@ void loop()
     updateLCD(availSpots);
   }
 
-  //Test code for LED - To be replaced
-  setLightState(0, GREEN);
-  setLightState(1, GREEN);
+  //Test code for LED
+  setLightState(0, green);
+  setLightState(1, green);
 
   //delay for the car test
+  
+  */
   delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
 
 }
@@ -119,12 +120,12 @@ bool isCar()
 
 void setLightState(int row, int colour)
 {
-  if (colour == GREEN)//Light to be set to Green
+  if (colour == green)//Light to be set to Green
   {
     digitalWrite(greenLED[row], HIGH);
     digitalWrite(yellowLED[row], LOW);
   }
-  else if (colour == YELLOW)//Light to be set to yellow
+  else if (colour == yellow)//Light to be set to yellow
   {
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], HIGH);
@@ -141,4 +142,5 @@ void updateLCD(int availableSpots)
 {
   //Display the number of available cars
   lcd.print(availableSpots);
+
 }

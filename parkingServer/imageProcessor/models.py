@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-import datetime
+from django.utils import timezone
 
 from mainModels.models import Spot, SectorSpot, ParkingLot, Sector, ImageCoordinates, Image, ParkingEvent
 from .ImageProcessorServer import ImageProcessorServer
@@ -11,9 +11,11 @@ from .ImageProcessorServer import ImageProcessorServer
 # processor is not an object
 class ImageProcessor(models.Model):
     MIN_OVERLAP = 0.4
+
     class Meta:
         managed = False
 
+    # constructs a new image processor with a specified server to handle the ObjectRecognition
     def __init__(self, server:ImageProcessorServer):
         self.server = server
 
@@ -35,16 +37,16 @@ class ImageProcessor(models.Model):
             SectorSpot.objects.create(sector=sector, spot=spot, image_coordinates=image_coordinates)
 
     # Updates a sector's spot statuses based on it's most recent image
-    def updateSector(self, sector):
+    def update_sector_with_latest(self, sector):
         # get the latest image for this sector
         images = Image.objects.filter(sector=sector).order_by('-id')
         latest_image = images[0]
         image_path = latest_image.photo.url[1:]
         # update the sector with the latest image
-        self.updateSectorByImage(image_path, sector)
+        self.update_sector_by_image(image_path, sector)
 
     # Updates a sector's spot statuses with a picture input
-    def updateSectorByImage(self, image_name:str, sector):
+    def update_sector_by_image(self, image_name:str, sector):
         # use object recognition to find coordinates
         detected_coords = self.server.get_car_coordinates(image_name)
         # for each coordinate in the detected coordinates
@@ -54,17 +56,17 @@ class ImageProcessor(models.Model):
             spot = sector_spot.spot
             for coord in detected_coords:
                 # if the coordinates intersect by more than the MIN_OVERLAP
-                if self.__calculateOverlapPercentage(sector_spot.image_coordinates, coord) >= self.MIN_OVERLAP and spot.full==False:
+                if self.__calculate_overlap_percentage(sector_spot.image_coordinates, coord) >= self.MIN_OVERLAP and spot.full==False:
                     # update the spot to full and save it
                     spot.full = True
-                    spot.last_park = datetime.datetime.now()
+                    spot.last_park = timezone.now()
                     spot.save(update_fields=["last_park", "full"])
                     spot_full = True
             # if the spot is empty in the picture but not in the database update the database entry
             if not spot_full and spot.full:
                 ParkingEvent.objects.create(spot=spot,
                                             parking_start=spot.last_park,
-                                            parking_end=datetime.datetime.now())
+                                            parking_end=timezone.now())
 
                 spot.full = False
                 spot.last_park = None
@@ -73,7 +75,7 @@ class ImageProcessor(models.Model):
 
     # helper method
     # Takes the input of the coordinates of two rectangles and determinest the percentage that they overlap
-    def __calculateOverlapPercentage(self, spot_coords, detected_coords):
+    def __calculate_overlap_percentage(self, spot_coords, detected_coords):
         left1 = spot_coords.left
         left2 = detected_coords[0]
 
