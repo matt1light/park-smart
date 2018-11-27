@@ -45,6 +45,8 @@ uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 #define GREEN 1
 #define YELLOW 2
 
+bool carFlag = false;
+
 //testing bool
 bool isTesting = false;
 
@@ -87,7 +89,26 @@ void loop()
     lcd.setCursor(0, 1);
     updateLCD(currentDisplay.emptySpots);
   }
-  
+        if (car && !carFlag)
+      {
+        Serial.println("There is a car");
+        Serial.println(carFlag);
+        carFlag = true;
+          
+          numCars+=1;
+          Serial.println(numCars);
+          lcd.setCursor(0,1);
+          updateLCD(numCars);
+          
+      }
+      else if(!car)
+      {
+        Serial.println("There is not a car");
+        Serial.println(carFlag);
+        Serial.println(numCars);
+        carFlag = false;
+      }
+
   //delay for the car test
   delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
 
