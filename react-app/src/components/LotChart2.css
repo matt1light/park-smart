@@ -1,0 +1,10 @@
+.active{
+    stroke:#000;
+    stroke-width: 2px;
+}
+
+line {
+    stroke: rgb(212, 212, 212);
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}

@@ -1,0 +1,162 @@
+{
+    "lotState": {
+        "sectors": [
+            {
+                "x": 0,
+                "y": 0,
+                "sector_spots":[
+                    {
+                        "spot":{
+                            "full": false,
+                            "active": true
+                        },
+                        "image_coordinates":{
+                            "left": 0,
+                            "right": 1,
+                            "top": 0,
+                            "bottom": 1
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": true,
+                            "active": true
+                        },
+                        "image_coordinates":{
+                            "left": 1,
+                            "right": 2,
+                            "top": 0,
+                            "bottom": 1
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": false,
+                            "active": false
+                        },
+                        "image_coordinates":{
+                            "left": 2,
+                            "right": 3,
+                            "top": 0,
+                            "bottom": 1
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": true,
+                            "active": true
+                        },
+                        "image_coordinates":{
+                            "left": 0,
+                            "right": 1,
+                            "top": 1,
+                            "bottom": 2
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": true,
+                            "active": false
+                        },
+                        "image_coordinates":{
+                            "left": 1,
+                            "right": 2,
+                            "top": 1,
+                            "bottom": 2
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": false,
+                            "active": true
+                        },
+                        "image_coordinates":{
+                            "left": 2,
+                            "right": 3,
+                            "top": 1,
+                            "bottom": 2
+                        }
+                    },
+                ]
+            },
+            {
+                "x": 1,
+                "y": 1,
+                "sector_spots":[
+                    {
+                        "spot":{
+                            "full": false,
+                            "active": true
+                        },
+                        "image_coordinates":{
+                            "left": 0,
+                            "right": 1,
+                            "top": 0,
+                            "bottom": 1
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": true,
+                            "active": true
+                        },
+                        "image_coordinates":{
+                            "left": 1,
+                            "right": 2,
+                            "top": 0,
+                            "bottom": 1
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": false,
+                            "active": false
+                        },
+                        "image_coordinates":{
+                            "left": 2,
+                            "right": 3,
+                            "top": 0,
+                            "bottom": 1
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": true,
+                            "active": true
+                        },
+                        "image_coordinates":{
+                            "left": 0,
+                            "right": 1,
+                            "top": 1,
+                            "bottom": 2
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": true,
+                            "active": false
+                        },
+                        "image_coordinates":{
+                            "left": 1,
+                            "right": 2,
+                            "top": 1,
+                            "bottom": 2
+                        }
+                    },
+                    {
+                        "spot":{
+                            "full": false,
+                            "active": true
+                        },
+                        "image_coordinates":{
+                            "left": 2,
+                            "right": 3,
+                            "top": 1,
+                            "bottom": 2
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
