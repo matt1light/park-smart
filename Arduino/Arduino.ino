@@ -50,6 +50,12 @@ short availSpots;
 
 bool isTesting = false;
 
+struct DisplayState{
+  char lightState[NUMROWS];
+  int emptySpots;
+};
+
+struct DisplayState currentDisplay;
 
 void setup()
 {
