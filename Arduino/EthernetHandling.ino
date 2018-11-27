@@ -19,10 +19,7 @@
 #define CONNECTION_FAILURE_TRUNCATED -3
 #define CONNECTION_FAILURE_INVALID_RESPONSE -4
 
-struct DisplayState{
-  char lightState[NUMROWS];
-  int emptySpots;
-};
+
 
 // ------------------------------------------------------------------------------
 // WIRELESS SETUP
@@ -32,18 +29,19 @@ struct DisplayState{
 byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 
 // 10.0.0.43 should be this device's static IP
-//IPAddress ip(169,254,10,10);
+#define CLIENTIP 10,0,0,43
 IPAddress ip(10,0,0,43);
 int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-IPAddress server(10,0,0,41);
+#define SERVERIP 10,0,0,41
+IPAddress server(SERVERIP);
 
 // Declare the client
 EthernetClient client;
 
-struct DisplayState currentDisplay;
+
 
 int outputID = 1;
 
@@ -88,10 +86,10 @@ int setupEthernet(void){
 }
 
 // Perform a GET request for a given endpoint
-// TODO: Make this take a char* array
+// TODO: Make this take a char* array?
 void makeGetRequest(void){
   Serial.println("Trying a Get request");
- 
+  // GET /displayState/?output=outputID HTTP/1.1
   client.print("GET ");
   client.print(TARGETPATH);
   client.print(outputID);

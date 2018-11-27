@@ -48,6 +48,12 @@ uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 //testing bool
 bool isTesting = false;
 
+struct DisplayState{
+  char lightState[NUMROWS];
+  int emptySpots;
+};
+
+struct DisplayState currentDisplay;
 
 void setup()
 {
