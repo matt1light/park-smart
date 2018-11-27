@@ -41,13 +41,11 @@ uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
 uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 
 //colour definitions to be passed to light state
-#define off 0
-#define green 1
-#define yellow 2
+#define OFF 0
+#define GREEN 1
+#define YELLOW 2
 
-//Temp holder for available spots to be displated on LCD
-short availSpots;
-
+//testing bool
 bool isTesting = false;
 
 void setup()
@@ -75,22 +73,15 @@ void setup()
 void loop()
 {
   readIncomingBytes();
-  /*
   car = isCar(); //test if car is there or not
 
   if (car)
   {
     lcd.setCursor(0, 1);
-    updateLCD(availSpots);
+    updateLCD(currentDisplay.emptySpots);
   }
 
-  //Test code for LED
-  setLightState(0, green);
-  setLightState(1, green);
-
   //delay for the car test
-  
-  */
   delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
 
 }
@@ -119,12 +110,12 @@ bool isCar()
 
 void setLightState(int row, int colour)
 {
-  if (colour == green)//Light to be set to Green
+  if (colour == GREEN)//Light to be set to Green
   {
     digitalWrite(greenLED[row], HIGH);
     digitalWrite(yellowLED[row], LOW);
   }
-  else if (colour == yellow)//Light to be set to yellow
+  else if (colour == YELLOW)//Light to be set to yellow
   {
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], HIGH);
