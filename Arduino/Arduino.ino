@@ -1,3 +1,7 @@
+#include <LinkedList.h>
+#include <Event.h>
+#include <Timer.h>
+
 #include <ArduinoJson.h>
 
 #include <LiquidCrystal.h>
@@ -46,6 +50,8 @@ uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 #define YELLOW 2
 
 bool carFlag = false;
+int extraCars = 0;
+const long ENTRANCE_DELAY = 1000*60*2;
 
 //testing bool
 bool isTesting = false;
@@ -95,7 +101,7 @@ void loop()
         Serial.println(carFlag);
         carFlag = true;
           
-          numCars+=1;
+          carEntersLot()
           Serial.println(numCars);
           lcd.setCursor(0,1);
           updateLCD(numCars);
@@ -166,6 +172,34 @@ void updateLightState()
 void updateLCD(int availableSpots)
 {
   //Display the number of available cars
-  lcd.print(availableSpots);
+  lcd.print(availableSpots - extraCars);
 
 }
+
+int getAvailableSpots(int availableSpots, int extraCars){
+    if (availableSpots - extraCars < 0){
+        return 0;
+    }
+    else{
+        return availableSpots - extraCars;
+    }
+}
+
+void carEntersLot()
+{
+    extraCars+=1;
+    // starts 2 minute timer
+    // on timer finish decrease ext
+    int timer_event_id = Timer.after(ENTRANCE_DELAY, removeExtraCar());
+}
+
+void removeExtraCar()
+{
+    extraCars-=1;
+}
+
+//void getNewStateFromServer()
+//{
+//    makeGetRequest()
+//    readIncomingBytes()
+//}
