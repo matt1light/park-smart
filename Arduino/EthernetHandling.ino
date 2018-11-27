@@ -9,6 +9,8 @@
 
 #define MSGBUFFERSIZE 640
 
+#define TARGETPATH "/displayState/?output="
+
 // Connection status codes
 #define CONNECTION_SUCCESS 1
 #define CONNECTION_FAILURE_GENERIC 0
@@ -90,7 +92,8 @@ int setupEthernet(void){
 void makeGetRequest(void){
   Serial.println("Trying a Get request");
  
-  client.print("GET /displayState/?output=");
+  client.print("GET ");
+  client.print(TARGETPATH);
   client.print(outputID);
   client.println(" HTTP/1.1");
   client.println("Host: 10.0.0.41:8000");
