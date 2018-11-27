@@ -7,7 +7,7 @@
 // The number of bytes to read at once
 #define PACKETSIZE 128
 
-#define MSGBUFFERSIZE 640
+#define MSGBUFFERSIZE 300
 
 #define TARGETPATH "/displayState/?output="
 
@@ -35,8 +35,8 @@ int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
-#define SERVERIP 10,0,0,41
-IPAddress server(SERVERIP);
+//#define SERVERIP 10,0,0,41
+IPAddress server(10,0,0,41);
 
 // Declare the client
 EthernetClient client;
@@ -52,6 +52,9 @@ int outputID = 1;
 // This will be read from when deserializing, or written to when serializing
 // NB: Work in progress
 byte messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
+int bufferIndex = 0;
+
+char jsonBuffer[100];
 
 // Initialize the connection between this machine and the server.
 int setupEthernet(void){
@@ -105,12 +108,16 @@ void makeGetRequest(void){
 
 // Read some bytes from the incoming stream
 void readIncomingBytes(void){
+  Serial.println("Checking for incoming data");
   // Check how much data is incoming
   int len = client.available();
   
   // Only do anything if there is data to process
   if(len > 0){
-     readNBytes(PACKETSIZE);
+     //readNBytes(PACKETSIZE);
+     client.read(messageBuffer, len);
+     Serial.write(messageBuffer, len);
+     extractJSONFromMessage();
     }
   
   else{

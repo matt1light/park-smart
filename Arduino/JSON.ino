@@ -26,7 +26,7 @@ JsonObject serialize(struct DisplayState currDS){
    //return root;
 }
 
-
+// TODO: Account for error messages in JSON objects
 
 // Decode a JSON-formatted string and update the current displayState to match it
 void deserialize(char* json){
@@ -39,4 +39,32 @@ void deserialize(char* json){
     currentDisplay.lightState[i] = displayState[i];  
   }
   currentDisplay.emptySpots = root["emptySpots"];
+}
+
+int extractJSONFromMessage(void){
+  int startPos = findChar('{');
+  int endPos = findChar('}');
+  int len = endPos - startPos + 1;
+
+  memcpy(jsonBuffer, &messageBuffer[startPos], len);
+  Serial.println("JSON message: ");
+  Serial.write(jsonBuffer);
+  
+}
+
+int findChar(char target){
+  int index = 0;
+  
+  while(1){
+    if(index >= MSGBUFFERSIZE-1){ // Reached the end of the buffer; > for sanity
+      Serial.println("Nothing found");
+      return -1; // Nothing was found
+    }
+    else if(messageBuffer[index] == target){
+      Serial.print("Start of JSON object found at index ");
+      Serial.println(index);
+      return index;
+    }
+    index++;
+  }
 }

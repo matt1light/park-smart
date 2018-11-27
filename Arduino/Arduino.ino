@@ -55,6 +55,8 @@ struct DisplayState{
   int emptySpots;
 };
 
+int numCars=0;
+
 DisplayState currentDisplay;
 
 void setup()
@@ -77,6 +79,7 @@ void setup()
   if (connected == CONNECTION_SUCCESS) {
     makeGetRequest();
   }
+  //extractJSONFromMessage();
 }
 
 void loop()
