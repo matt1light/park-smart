@@ -132,7 +132,6 @@ void setLightState(int row, int colour)
     digitalWrite(greenLED[row], LOW);
     digitalWrite(yellowLED[row], LOW);
   }
-
 }
 
 void updateLCD(int availableSpots)
