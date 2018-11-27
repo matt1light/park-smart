@@ -53,7 +53,7 @@ struct DisplayState{
   int emptySpots;
 };
 
-struct DisplayState currentDisplay;
+DisplayState currentDisplay;
 
 void setup()
 {
@@ -69,7 +69,7 @@ void setup()
   pinMode(YELLOW2, OUTPUT);
   pinMode(GREEN2, OUTPUT);
 
-
+ 
   initDisplayState();
   int connected = setupEthernet();
   if (connected == CONNECTION_SUCCESS) {

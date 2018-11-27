@@ -43,6 +43,9 @@ EthernetClient client;
 
 
 
+
+//struct DisplayState currentDisplay;
+
 int outputID = 1;
 
 // Buffer that incoming data will be written to
