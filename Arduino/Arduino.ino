@@ -65,7 +65,6 @@ void setup()
   pinMode(YELLOW2, OUTPUT);
   pinMode(GREEN2, OUTPUT);
 
-  setUpUS();
 
   initDisplayState();
   int connected = setupEthernet();
