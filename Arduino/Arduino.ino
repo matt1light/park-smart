@@ -51,7 +51,7 @@ uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 
 bool carFlag = false;
 int extraCars = 0;
-const long ENTRANCE_DELAY = 1000*60*2;
+const long ENTRANCE_DELAY = (long)1000*60*2;
 
 //testing bool
 bool isTesting = false;
@@ -101,17 +101,14 @@ void loop()
         Serial.println(carFlag);
         carFlag = true;
           
-          carEntersLot()
-          Serial.println(numCars);
+          carEntersLot();
           lcd.setCursor(0,1);
-          updateLCD(numCars);
           
       }
       else if(!car)
       {
         Serial.println("There is not a car");
         Serial.println(carFlag);
-        Serial.println(numCars);
         carFlag = false;
       }
 
@@ -190,7 +187,8 @@ void carEntersLot()
     extraCars+=1;
     // starts 2 minute timer
     // on timer finish decrease ext
-    int timer_event_id = Timer.after(ENTRANCE_DELAY, removeExtraCar());
+    Timer t;
+    int timer_event_id = t.after(ENTRANCE_DELAY, removeExtraCar, 0);
 }
 
 void removeExtraCar()
