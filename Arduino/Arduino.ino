@@ -6,6 +6,11 @@
 
 #include <LiquidCrystal.h>
 
+
+#define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
+#define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
+#define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
+
 int wait = 2000; //delay frequency of ultrasonic sensor readings in milliseconds
 
 double d1, d2;//distance values, one for each ultrasonic sensor
@@ -67,8 +72,10 @@ DisplayState currentDisplay;
 
 void setup()
 {
-  //Initialize serial connection
+  // Initialize serial connection
   Serial.begin(9600);
+  while(!Serial){}; // Wait until the serial port is able to connect.
+  delay(1000);
 
   //Initialize lcd interface and set dimentions
   lcd.begin(16, 2);
@@ -100,8 +107,11 @@ void loop()
   }
         if (car && !carFlag)
       {
+        #if DEBUGHARDWARE
         Serial.println("There is a car");
         Serial.println(carFlag);
+        #endif
+        
         carFlag = true;
           
           carEntersLot();
@@ -110,8 +120,10 @@ void loop()
       }
       else if(!car)
       {
+        #if DEBUGHARDWARE
         Serial.println("There is not a car");
         Serial.println(carFlag);
+        #endif
         carFlag = false;
       }
 

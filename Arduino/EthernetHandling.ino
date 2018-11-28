@@ -8,6 +8,7 @@
 #define PACKETSIZE 128
 
 #define MSGBUFFERSIZE 300
+#define JSONBUFFERSIZE 200
 
 #define TARGETPATH "/displayState/?output="
 
@@ -50,46 +51,53 @@ int outputID = 1;
 
 // Buffer that incoming data will be written to
 // This will be read from when deserializing, or written to when serializing
-// NB: Work in progress
 byte messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
 int bufferIndex = 0;
 
-char jsonBuffer[100];
+char jsonBuffer[JSONBUFFERSIZE];
 char errorBuffer[3];
 
 
 
 // Initialize the connection between this machine and the server.
 int setupEthernet(void){
-  Serial.begin(9600);
-  while(!Serial){}; // Wait until the serial port is able to connect.
-  delay(1000);
-
+  
   // Set up the Arduino with a static IP.
   // Note that DHCP is possible, but not used for this project,
   // and bloats the sketch size significantly.
+  #if DEBUGNETWORK
   Serial.println("Attempting to initialize Ethernet with static IP");
+  #endif
   Ethernet.begin(mac, ip);
+  delay(2000); 
+  #if DEBUGNETWORK
   Serial.print("IP address is ");
   Serial.println(Ethernet.localIP()); 
-
+  #endif
+  
   // client.connect() returns an error code
   // 1=success, -1=timeout, -2=invalid server, -3=truncated, -4=invalid response
   // 0=something, but this case is undocumented.
   int connectionStatus = client.connect(server, port);
+  #if DEBUGNETWORK
   Serial.print("Attempting to connect to ");
-  Serial.print(client.remoteIP());
+  Serial.println(client.remoteIP());
+  #endif
   if(connectionStatus == CONNECTION_SUCCESS){
+    #if DEBUGNETWORK
     Serial.print("Connected successfully to ");
     Serial.print(client.remoteIP());
     Serial.print(" on port ");
     Serial.println(port);
+    #endif
   }
   else{
+    #if DEBUGNETWORK
     Serial.print("Failed to connect on port ");
     Serial.println(port);
     Serial.print("Error code: ");
     Serial.println(connectionStatus);
+    #endif
   } 
   return connectionStatus;
 }
@@ -97,7 +105,9 @@ int setupEthernet(void){
 // Perform a GET request for a given endpoint
 // TODO: Make this take a char* array?
 void makeGetRequest(void){
+  #if DEBUGNETWORK
   Serial.println("Trying a Get request");
+  #endif
   // GET /displayState/?output=outputID HTTP/1.1
   client.print("GET ");
   client.print(TARGETPATH);
@@ -119,8 +129,11 @@ void readIncomingBytes(void){
   if(len > 0){
      //readNBytes(PACKETSIZE);
      client.read(messageBuffer, len);
+     #if DEBUGNETWORK
      Serial.write(messageBuffer, len);
+     #endif
      extractJSONFromMessage();
+     deserialize(jsonBuffer);
     }
   
   else{
