@@ -26,7 +26,6 @@ JsonObject serialize(struct DisplayState currDS){
   //return root;
 }
 
-// TODO: Account for error messages in JSON objects
 
 // Decode a JSON-formatted string and update the current displayState to match it
 void deserialize(char* json){
@@ -116,5 +115,3 @@ char charToDigit(char in){
     return -1;
   }
 }
-
-//TODO: Restructure function flow

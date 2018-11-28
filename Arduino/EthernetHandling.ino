@@ -5,9 +5,6 @@
 
 #define NUMROWS 3
 
-
-
-
 #define TARGETPATH "/displayState/?output="
 
 // Connection status codes
@@ -38,17 +35,7 @@ IPAddress server(10,0,0,41);
 // Declare the client
 EthernetClient client;
 
-
-
-
-//struct DisplayState currentDisplay;
-
 int outputID = 1;
-
-
-
-
-
 
 void setupEthernet(void){
   // Set up the Arduino with a static IP.

@@ -7,15 +7,30 @@
 #include <LiquidCrystal.h>
 
 
+
+//----------------------------------------------------------------------------
+// CONFIGURATION
+//----------------------------------------------------------------------------
+
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
 #define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
 #define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
 
+
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
 #define REQUESTDELAY 10000 // Time between requests made to the server. Does not account for processing time
 #define LOOPITERATIONS (REQUESTDELAY / WAIT) // How many times loop() should run before another request should be sent
-
 char loops = 0;
+
+#ifndef NUMROWS
+  #define NUMROWS 3
+#endif
+
+
+//----------------------------------------------------------------------------
+// HARDWARE SETUP
+//----------------------------------------------------------------------------
+
 
 double d1, d2;//distance values, one for each ultrasonic sensor
 
@@ -23,10 +38,6 @@ double dTrig = 5;//Max triggering detected distance
 
 bool car; //state variable if car is at parking lot entrance or not
 
-
-#ifndef NUMROWS
-#define NUMROWS 3
-#endif
 
 //LCD Pin Setup
 #define rs 7
@@ -49,14 +60,28 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #define CONNECTION_SUCCESS 1
 #endif
 
-//Arrray for Lights
-uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
-uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
-
 //colour definitions to be passed to light state
 #define OFF 0
 #define GREEN 1
 #define YELLOW 2
+
+// Struct to represent the system's display state
+struct DisplayState {
+  char lightState[NUMROWS];
+  int emptySpots;
+};
+
+DisplayState currentDisplay;
+
+int numCars = 0;
+
+//----------------------------------------------------------------------------
+// STATE VARIABLES
+//----------------------------------------------------------------------------
+
+//Arrray for Lights
+uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
+uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
 
 bool carFlag = false;
 int extraCars = 0;
@@ -65,22 +90,18 @@ const long ENTRANCE_DELAY = (long)1000 * 60 * 2; // 1 second * 1 minute * 2 = 2 
 //testing bool
 bool isTesting = false;
 
-struct DisplayState {
-  char lightState[NUMROWS];
-  int emptySpots;
-};
-
-int numCars = 0;
-
-DisplayState currentDisplay;
-
-// Buffer that incoming data will be written to
-// This will be read from when deserializing, or written to when serializing
+// Buffer that incoming data will be written to.
+// This will be read from when deserializing, or written to when serializing.
 #define MSGBUFFERSIZE 300
-byte messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
+byte messageBuffer[MSGBUFFERSIZE];
+
 #define JSONBUFFERSIZE 200
 char jsonBuffer[JSONBUFFERSIZE];
 char errorBuffer[3]; // HTTP error codes are only ever 3 digits long
+
+//----------------------------------------------------------------------------
+// MAIN PROGRAM
+//----------------------------------------------------------------------------
 
 void setup()
 {
@@ -160,7 +181,7 @@ void loop()
 bool isCar()
 {
   if (isTesting) {
-    //If testung, use the stub file
+    //If testing, use the stub file
     d1 = getDistanceStub(1);
     d2 = getDistanceStub(2);
   }
