@@ -55,6 +55,9 @@ byte messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
 int bufferIndex = 0;
 
 char jsonBuffer[100];
+char errorBuffer[3];
+
+
 
 // Initialize the connection between this machine and the server.
 int setupEthernet(void){
@@ -108,7 +111,7 @@ void makeGetRequest(void){
 
 // Read some bytes from the incoming stream
 void readIncomingBytes(void){
-  Serial.println("Checking for incoming data");
+  //Serial.println("Checking for incoming data");
   // Check how much data is incoming
   int len = client.available();
   
