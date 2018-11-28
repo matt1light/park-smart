@@ -5,8 +5,8 @@
 
 #define NUMROWS 3
 
-#define MSGBUFFERSIZE 300
-#define JSONBUFFERSIZE 200
+
+
 
 #define TARGETPATH "/displayState/?output="
 
@@ -21,9 +21,6 @@
 #define MAXCONNECTIONATTEMPTS 3
 
 
-// ------------------------------------------------------------------------------
-// WIRELESS SETUP
-// ------------------------------------------------------------------------------
 // A6:8F:4E:6E:F5:B0; this is a valid but entirely arbitrary MAC address.
 // The shield does not come with a preset MAC so one needs to be set.
 byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
@@ -48,13 +45,7 @@ EthernetClient client;
 
 int outputID = 1;
 
-// Buffer that incoming data will be written to
-// This will be read from when deserializing, or written to when serializing
-byte messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
-int bufferIndex = 0;
 
-char jsonBuffer[JSONBUFFERSIZE];
-char errorBuffer[3]; // HTTP error codes are only ever 3 digits long
 
 
 
