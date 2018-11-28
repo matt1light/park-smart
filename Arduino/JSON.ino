@@ -1,5 +1,3 @@
-#include <ArduinoJson.h>
-
 // Size of the displayState JSON buffer, used when serializing/deserializing.
 // Derivation: there are as many ints in the lightState array as there are rows being tracked,
 // and as 2 ints in the screenState array: current and max cars.
