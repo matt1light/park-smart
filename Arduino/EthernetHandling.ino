@@ -7,6 +7,8 @@
 // The number of bytes to read at once
 #define PACKETSIZE 128
 
+#define MAXCONNECTIONATTEMPTS 3
+
 #define MSGBUFFERSIZE 300
 #define JSONBUFFERSIZE 200
 
@@ -55,13 +57,12 @@ byte messageBuffer[MSGBUFFERSIZE]; // Size is currently arbitrary
 int bufferIndex = 0;
 
 char jsonBuffer[JSONBUFFERSIZE];
-char errorBuffer[3];
+char errorBuffer[3]; // HTTP error codes are only ever 3 digits long
 
 
 
-// Initialize the connection between this machine and the server.
-int setupEthernet(void){
-  
+
+void setupEthernet(void){
   // Set up the Arduino with a static IP.
   // Note that DHCP is possible, but not used for this project,
   // and bloats the sketch size significantly.
@@ -74,33 +75,45 @@ int setupEthernet(void){
   Serial.print("IP address is ");
   Serial.println(Ethernet.localIP()); 
   #endif
-  
-  // client.connect() returns an error code
-  // 1=success, -1=timeout, -2=invalid server, -3=truncated, -4=invalid response
-  // 0=something, but this case is undocumented.
-  int connectionStatus = client.connect(server, port);
-  #if DEBUGNETWORK
-  Serial.print("Attempting to connect to ");
-  Serial.println(client.remoteIP());
-  #endif
-  if(connectionStatus == CONNECTION_SUCCESS){
-    #if DEBUGNETWORK
-    Serial.print("Connected successfully to ");
-    Serial.print(client.remoteIP());
-    Serial.print(" on port ");
-    Serial.println(port);
-    #endif
-  }
-  else{
-    #if DEBUGNETWORK
-    Serial.print("Failed to connect on port ");
-    Serial.println(port);
-    Serial.print("Error code: ");
-    Serial.println(connectionStatus);
-    #endif
-  } 
-  return connectionStatus;
 }
+
+// Attempt to initialize the connection between this machine and the server.
+int attemptConnection(){
+  for(int i=0; i<MAXCONNECTIONATTEMPTS; i++){
+    // client.connect() returns an error code
+    // 1=success, -1=timeout, -2=invalid server, -3=truncated, -4=invalid response
+    // 0=something, but this case is undocumented. Treated here as a generic failure.
+    int connectionStatus = client.connect(server, port);
+    
+    #if DEBUGNETWORK
+    Serial.print("Attempting to connect to ");
+    Serial.println(client.remoteIP());
+    #endif
+    
+    if(connectionStatus == CONNECTION_SUCCESS){
+      #if DEBUGNETWORK
+      Serial.print("Connected successfully to ");
+      Serial.print(client.remoteIP());
+      Serial.print(" on port ");
+      Serial.println(port);
+      #endif
+    
+      return 1; // Connection succeeded, break
+    }
+    
+    else{
+      #if DEBUGNETWORK
+      Serial.print("Failed to connect on port ");
+      Serial.println(port);
+      Serial.print("Error code: ");
+      Serial.println(connectionStatus);
+      #endif
+    }
+  }
+  // Connection did not succeed within the allowed number of attempts
+  return -1; 
+}
+
 
 // Perform a GET request for a given endpoint
 // TODO: Make this take a char* array?
@@ -119,21 +132,19 @@ void makeGetRequest(void){
   
 }
 
-// Read some bytes from the incoming stream
-void readIncomingBytes(void){
-  //Serial.println("Checking for incoming data");
+// Read some bytes from the incoming stream.
+// If there is an incoming message, save it.
+int readIncomingBytes(void){
   // Check how much data is incoming
   int len = client.available();
   
   // Only do anything if there is data to process
   if(len > 0){
-     //readNBytes(PACKETSIZE);
      client.read(messageBuffer, len);
      #if DEBUGNETWORK
      Serial.write(messageBuffer, len);
      #endif
-     extractJSONFromMessage();
-     deserialize(jsonBuffer);
+
     }
   
   else{

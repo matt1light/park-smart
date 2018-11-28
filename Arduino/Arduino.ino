@@ -77,7 +77,7 @@ void setup()
   while(!Serial){}; // Wait until the serial port is able to connect.
   delay(1000);
 
-  //Initialize lcd interface and set dimentions
+  //Initialize lcd interface and set dimensions
   lcd.begin(16, 2);
   lcd.print("Free spots:");
 
@@ -88,16 +88,23 @@ void setup()
 
  
   initDisplayState();
-  int connected = setupEthernet();
+
+  setupEthernet();
+  int connected = attemptConnection();
   if (connected == CONNECTION_SUCCESS) {
     makeGetRequest();
   }
-  //extractJSONFromMessage();
+  else{
+    throwFatalError("Could not connect to the server");
+  }
 }
 
 void loop()
 {
-  readIncomingBytes();
+  if(readIncomingBytes()){
+    extractJSONFromMessage();
+    deserialize(jsonBuffer);
+  }
   car = isCar(); //test if car is there or not
 
   if (car)
@@ -216,3 +223,11 @@ void removeExtraCar()
 //    makeGetRequest()
 //    readIncomingBytes()
 //}
+
+void throwFatalError(char* errorMsg){
+  Serial.println("FATAL ERROR OCCURRED, ABORTING");
+  Serial.print("Error: ");
+  Serial.println(errorMsg);
+  Serial.println("Program terminating. Please restart the board and try again.")
+  while(1){} // Kill the program
+}
