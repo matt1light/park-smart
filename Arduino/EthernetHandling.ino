@@ -4,10 +4,6 @@
 // Partially adapted from the WebClient sample program.
 
 #define NUMROWS 3
-// The number of bytes to read at once
-#define PACKETSIZE 128
-
-#define MAXCONNECTIONATTEMPTS 3
 
 #define MSGBUFFERSIZE 300
 #define JSONBUFFERSIZE 200
@@ -22,6 +18,7 @@
 #define CONNECTION_FAILURE_TRUNCATED -3
 #define CONNECTION_FAILURE_INVALID_RESPONSE -4
 
+#define MAXCONNECTIONATTEMPTS 3
 
 
 // ------------------------------------------------------------------------------
@@ -144,27 +141,9 @@ int readIncomingBytes(void){
      #if DEBUGNETWORK
      Serial.write(messageBuffer, len);
      #endif
-
     }
   
   else{
    // Do nothing
   }
-}
-
-
-// Read n bytes of data from the incoming buffer and print them to serial.
-void readNBytes(int n){
-  byte buffer[n];
-  client.read(buffer, n);
-  Serial.write(buffer, n);
-}
-
-
-// Create dummy values for the current displayState
-void initDisplayState(){
-  for(int i=0; i<NUMROWS; i++){
-    currentDisplay.lightState[i] = 0;
-  }
-  currentDisplay.emptySpots = 9999;
 }

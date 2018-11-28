@@ -11,7 +11,11 @@
 #define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
 #define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
 
-int wait = 2000; //delay frequency of ultrasonic sensor readings in milliseconds
+#define WAIT = 2000; //delay frequency of ultrasonic sensor readings in milliseconds
+#define REQUESTDELAY 10000 // Time between requests made to the server. Does not account for processing time
+#define LOOPITERATIONS REQUESTDELAY / WAIT // How many times loop() should run before another request should be sent
+
+char loops = 0;
 
 double d1, d2;//distance values, one for each ultrasonic sensor
 
@@ -101,6 +105,12 @@ void setup()
 
 void loop()
 {
+  if(loops >= LOOPITERATIONS){
+    loops = 0;
+    // It's time to make a request from the server
+    makeGetRequest();
+  }
+  
   if(readIncomingBytes()){
     extractJSONFromMessage();
     deserialize(jsonBuffer);
@@ -135,8 +145,8 @@ void loop()
       }
 
   //delay for the car test
-  delay(wait); //using predetermined time, in milliseconds, delay after each measurement and return
-
+  delay(WAIT); //using predetermined time, in milliseconds, delay after each measurement and return
+  loops++;
 }
 
 bool isCar()
@@ -223,6 +233,14 @@ void removeExtraCar()
 //    makeGetRequest()
 //    readIncomingBytes()
 //}
+
+// Create dummy values for the current displayState
+void initDisplayState(){
+  for(int i=0; i<NUMROWS; i++){
+    currentDisplay.lightState[i] = 0;
+  }
+  currentDisplay.emptySpots = 0;
+}
 
 void throwFatalError(char* errorMsg){
   Serial.println("FATAL ERROR OCCURRED, ABORTING");
