@@ -5,13 +5,13 @@ from mainModels.models import ParkingLot, LotState, Sector, Image
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import encode_multipart
 import base64
 
 from django.utils import timezone
 
 # Create your tests here.
-
 class ViewTestCase(TestCase):
     # def loadImage(self, path):
     #     with open(path, "rb") as imageFile:

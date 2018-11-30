@@ -1,4 +1,4 @@
-from mainModels.models import ParkingLot, LotState, Sector, Image, Row, Spot, ArduinoOutput
+from mainModels.models import ParkingLot, LotState, Sector, Image, Row, Spot, ArduinoOutput, SectorSpot
 from imageProcessor.models import ImageProcessor
 from django.utils import timezone
 import json
@@ -7,6 +7,7 @@ from imageProcessor.ImageProcessorServer import ImageProcessorServerImageAI
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 class ImageInDisplayOut(TestCase):
 
@@ -17,8 +18,8 @@ class ImageInDisplayOut(TestCase):
         # add LotState
         cls.lot_state = LotState.objects.create(parking_lot=cls.parking_lot, active=True)
         # add 2 Sectors
-        cls.sector1 = Sector.objects.create(lot_state=cls.lot_state, x_index=0, y_index=0)
-        cls.sector2 = Sector.objects.create(lot_state=cls.lot_state, x_index=1, y_index=0)
+        cls.sector1 = Sector.objects.create(lot_state=cls.lot_state, x_index=0, y_index=0, cameraID= "1.1")
+        cls.sector2 = Sector.objects.create(lot_state=cls.lot_state, x_index=1, y_index=0, cameraID="1.2")
         # add 2 Rows
         cls.top_row = Row.objects.create(lot_state=cls.lot_state, active=True)
         cls.bottom_row = Row.objects.create(lot_state=cls.lot_state, active=True)
@@ -35,25 +36,21 @@ class ImageInDisplayOut(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        # add ParkingLot
-        # self.parking_lot = ParkingLot.objects.create(description = "", name= "")
-        # # add LotState
-        # self.lot_state = LotState.objects.create(parking_lot=self.parking_lot, active=True)
-        # # add 2 Sectors
-        # self.sector1 = Sector.objects.create(lot_state=self.lot_state, x_index=0, y_index=0)
-        # self.sector2 = Sector.objects.create(lot_state=self.lot_state, x_index=1, y_index=0)
-        # # add 2 Rows
-        # self.top_row = Row.objects.create(lot_state=self.lot_state, active=True)
-        # self.bottom_row = Row.objects.create(lot_state=self.lot_state, active=True)
-        # # use calibrate to add spots
-        # # dump this jsons
-        # self.client = APIClient()
-        # self.output = ArduinoOutput.object.create(parking_lot=self.parking_lot, ip_address="192.1.1.1")
-        # # calibrate
-        # ImageProcessor.calibrate_sector("../test_resources/test_pics/e2esituations/e2e3.jpg", self.sector1)
-        # # add spots to the two rows
-        # Spot.objects.filter(pk__range=(1,4)).update(row=self.top_row)
-        # Spot.objects.filter(pk__range=(5,8)).update(row=self.bottom_row)
+
+
+    def test_save_image_triggers_signal(self):
+
+        p = open('../test_resources/test_pics/e2esituations/e2e3.jpg', 'rb')
+
+        file = SimpleUploadedFile(name=p.name, content=p.read())
+
+        Image.objects.create(sector=self.sector1, time_taken=timezone.now(), photo=file)
+        sector = Sector.objects.filter(pk=self.sector1.pk)
+
+        self.sector1.refresh_from_db()
+        for sector_spot in self.sector1.sector_spots.all():
+            self.assertEqual(sector_spot.spot.full, True)
+
 
     def test_full_back_row(self):
         # simulate the pi sending the image
