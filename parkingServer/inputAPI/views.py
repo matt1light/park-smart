@@ -1,9 +1,6 @@
 from __future__ import unicode_literals
 
 from rest_framework import generics, viewsets
-from rest_framework import status
-from rest_framework.views import APIView
-from django.http import JsonResponse
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
