@@ -22,10 +22,12 @@ class ImageProcessor(models.Model):
     # Creates spots based on the identified cars in an image and adds them to a specified sector
     # Input: name of image to be processed, sector for spots to be added to
     def calibrate_sector(self, image_name, sector):
+        print("\nCalibrating sector: #" + str(sector.pk))
         # get coordinates for new spots
         new_coords = self.server.get_car_coordinates(image_name)
         # for each spot create a SectorSpot and add the coordinates
         for new_spot_coords in new_coords:
+            print("\n.")
             # create a spot with sectorspot id
             spot = Spot.objects.create(active=True, full=False)
             # create an ImageCoord from new_spot_coords with sectorspot id
@@ -43,10 +45,16 @@ class ImageProcessor(models.Model):
         latest_image = images[0]
         image_path = latest_image.photo.url[1:]
         # update the sector with the latest image
-        self.update_sector_by_image(image_path, sector)
+        self.update_sector_by_image_name(image_path, sector)
+
+    def update_sector_from_image(self, image):
+        image_name = image.photo.url[1:]
+        sector = image.sector
+
+        self.update_sector_by_image_name(image_name, sector)
 
     # Updates a sector's spot statuses with a picture input
-    def update_sector_by_image(self, image_name:str, sector):
+    def update_sector_by_image_name(self, image_name:str, sector):
         # use object recognition to find coordinates
         detected_coords = self.server.get_car_coordinates(image_name)
         # for each coordinate in the detected coordinates
@@ -58,12 +66,14 @@ class ImageProcessor(models.Model):
                 # if the coordinates intersect by more than the MIN_OVERLAP
                 if self.__calculate_overlap_percentage(sector_spot.image_coordinates, coord) >= self.MIN_OVERLAP and spot.full==False:
                     # update the spot to full and save it
+                    print("New car found in \n\tsector: " + str(sector.pk) + "\n\tspot: " + str(spot.pk))
                     spot.full = True
                     spot.last_park = timezone.now()
                     spot.save(update_fields=["last_park", "full"])
-                    spot_full = True
+                    new_car_in_spot = True
             # if the spot is empty in the picture but not in the database update the database entry
-            if not spot_full and spot.full:
+            if not new_car_in_spot and spot.full:
+                print("Car left spot in \n\tsector:" + str(sector.pk) + "\n\tspot: " + str(spot.pk))
                 ParkingEvent.objects.create(spot=spot,
                                             parking_start=spot.last_park,
                                             parking_end=timezone.now())
