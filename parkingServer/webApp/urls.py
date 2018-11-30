@@ -7,9 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
-urlpatterns = {
+urlpatterns = [
     # url(r'^image/$', CreateView.as_view(), name="create"),
     url(r'^sectors/$', SectorListView.as_view(), name="list_sectors"),
     url(r'^row/$', SectorListView.as_view(), name="list_sectors"),
     url(r'^graphql', csrf_exempt(GraphQLView.as_view(graphiql=True)))
-}
+]

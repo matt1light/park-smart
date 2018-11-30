@@ -7,12 +7,13 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ('photo', 'time_taken', 'sector')
 
 class ImageResourceSerializer(serializers.Serializer):
+
     photo = serializers.ImageField()
     time_taken = serializers.DateTimeField()
     cameraID = serializers.CharField(max_length=30)
 
     def create(self, validated_data):
-        sector = Sector.objects.get(cameraID = validated_data['cameraID'])
+        sector = Sector.objects.filter(cameraID = validated_data['cameraID']).first()
         image = Image.objects.create(sector=sector, photo=validated_data['photo'], time_taken=validated_data['time_taken'])
         return image
 
