@@ -38,7 +38,7 @@ class DisplayState(object):
             active += active_spots.count()
 
         self.signState = {
-            "num_full_spots": active - available,
+            "num_available_spots": available,
             "num_active_spots": active
         }
 
