@@ -18,7 +18,7 @@ JsonObject serialize(struct DisplayState currDS){
   for(int i=0; i<NUMROWS; i++){
     lightState.add(currDS.lightState[i]);
   }
-  root["emptySpots"] = currDS.emptySpots;
+  root["num_available_spots"] = currDS.emptySpots;
   #if DEBUGJSON  
   root.printTo(Serial);
   Serial.println();

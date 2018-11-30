@@ -13,7 +13,7 @@
 //----------------------------------------------------------------------------
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
-#define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
+#define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
 #define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
@@ -118,17 +118,19 @@ void setup()
   pinMode(YELLOW2, OUTPUT);
   pinMode(GREEN2, OUTPUT);
 
-
   initDisplayState();
 
+  setRowColour(0, YELLOW);
+
   setupEthernet();
-  int connected = attemptConnection();
-  if (connected == CONNECTION_SUCCESS) {
-    makeGetRequest();
-  }
-  else {
-    throwFatalError("Could not connect to the server");
-  }
+  //int connected = attemptConnection();
+  //if (connected == CONNECTION_SUCCESS) {
+    
+    //makeGetRequest();
+  //}
+  //else {
+    //throwFatalError("Could not connect to the server");
+  //}
 }
 
 void loop()
@@ -137,12 +139,16 @@ void loop()
   if (loops >= LOOPITERATIONS) {
     loops = 0;
     // It's time to make a request from the server
-    makeGetRequest();
+    if(attemptConnection()){
+      makeGetRequest();
+    }
   }
 
   if (readIncomingBytes()) {
+    //closeConnection();
     extractJSONFromMessage();
     deserialize(jsonBuffer);
+   
   }
 
   
@@ -155,10 +161,10 @@ void loop()
   }
   if (car && !carFlag)
   {
-#if DEBUGHARDWARE
+  #if DEBUGHARDWARE
     Serial.println("There is a car");
     Serial.println(carFlag);
-#endif
+  #endif
 
     carFlag = true;
 
@@ -192,6 +198,12 @@ bool isCar()
     //if not testing, run with regular file
     d1 = getDistance(1);
     d2 = getDistance(2);
+    #if DEBUGHARDWARE
+    Serial.print("Sensor 1: ");
+    Serial.println(d1);
+    Serial.print("Sensor 2: ");
+    Serial.println(d2);
+    #endif
   }
   //compare the distance detected by each ultrasonic sensor and compare it to the predetermined maximum
   if (d1 <= dTrig && d2 <= dTrig)
@@ -275,7 +287,8 @@ void initDisplayState() {
 
 void throwFatalError(char* errorMsg) {
   for (int i=0; i<NUMROWS; i++){
-    currentDisplay.lightState[i] = YELLOW;
+    //currentDisplay.lightState[i] = YELLOW;
+    setRowColour(i, YELLOW);
   }
   currentDisplay.emptySpots = 9999;
   updateLightState();
@@ -284,5 +297,5 @@ void throwFatalError(char* errorMsg) {
   Serial.print("Error: ");
   Serial.println(errorMsg);
   Serial.println("Program terminating. Please restart the board and try again.");
-  while (1) {} // Kill the program
+  while (1) {} // Kill the program. Or at least put it in eternal limbo.
 }
