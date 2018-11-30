@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['localhost', '172.17.130.14', '169.254.45.1', '10.0.0.41']
 # Application definition
 
 INSTALLED_APPS = [
+    'webApp.apps.WebappConfig',
     'inputAPI.apps.InputapiConfig',
     'outputAPI.apps.OutputapiConfig',
     'imageProcessor.apps.ImageprocessorConfig',
@@ -41,7 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'graphene_django',
+    'corsheaders',
 ]
+
+GRAPHENE = {
+    'SCHEMA': 'webApp.schema.schema'
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,8 +57,10 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+CORS_ORIGIN_WHITELIST = ('localhost:3000')
 
 ROOT_URLCONF = 'parkingServer.urls'
 

@@ -10,7 +10,7 @@ from .ImageProcessorServer import ImageProcessorServerImageAI
 
 # Test that the imageprocessor can process an image based on a sector
 class ImageProcessorUnitTests(TestCase):
-    fixtures=['data']
+    fixtures=['../test_resources/fixtures/data']
 
     def setUp(self):
         # add image to database
