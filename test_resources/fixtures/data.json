@@ -18,14 +18,127 @@
     "model": "mainModels.lotState",
     "pk": 1,
     "fields":{
-      "parking_lot": 1
+      "parking_lot": 1,
+      "active": "True"
     }
   },
   {
     "model": "mainModels.row",
     "pk": 1,
     "fields":{
-      "lot_state": 1
+      "lot_state": 1,
+      "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.sector",
+    "pk": 1,
+    "fields":{
+      "lot_state": 1,
+      "x_index": 1,
+      "y_index": 1,
+      "cameraID": "1.1"
+    }
+  },
+  {
+    "model": "mainModels.sector",
+    "pk": 2,
+    "fields":{
+      "lot_state": 1,
+      "x_index": 2,
+      "y_index": 2,
+      "cameraID": "1.2"
+    }
+  },
+  {
+    "model": "mainModels.sector",
+    "pk": 3,
+    "fields":{
+      "lot_state": 1,
+      "x_index": 0,
+      "y_index": 0,
+      "cameraID": "1.2"
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 1,
+    "fields":{
+      "sector": 1,
+      "image_coordinates": 1,
+      "spot": 1
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 2,
+    "fields":{
+      "sector": 1,
+      "image_coordinates": 2,
+      "spot": 2
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 3,
+    "fields":{
+      "sector": 1,
+      "image_coordinates": 3,
+      "spot": 3
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 4,
+    "fields":{
+      "sector": 2,
+      "image_coordinates": 4,
+      "spot": 4
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 5,
+    "fields":{
+      "sector": 2,
+      "image_coordinates": 5,
+      "spot": 5
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 6,
+    "fields":{
+      "sector": 2,
+      "image_coordinates": 6,
+      "spot": 6
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 7,
+    "fields":{
+      "sector": 3,
+      "image_coordinates": 7,
+      "spot": 7
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 8,
+    "fields":{
+      "sector": 3,
+      "image_coordinates": 8,
+      "spot": 8
+    }
+  },
+  {
+    "model": "mainModels.sectorSpot",
+    "pk": 9,
+    "fields":{
+      "sector": 3,
+      "image_coordinates": 9,
+      "spot": 9
     }
   },
   {
@@ -35,6 +148,168 @@
       "row": 1,
       "full": "False",
       "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 2,
+    "fields":{
+      "row": 1,
+      "full": "False",
+      "active": "False"
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 3,
+    "fields":{
+      "row": 1,
+      "full": "True",
+      "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 4,
+    "fields":{
+      "row": 1,
+      "full": "False",
+      "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 5,
+    "fields":{
+      "row": 1,
+      "full": "False",
+      "active": "False"
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 6,
+    "fields":{
+      "row": 1,
+      "full": "True",
+      "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 7,
+    "fields":{
+      "row": 1,
+      "full": "False",
+      "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 8,
+    "fields":{
+      "row": 1,
+      "full": "False",
+      "active": "False"
+    }
+  },
+  {
+    "model": "mainModels.spot",
+    "pk": 9,
+    "fields":{
+      "row": 1,
+      "full": "True",
+      "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 1,
+    "fields":{
+      "top": 0,
+      "bottom": 0,
+      "left": 0,
+      "right": 0
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 2,
+    "fields":{
+      "top": 1,
+      "bottom": 0,
+      "left": 1,
+      "right": 0
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 3,
+    "fields":{
+      "top": 2,
+      "bottom": 0,
+      "left": 2,
+      "right": 0
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 4,
+    "fields":{
+      "top": 0,
+      "bottom": 0,
+      "left": 0,
+      "right": 0
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 5,
+    "fields":{
+      "top": 1,
+      "bottom": 0,
+      "left": 1,
+      "right": 0
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 6,
+    "fields":{
+      "top": 2,
+      "bottom": 0,
+      "left": 2,
+      "right": 0
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 7,
+    "fields":{
+      "top": 0,
+      "bottom": 0,
+      "left": 0,
+      "right": 0
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 8,
+    "fields":{
+      "top": 1,
+      "bottom": 0,
+      "left": 1,
+      "right": 0
+    }
+  },
+  {
+    "model": "mainModels.imageCoordinates",
+    "pk": 9,
+    "fields": {
+      "top": 2,
+      "bottom": 0,
+      "left": 2,
+      "right": 0
     }
   }
 ]

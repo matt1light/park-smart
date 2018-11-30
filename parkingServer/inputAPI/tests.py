@@ -25,81 +25,77 @@ class ViewTestCase(TestCase):
         self.client = APIClient()
 
 
-    def test_api_returns_400_on_failed_image(self):
-        self.api_create_2_images()
-        self.assertEqual(self.response.status_code, status.HTTP_400_BAD_REQUEST, self.response)
-        self.assertEqual(self.response.content.decode("utf-8"), '["One or more images failed validation"]')
+    # def test_api_returns_400_on_failed_image(self):
+    #     self.api_create_2_images()
+    #     self.assertEqual(self.response.status_code, status.HTTP_400_BAD_REQUEST, self.response)
+    #     self.assertEqual(self.response.content.decode("utf-8"), '["One or more images failed validation"]')
 
     def test_api_can_create_image(self):
         ## set up database for successful test
         self.parking_lot = ParkingLot.objects.create(description = "", name= "")
         self.lot_state = LotState.objects.create(parking_lot=self.parking_lot, active=True)
-        self.sector1 = Sector.objects.create(lot_state=self.lot_state, x_index=0, y_index=0)
-        self.sector2 = Sector.objects.create(lot_state=self.lot_state, x_index=1, y_index=0)
+        self.sector = Sector.objects.create(lot_state=self.lot_state, x_index=0, y_index=0, cameraID="1.1")
 
-        # call the create 2 images helper method
-        self.api_create_2_images()
+        #call the create image helper
+        self.api_create_an_image()
 
         self.assertEqual(self.response.status_code, status.HTTP_201_CREATED, self.response)
-        self.assertIsNotNone(self.sector1.images.first())
-        self.assertIsNotNone(self.sector2.images.first())
+        self.assertIsNotNone(self.sector.images.first())
+        self.assertEqual(len(Image.objects.all()), 1)
 
     # helper method
 
-    def build_input_request(self, photos, sectors):
-        images = []
-        data = {}
-        files = []
-        count = 0
+    def build_input_request(self, photo, cameraID):
         time_now = timezone.now()
-        for photo in photos:
-            # append photo to files
-            p = open(photo, 'rb')
-            data[photo] = p
-            files.append(photo)
-            count += 1
 
-            image = {
-                "cameraId": sectors[count],
-                "photo": photo,
-                "time_taken": str(time_now)
-            }
+        p = open(photo, 'rb')
 
-            images.append(image)
-
-        data["images"] = images
-
-    def api_create_2_images(self):
-        photos = ["../test_resources/test_pics/test1.jpg", "../test_resources/test_pics/test2.jpg"]
-        sectors = [0, 1]
-
-    def api_create_2_images(self):
-        time_now = timezone.now()
-        p1 = open('../test_resources/test_pics/test1.jpg', 'rb')
-        p2 = open('../test_resources/test_pics/test2.jpg', 'rb')
         data = {
-            "images": [
-                {
-                    "cameraId": 1,
-                    "photo": "test1.jpg",
-                    "time_taken": str(time_now)
-                },
-                {
-
-                    "cameraId": 2,
-                    "photo": "test2.jpg",
-                    "time_taken": str(time_now)
-                }
-            ],
-            "test1.jpg": p1,
-            "test2.jpg": p2
+            "cameraID": cameraID,
+            "photo": p,
+            "time_taken": str(time_now)
         }
 
+        return data
+
+    def api_create_an_image(self):
+        photo = "../test_resources/test_pics/test1.jpg"
+        cameraID = "1.1"
+
+        data = self.build_input_request(photo, cameraID)
+
         self.response = self.client.post(
-            "/image-collection/", data=data, format="multipart"
+            "/image/", data=data, format="multipart"
         )
 
-        print(self.response)
+
+    # def api_create_2_images(self):
+    #     time_now = timezone.now()
+    #     p1 = open('../test_resources/test_pics/test1.jpg', 'rb')
+    #     p2 = open('../test_resources/test_pics/test2.jpg', 'rb')
+    #     data = {
+    #         "images": [
+    #             {
+    #                 "cameraID": 1,
+    #                 "photo": "test1.jpg",
+    #                 "time_taken": str(time_now)
+    #             },
+    #             {
+    #
+    #                 "cameraID": 2,
+    #                 "photo": "test2.jpg",
+    #                 "time_taken": str(time_now)
+    #             }
+    #         ],
+    #         "test1.jpg": p1,
+    #         "test2.jpg": p2
+    #     }
+    #
+    #     self.response = self.client.post(
+    #         "/image-collection/", data=data, format="multipart"
+    #     )
+    #
+    #     print(self.response)
 
 
     # def test_api_can_create_image(self):

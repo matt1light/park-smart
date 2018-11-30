@@ -29,9 +29,7 @@ class CreateView(generics.ListCreateAPIView):
     serializer_class = ImageResourceSerializer
 
     def perform_create(self, serializer):
-        print(self.request.data)
-        print(self.request._files)
-        serializer.save()
+        serializer.create(self.request.data)
 
 class MultiImage(generics.ListCreateAPIView):
     queryset = Image.objects.all()
@@ -51,7 +49,7 @@ class MultiImage(generics.ListCreateAPIView):
             except Exception as e:
                 raise ValidationError(str(e))
 
-            sector = image['cameraId']
+            sector = image['cameraID']
             time_taken = image['time_taken']
 
             data = {
@@ -76,7 +74,7 @@ class MultiImage(generics.ListCreateAPIView):
 #     serializer_class = ImageSerializer
 #
 #     for image in request['images']:
-#         # find the sector by cameraId and add image to the sector
+#         # find the sector by cameraID and add image to the sector
 #         sector = Sector.objects.filter(camera=image['camera']).first()
 #         # create a new image based on that camera id
 #         Image.create(time_taken=image['time_taken'], photo=image['photo'], sector=sector)

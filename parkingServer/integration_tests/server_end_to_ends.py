@@ -140,7 +140,7 @@ class ImageInDisplayOut(TestCase):
         data = {
             "images": [
                 {
-                    "cameraId": sector.pk,
+                    "cameraID": sector.pk,
                     "photo": photo_path,
                     "time_taken": str(time_now)
                 }

@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='camera',
-            name='cameraId',
+            name='cameraID',
             field=models.CharField(default='1.1', max_length=30),
             preserve_default=False,
         ),

@@ -16,6 +16,7 @@ class Sector(models.Model):
     lot_state = models.ForeignKey(LotState, related_name='sectors', on_delete=models.CASCADE)
     x_index = models.IntegerField()
     y_index = models.IntegerField()
+    cameraID = models.CharField(max_length=30, default="1.1")
 
 class Row(models.Model):
     lot_state = models.ForeignKey(LotState, related_name='rows', on_delete=models.CASCADE)
@@ -58,7 +59,7 @@ class CameraHubInput(Input):
 class Camera(models.Model):
     camera_hub = models.ForeignKey(CameraHubInput, related_name='cameras', on_delete=models.CASCADE)
     # this might not exist later but as is we want cameras to be represented as hubID.camID
-    cameraId = models.CharField(max_length=30)
+    cameraID = models.CharField(max_length=30)
     sector = models.ForeignKey(Sector, related_name='camera', on_delete=models.SET_NULL, null=True)
 
 class Output(models.Model):
