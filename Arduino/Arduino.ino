@@ -16,7 +16,6 @@
 #define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
 #define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
 
-
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
 #define REQUESTDELAY 10000 // Time between requests made to the server. Does not account for processing time
 #define LOOPITERATIONS (REQUESTDELAY / WAIT) // How many times loop() should run before another request should be sent
@@ -134,6 +133,7 @@ void setup()
 
 void loop()
 {
+  
   if (loops >= LOOPITERATIONS) {
     loops = 0;
     // It's time to make a request from the server
@@ -144,6 +144,8 @@ void loop()
     extractJSONFromMessage();
     deserialize(jsonBuffer);
   }
+
+  
   car = isCar(); //test if car is there or not
 
   if (car)
@@ -272,6 +274,12 @@ void initDisplayState() {
 }
 
 void throwFatalError(char* errorMsg) {
+  for (int i=0; i<NUMROWS; i++){
+    currentDisplay.lightState[i] = YELLOW;
+  }
+  currentDisplay.emptySpots = 9999;
+  updateLightState();
+  updateLCD(currentDisplay.emptySpots);
   Serial.println("FATAL ERROR OCCURRED, ABORTING");
   Serial.print("Error: ");
   Serial.println(errorMsg);

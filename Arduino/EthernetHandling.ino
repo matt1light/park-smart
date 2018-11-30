@@ -61,6 +61,8 @@ int attemptConnection(){
     int connectionStatus = client.connect(server, port);
     
     #if DEBUGNETWORK
+    Serial.print("Connection Attempt #");
+    Serial.println(i);
     Serial.print("Attempting to connect to ");
     Serial.println(client.remoteIP());
     #endif
