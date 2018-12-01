@@ -54,7 +54,7 @@ void deserialize(char* json){
     currentDisplay.emptySpots = root["num_available_spots"];
 
     updateLightState();
-    updateLCD(currentDisplay.emptySpots);
+    updateLCD();
   }
 }
 
