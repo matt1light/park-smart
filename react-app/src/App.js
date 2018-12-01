@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
-import LotChart from './components/LotChart.js'
-import LotChart2 from './components/LotChart2.js'
+import SectorQuery from './components/SectorQuery'
+import {ApolloProvider} from "react-apollo"
+import TabContainer from "./components/TabContainer"
 
 const test_sector_spots = [
                     {
@@ -10,7 +11,6 @@ const test_sector_spots = [
                             "active": true
                         },
                         "image_coordinates":{
-                            "left": 0,
                             "right": 1,
                             "top": 0,
                             "bottom": 1
@@ -117,13 +117,14 @@ const data = {
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <div>
-          <LotChart2 data = {data} width= {1600} height={800}/>
-        </div>
-        <div>
-        </div>
-      </div>
+        <ApolloProvider client={this.props.client}>
+            <div className="App">
+                <div>
+                    <TabContainer></TabContainer>
+                    <SectorQuery></SectorQuery>
+                </div>
+            </div>
+        </ApolloProvider>
     );
   }
 }
