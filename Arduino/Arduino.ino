@@ -253,7 +253,7 @@ void carEntersLot()
   // starts 2 minute timer
   // on timer finish decrease ext
   Timer t;
-  int timer_event_id = t.after(ENTRANCE_DELAY, removeExtraCar);
+  t.after(ENTRANCE_DELAY, removeExtraCar);
 }
 
 void removeExtraCar()
