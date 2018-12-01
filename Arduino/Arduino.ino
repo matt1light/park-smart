@@ -165,7 +165,7 @@ void loop()
 
   if (car)
   {
-    lcd.setCursor(0, 1);
+    
     updateLCD();
   }
   if (car && !carFlag)
@@ -178,7 +178,7 @@ void loop()
     carFlag = true;
 
     carEntersLot();
-    lcd.setCursor(0, 1);
+    //lcd.setCursor(0, 1);
 
   }
   else if (!car)
@@ -253,6 +253,7 @@ void updateLightState()
 void updateLCD()
 {
   lcd.clear();
+  lcd.setCursor(0, 1);
   lcd.print("Available spots:");
   lcd.setCursor(0,2);
   
