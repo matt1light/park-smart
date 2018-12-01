@@ -231,6 +231,8 @@ void updateLightState()
 
 void updateLCD(int availableSpots)
 {
+  lcd.clearLine(2);
+  lcd.setCursor(0,2);
   //Display the number of available cars
   lcd.print(availableSpots - extraCars);
 
