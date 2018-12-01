@@ -21,8 +21,17 @@
 #define LOOPITERATIONS (REQUESTDELAY / WAIT) // How many times loop() should run before another request should be sent
 char loops = 0;
 
+
+// Currently hardcoded.
+// If given the chance to make full production code, there would be a request
+// made that would be run on startup, fetch the config (output ID, number of
+// rows, etc).
 #ifndef NUMROWS
   #define NUMROWS 3
+#endif
+
+#ifndef OUTPUTID
+  #define OUTPUTID 1
 #endif
 
 
@@ -231,10 +240,17 @@ void updateLightState()
 
 void updateLCD(int availableSpots)
 {
-  lcd.clearLine(2);
+  lcd.clear();
+  lcd.print("Available spots:");
   lcd.setCursor(0,2);
+  
   //Display the number of available cars
   lcd.print(availableSpots - extraCars);
+  Serial.print("Available spots:");
+  Serial.println(availableSpots);
+  Serial.print("Extra Cars:");
+  Serial.println(extraCars);
+  Serial.println(availableSpots - extraCars);
 
 }
 

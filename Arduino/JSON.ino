@@ -45,13 +45,13 @@ void deserialize(char* json){
     Serial.println(error);
     
   }
-  
-  else { // The request is valid and the 
+
+  else { // The request is valid
     JsonArray& displayState = root["displayState"];
     for(int i=0; i<NUMROWS; i++){
-      currentDisplay.lightState[i] = displayState[i];  
+      currentDisplay.lightState[i] = displayState["num_available_spots"][i];
     }
-    currentDisplay.emptySpots = root["emptySpots"];
+    currentDisplay.emptySpots = root["num_available_spots"];
 
     updateLightState();
     updateLCD(currentDisplay.emptySpots);

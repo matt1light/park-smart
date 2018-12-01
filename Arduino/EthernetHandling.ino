@@ -4,6 +4,7 @@
 // Partially adapted from the WebClient sample program.
 
 #define NUMROWS 3
+#define OUTPUTID 1
 
 #define TARGETPATH "/displayState/?output="
 
@@ -34,8 +35,6 @@ IPAddress server(10,0,0,41);
 
 // Declare the client
 EthernetClient client;
-
-int outputID = 1;
 
 void setupEthernet(void){
   // Set up the Arduino with a static IP.
@@ -98,10 +97,10 @@ void makeGetRequest(void){
   #if DEBUGNETWORK
   Serial.println("Trying a Get request");
   #endif
-  // GET /displayState/?output=outputID HTTP/1.1
+  // GET /displayState/?output=OUTPUTID HTTP/1.1
   client.print("GET ");
   client.print(TARGETPATH);
-  client.print(outputID);
+  client.print(OUTPUTID);
   client.println(" HTTP/1.1");
   client.println("Host: 10.0.0.41:8000");
   client.println("Cache-Control: no-cache");
