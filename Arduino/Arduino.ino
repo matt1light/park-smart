@@ -16,12 +16,12 @@
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
 
-#define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
+#define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
 
 #define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
-#define REQUESTDELAY 10000 // Time between requests made to the server. Does not account for processing time
+#define REQUESTDELAY 20000 // Time between requests made to the server. Does not account for processing time
 #define LOOPITERATIONS (REQUESTDELAY / WAIT) // How many times loop() should run before another request should be sent
 char loops = 0;
 
@@ -107,10 +107,10 @@ bool isTesting = false;
 
 // Buffer that incoming data will be written to.
 // This will be read from when deserializing, or written to when serializing.
-#define MSGBUFFERSIZE 300
+#define MSGBUFFERSIZE 250
 byte messageBuffer[MSGBUFFERSIZE];
 
-#define JSONBUFFERSIZE 200
+#define JSONBUFFERSIZE 120
 char jsonBuffer[JSONBUFFERSIZE];
 char errorBuffer[3]; // HTTP error codes are only ever 3 digits long
 
@@ -127,7 +127,6 @@ void setup()
 
   //Initialize lcd interface and set dimensions
   lcd.begin(16, 2);
-  lcd.print("Free spots:");
 
   pinMode(YELLOW0, OUTPUT);
   pinMode(GREEN0, OUTPUT);
@@ -154,6 +153,12 @@ void loop()
   if (loops >= LOOPITERATIONS) {
     loops = 0;
     // It's time to make a request from the server
+
+    // Close the previous connection
+    closeConnection();
+    // Make a new connection
+    attemptConnection();
+    // Make the request
     makeGetRequest();
   }
 
@@ -209,6 +214,13 @@ bool isCar()
     //if not testing, run with regular file
     d1 = getDistance(1);
     d2 = getDistance(2);
+
+    #if DEBUGHARDWARE
+      Serial.print("Sensor 1: ");
+      Serial.println(d1);
+      Serial.print("Sensor 2: ");
+      Serial.println(d2);
+     #endif
   }
   //compare the distance detected by each ultrasonic sensor and compare it to the predetermined maximum
   if (d1 <= dTrig && d2 <= dTrig)
@@ -250,29 +262,27 @@ void updateLCD()
 {
   lcd.clear();
   lcd.print("Available spots:");
-  lcd.setCursor(0,2);
+  lcd.setCursor(0,1);
   
   //Display the number of available cars
 
   int availableSpots = getAvailableSpots();
+  
   lcd.print(availableSpots);
   /*
-
-  lcd.print(availableSpots - extraCars);
   Serial.print("Available spots:");
   Serial.println(availableSpots);
   Serial.print("Extra Cars:");
   Serial.println(extraCars);
-  
   Serial.println(availableSpots - extraCars);
- */
+  */
 
 
 }
 
 int getAvailableSpots() {
   int availableSpots = currentDisplay.emptySpots;
-  if (availableSpots - extraCars < 0) {
+  if ((availableSpots - extraCars) < 0) {
     return 0;
   }
   else {
@@ -318,8 +328,6 @@ void throwFatalError(char* errorMsg) {
   currentDisplay.emptySpots = 9999;
   updateLightState();
   updateLCD();
-  digitalWrite(YELLOW1, HIGH);
-  digitalWrite(GREEN0, HIGH);
 
   Serial.println("FATAL ERROR OCCURRED, ABORTING");
   Serial.print("Error: ");
