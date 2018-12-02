@@ -27,7 +27,7 @@ char loops = 0;
 // made that would be run on startup, fetch the config (output ID, number of
 // rows, etc).
 #ifndef NUMROWS
-  #define NUMROWS 3
+  #define NUMROWS 2
 #endif
 
 #ifndef OUTPUTID
@@ -237,8 +237,9 @@ void updateLightState()
 void updateLCD()
 {
   lcd.clear();
+  lcd.setCursor(0,0);
   lcd.print("Available spots:");
-  lcd.setCursor(0,2);
+  lcd.setCursor(0,1);
   
   //Display the number of available cars
   int availableSpots = getAvailableSpots();
