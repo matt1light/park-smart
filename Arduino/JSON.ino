@@ -48,11 +48,15 @@ void deserialize(char* json){
 
   else { // The request is valid
     JsonArray& displayState = root["displayState"];
+    JsonArray& signState = root["signState"];
     for(int i=0; i<NUMROWS; i++){
       currentDisplay.lightState[i] = displayState["num_available_spots"][i];
     }
-    currentDisplay.emptySpots = root["num_available_spots"];
-
+   
+    currentDisplay.emptySpots = signState["num_available_spots"];
+    //Serial.write(currentDisplay.emptySpots);
+    //signState.prettyPrintTo(Serial);
+    root.prettyPrintTo(Serial);
     updateLightState();
     updateLCD();
   }

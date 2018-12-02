@@ -14,10 +14,10 @@
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
 #define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
-#define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
+#define DEBUGJSON 0 // Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
-#define REQUESTDELAY 10000 // Time between requests made to the server. Does not account for processing time
+#define REQUESTDELAY 5000 // Time between requests made to the server. Does not account for processing time
 #define LOOPITERATIONS (REQUESTDELAY / WAIT) // How many times loop() should run before another request should be sent
 char loops = 0;
 
@@ -183,10 +183,10 @@ void loop()
   }
   else if (!car)
   {
-#if DEBUGHARDWARE
-    Serial.println("There is not a car");
-    Serial.println(carFlag);
-#endif
+    #if DEBUGHARDWARE
+      Serial.println("There is not a car");
+      Serial.println(carFlag);
+    #endif
     carFlag = false;
   }
 
@@ -253,7 +253,7 @@ void updateLightState()
 void updateLCD()
 {
   lcd.clear();
-  lcd.setCursor(0, 1);
+  lcd.setCursor(0, 0);
   lcd.print("Available spots:");
   lcd.setCursor(0,2);
   
