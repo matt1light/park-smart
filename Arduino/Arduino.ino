@@ -52,12 +52,12 @@ bool car; //state variable if car is at parking lot entrance or not
 
 
 //LCD Pin Setup
-#define rs 7
-#define en 6
-#define d4 5
-#define d5 4
-#define d6 3
-#define d7 2
+#define rs 4
+#define en 5
+#define d4 6
+#define d5 7
+#define d6 8
+#define d7 9
 
 //LCD Setup
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
@@ -168,7 +168,7 @@ void loop()
   if (car)
   {
     lcd.setCursor(0, 1);
-    updateLCD(currentDisplay.emptySpots);
+    updateLCD();
   }
   if (car && !carFlag)
   {
@@ -246,7 +246,7 @@ void updateLightState()
   }
 }
 
-void updateLCD(int availableSpots)
+void updateLCD()
 {
   lcd.clear();
   lcd.print("Available spots:");
@@ -270,7 +270,7 @@ void updateLCD(int availableSpots)
 
 }
 
-int getAvailableSpots(int availableSpots, int extraCars) {
+int getAvailableSpots() {
   if (availableSpots - extraCars < 0) {
     return 0;
   }
