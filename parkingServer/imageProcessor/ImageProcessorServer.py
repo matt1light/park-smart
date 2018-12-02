@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from .ImageAI import getCoordsFromImageResnet, getCarAndMotorcycleCoordsFromImageResnet
 from .visionAPI import localize_objects
+from parkingServer.settings import IMAGE_PROCESSING_SERVER_IP
+import requests
 
 class ImageProcessorServer():
 
