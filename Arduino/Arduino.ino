@@ -275,9 +275,11 @@ int getAvailableSpots() {
 void carEntersLot()
 {
   extraCars += 1;
+  updateLCD();
   // starts 2 minute timer
   timer.tick();
   timer.at(ENTRANCE_DELAY, removeExtraCar);
+  updateLCD();
 }
 
 void removeExtraCar()
