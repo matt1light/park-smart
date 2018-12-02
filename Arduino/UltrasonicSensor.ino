@@ -4,8 +4,8 @@
 ////Initialize Ultrasonic Sensors and the pins it uses
 #define trigPin1 A4//trigger pin for ultrasonic sensor 1 connected to pin 6
 #define echoPin1 A5//echo Pin for ultrasonic sensor 1 connected to pin 7
-#define trigPin2 8//trigger pin for ultrasonic sensor 2 connected to pin 8
-#define echoPin2 9//echo Pin for ultrasonic sensor 2 connected to pin 9
+#define trigPin2 2//trigger pin for ultrasonic sensor 2 connected to pin 8
+#define echoPin2 3//echo Pin for ultrasonic sensor 2 connected to pin 9
 
 
 UltraSonicDistanceSensor distanceSensor1(trigPin1, echoPin1);
