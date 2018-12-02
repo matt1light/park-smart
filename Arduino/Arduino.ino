@@ -1,8 +1,5 @@
 #include <timer.h>
-#include <LinkedList.h>
 #include <Event.h>
-//#include <Timer.h>
-
 #include <ArduinoJson.h>
 #include <LiquidCrystal.h>
 
@@ -291,12 +288,6 @@ void removeExtraCar()
 {
   extraCars -= 1;
 }
-
-//void getNewStateFromServer()
-//{
-//    makeGetRequest()
-//    readIncomingBytes()
-//}
 
 // Create dummy values for the current displayState
 void initDisplayState() {
