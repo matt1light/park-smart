@@ -1,6 +1,8 @@
+#include <timer.h>
 #include <LinkedList.h>
 #include <Event.h>
-#include <Timer.h>
+//#include <Timer.h>
+
 
 #include <ArduinoJson.h>
 
@@ -13,11 +15,13 @@
 //----------------------------------------------------------------------------
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
+
 #define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
+
 #define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
-#define REQUESTDELAY 5000 // Time between requests made to the server. Does not account for processing time
+#define REQUESTDELAY 10000 // Time between requests made to the server. Does not account for processing time
 #define LOOPITERATIONS (REQUESTDELAY / WAIT) // How many times loop() should run before another request should be sent
 char loops = 0;
 
@@ -59,10 +63,10 @@ bool car; //state variable if car is at parking lot entrance or not
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 ////LED setup
-#define YELLOW1 A0
-#define GREEN1 A1
-#define YELLOW2 A2
-#define GREEN2 A3
+#define YELLOW0 A0
+#define GREEN0 A1
+#define YELLOW1 A2
+#define GREEN1 A3
 
 #ifndef CONNECTION_SUCCESS
 #define CONNECTION_SUCCESS 1
@@ -83,13 +87,16 @@ DisplayState currentDisplay;
 
 int numCars = 0;
 
+// on timer finish decrease exit
+  auto timer= timer_create_default();
+
 //----------------------------------------------------------------------------
 // STATE VARIABLES
 //----------------------------------------------------------------------------
 
 //Arrray for Lights
-uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
-uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
+uint8_t yellowLED[NUMROWS] = {YELLOW0, YELLOW1};
+uint8_t greenLED[NUMROWS] = {GREEN0, GREEN1};
 
 bool carFlag = false;
 int extraCars = 0;
@@ -122,25 +129,23 @@ void setup()
   lcd.begin(16, 2);
   lcd.print("Free spots:");
 
+  pinMode(YELLOW0, OUTPUT);
+  pinMode(GREEN0, OUTPUT);
   pinMode(YELLOW1, OUTPUT);
   pinMode(GREEN1, OUTPUT);
-  pinMode(YELLOW2, OUTPUT);
-  pinMode(GREEN2, OUTPUT);
+
 
   initDisplayState();
 
-  //setRowColour(1, YELLOW);
-
   setupEthernet();
-  //int connected = attemptConnection();
-  //if (connected == CONNECTION_SUCCESS) {
-    
-    //makeGetRequest();
-  //}
-  //else {
-    //throwFatalError("Could not connect to the server");
-  //}
-  //throwFatalError("False alarm");
+  int connected = attemptConnection();
+  if (connected == CONNECTION_SUCCESS) {
+    makeGetRequest();
+  }
+  else {
+    throwFatalError("Could not connect to the server");
+  }
+
 }
 
 void loop()
@@ -149,16 +154,12 @@ void loop()
   if (loops >= LOOPITERATIONS) {
     loops = 0;
     // It's time to make a request from the server
-    if(attemptConnection()){
-      makeGetRequest();
-    }
+    makeGetRequest();
   }
 
   if (readIncomingBytes()) {
-    //closeConnection();
     extractJSONFromMessage();
     deserialize(jsonBuffer);
-   
   }
 
   
@@ -166,28 +167,28 @@ void loop()
 
   if (car)
   {
-    
-    updateLCD();
+    lcd.setCursor(0, 1);
+    updateLCD(currentDisplay.emptySpots);
   }
   if (car && !carFlag)
   {
-  #if DEBUGHARDWARE
+#if DEBUGHARDWARE
     Serial.println("There is a car");
     Serial.println(carFlag);
-  #endif
+#endif
 
     carFlag = true;
 
     carEntersLot();
-    //lcd.setCursor(0, 1);
+    lcd.setCursor(0, 1);
 
   }
   else if (!car)
   {
-    #if DEBUGHARDWARE
-      Serial.println("There is not a car");
-      Serial.println(carFlag);
-    #endif
+#if DEBUGHARDWARE
+    Serial.println("There is not a car");
+    Serial.println(carFlag);
+#endif
     carFlag = false;
   }
 
@@ -208,12 +209,6 @@ bool isCar()
     //if not testing, run with regular file
     d1 = getDistance(1);
     d2 = getDistance(2);
-    #if DEBUGHARDWARE
-    Serial.print("Sensor 1: ");
-    Serial.println(d1);
-    Serial.print("Sensor 2: ");
-    Serial.println(d2);
-    #endif
   }
   //compare the distance detected by each ultrasonic sensor and compare it to the predetermined maximum
   if (d1 <= dTrig && d2 <= dTrig)
@@ -251,27 +246,31 @@ void updateLightState()
   }
 }
 
-void updateLCD()
+void updateLCD(int availableSpots)
 {
   lcd.clear();
-  lcd.setCursor(0, 0);
   lcd.print("Available spots:");
   lcd.setCursor(0,2);
   
   //Display the number of available cars
+
   int availableSpots = getAvailableSpots();
   lcd.print(availableSpots);
   /*
+
+  lcd.print(availableSpots - extraCars);
   Serial.print("Available spots:");
   Serial.println(availableSpots);
   Serial.print("Extra Cars:");
   Serial.println(extraCars);
-  Serial.println(availableSpots);
-  */
+  
+  Serial.println(availableSpots - extraCars);
+ */
+
+
 }
 
-int getAvailableSpots() {
-  int availableSpots = currentDisplay.emptySpots;
+int getAvailableSpots(int availableSpots, int extraCars) {
   if (availableSpots - extraCars < 0) {
     return 0;
   }
@@ -284,9 +283,8 @@ void carEntersLot()
 {
   extraCars += 1;
   // starts 2 minute timer
-  // on timer finish decrease ext
-  Timer t;
-  int timer_event_id = t.after(ENTRANCE_DELAY, removeExtraCar, 0);
+  timer.tick();
+  timer.at(ENTRANCE_DELAY, removeExtraCar);
 }
 
 void removeExtraCar()
@@ -311,8 +309,7 @@ void initDisplayState() {
 void throwFatalError(char* errorMsg) {
   /*
   for (int i=0; i<NUMROWS; i++){
-    //currentDisplay.lightState[i] = YELLOW;
-    setRowColour(i, YELLOW);
+    currentDisplay.lightState[i] = YELLOW;
   }
   */
  
@@ -322,10 +319,12 @@ void throwFatalError(char* errorMsg) {
   updateLCD();
   digitalWrite(YELLOW2, HIGH);
   digitalWrite(GREEN1, HIGH);
+
   Serial.println("FATAL ERROR OCCURRED, ABORTING");
   Serial.print("Error: ");
   Serial.println(errorMsg);
   Serial.println("Program terminating. Please restart the board and try again.");
+
   while (1) {
  
   } // Kill the program. Or at least put it in eternal limbo.
