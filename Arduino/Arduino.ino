@@ -1,6 +1,8 @@
+#include <timer.h>
 #include <LinkedList.h>
 #include <Event.h>
-#include <Timer.h>
+//#include <Timer.h>
+
 
 #include <ArduinoJson.h>
 
@@ -59,10 +61,10 @@ bool car; //state variable if car is at parking lot entrance or not
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 ////LED setup
-#define YELLOW1 A0
-#define GREEN1 A1
-#define YELLOW2 A2
-#define GREEN2 A3
+#define YELLOW0 A0
+#define GREEN0 A1
+#define YELLOW1 A2
+#define GREEN1 A3
 
 #ifndef CONNECTION_SUCCESS
 #define CONNECTION_SUCCESS 1
@@ -83,13 +85,16 @@ DisplayState currentDisplay;
 
 int numCars = 0;
 
+// on timer finish decrease exit
+  auto timer= timer_create_default();
+
 //----------------------------------------------------------------------------
 // STATE VARIABLES
 //----------------------------------------------------------------------------
 
 //Arrray for Lights
-uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
-uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
+uint8_t yellowLED[NUMROWS] = {YELLOW0, YELLOW1};
+uint8_t greenLED[NUMROWS] = {GREEN0, GREEN1};
 
 bool carFlag = false;
 int extraCars = 0;
@@ -122,10 +127,10 @@ void setup()
   lcd.begin(16, 2);
   lcd.print("Free spots:");
 
+  pinMode(YELLOW0, OUTPUT);
+  pinMode(GREEN0, OUTPUT);
   pinMode(YELLOW1, OUTPUT);
   pinMode(GREEN1, OUTPUT);
-  pinMode(YELLOW2, OUTPUT);
-  pinMode(GREEN2, OUTPUT);
 
 
   initDisplayState();
@@ -267,9 +272,8 @@ void carEntersLot()
 {
   extraCars += 1;
   // starts 2 minute timer
-  // on timer finish decrease ext
-  Timer t;
-  t.after(ENTRANCE_DELAY, removeExtraCar);
+  timer.tick();
+  timer.at(ENTRANCE_DELAY, removeExtraCar);
 }
 
 void removeExtraCar()
