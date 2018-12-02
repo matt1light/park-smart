@@ -7,11 +7,11 @@
 // CONFIGURATION
 //----------------------------------------------------------------------------
 
-#define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
+#define DEBUGHARDWARE 1 // Set to 1 to have hardware and displayState information printed to serial
 
-#define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
+#define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
 
-#define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
+#define DEBUGJSON 0 // Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
 #define REQUESTDELAY 20000 // Time between requests made to the server. Does not account for processing time
@@ -85,12 +85,6 @@ auto timer= timer_create_default();
 // STATE VARIABLES
 //----------------------------------------------------------------------------
 
-double d1, d2;//distance values, one for each ultrasonic sensor
-
-double dTrig = 5;//Max triggering detected distance
-
-bool car; //state variable if car is at parking lot entrance or not
-
 
 //Arrray for Lights
 char yellowLED[NUMROWS] = {YELLOW0, YELLOW1};
@@ -98,7 +92,7 @@ char greenLED[NUMROWS] = {GREEN0, GREEN1};
 
 bool carFlag = false;
 short extraCars = 0;
-const long ENTRANCE_DELAY = (long)1000 * 60 * 2; // 1 second * 1 minute * 2 = 2 minutes
+const long ENTRANCE_DELAY = (long)1000 * 60 * 0.1; // 1 second * 1 minute * 2 = 2 minutes
 
 //testing bool
 bool isTesting = false;
@@ -140,13 +134,16 @@ void setup()
     makeGetRequest();
   }
   else {
-    throwFatalError("Could not connect to the server");
+    //throwFatalError("Could not connect to the server");
   }
 
 }
 
 void loop()
 {
+
+  Serial.print("Extra cars: ");
+  Serial.println(extraCars);
   
   if (loops >= LOOPITERATIONS) {
     loops = 0;
@@ -164,6 +161,7 @@ void loop()
     extractJSONFromMessage();
     deserialize(jsonBuffer);
   }
+
 
   
   car = isCar(); //test if car is there or not
@@ -207,10 +205,10 @@ bool isCar()
     d2 = getDistance(2);
 
     #if DEBUGHARDWARE
-      Serial.print("Sensor 1: ");
-      Serial.println(d1);
-      Serial.print("Sensor 2: ");
-      Serial.println(d2);
+     // Serial.print("Sensor 1: ");
+      //Serial.println(d1);
+      //Serial.print("Sensor 2: ");
+      //Serial.println(d2);
      #endif
   }
   //compare the distance detected by each ultrasonic sensor and compare it to the predetermined maximum
@@ -253,13 +251,18 @@ void updateLCD()
 {
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("Available spots:");
+  //lcd.print("Available spots:");
+  lcd.print("Extra cars:");
   lcd.setCursor(0,1);
   
   //Display the number of available cars
-  int availableSpots = getAvailableSpots();
+  //int availableSpots = getAvailableSpots();
+  int availableSpots = 33;
   
-  lcd.print(availableSpots);
+  //lcd.print(availableSpots);
+  Serial.println(extraCars);
+
+  lcd.print(extraCars);
   /*
 
   Serial.print("Available spots:");
@@ -284,17 +287,19 @@ int getAvailableSpots() {
 
 void carEntersLot()
 {
+  Serial.println("Adding extra car");
   extraCars += 1;
   updateLCD();
   // starts 2 minute timer
   timer.tick();
-  timer.at(ENTRANCE_DELAY, removeExtraCar);
-  updateLCD();
+  timer.in(ENTRANCE_DELAY, removeExtraCar);
 }
 
 void removeExtraCar()
 {
+  Serial.println("Removing extra car");
   extraCars -= 1;
+  updateLCD();
 }
 
 // Create dummy values for the current displayState
