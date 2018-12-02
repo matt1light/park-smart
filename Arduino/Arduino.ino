@@ -88,7 +88,7 @@ DisplayState currentDisplay;
 int numCars = 0;
 
 // on timer finish decrease exit
-  auto timer= timer_create_default();
+ auto timer= timer_create_default();
 
 //----------------------------------------------------------------------------
 // STATE VARIABLES
@@ -168,7 +168,7 @@ void loop()
   if (car)
   {
     lcd.setCursor(0, 1);
-    updateLCD(currentDisplay.emptySpots);
+    updateLCD();
   }
   if (car && !carFlag)
   {
@@ -246,7 +246,7 @@ void updateLightState()
   }
 }
 
-void updateLCD(int availableSpots)
+void updateLCD()
 {
   lcd.clear();
   lcd.print("Available spots:");
@@ -270,7 +270,8 @@ void updateLCD(int availableSpots)
 
 }
 
-int getAvailableSpots(int availableSpots, int extraCars) {
+int getAvailableSpots() {
+  int availableSpots = currentDisplay.emptySpots;
   if (availableSpots - extraCars < 0) {
     return 0;
   }
@@ -317,8 +318,8 @@ void throwFatalError(char* errorMsg) {
   currentDisplay.emptySpots = 9999;
   updateLightState();
   updateLCD();
-  digitalWrite(YELLOW2, HIGH);
-  digitalWrite(GREEN1, HIGH);
+  digitalWrite(YELLOW1, HIGH);
+  digitalWrite(GREEN0, HIGH);
 
   Serial.println("FATAL ERROR OCCURRED, ABORTING");
   Serial.print("Error: ");
