@@ -3,12 +3,8 @@
 #include <Event.h>
 //#include <Timer.h>
 
-
 #include <ArduinoJson.h>
-
 #include <LiquidCrystal.h>
-
-
 
 //----------------------------------------------------------------------------
 // CONFIGURATION
@@ -172,18 +168,18 @@ void loop()
   }
   if (car && !carFlag)
   {
+  if (car && !carFlag) //If there is a car and there was not one before
+  {   
+    carFlag = true; //Register that there is a car currently here
+    carEntersLot(); 
+    
 #if DEBUGHARDWARE
     Serial.println("There is a car");
     Serial.println(carFlag);
 #endif
 
-    carFlag = true;
-
-    carEntersLot();
-    lcd.setCursor(0, 1);
-
   }
-  else if (!car)
+  else if (!car) //If there is not a car
   {
 #if DEBUGHARDWARE
     Serial.println("There is not a car");
@@ -253,11 +249,9 @@ void updateLCD()
   lcd.setCursor(0,2);
   
   //Display the number of available cars
-
   int availableSpots = getAvailableSpots();
   lcd.print(availableSpots);
   /*
-
   lcd.print(availableSpots - extraCars);
   Serial.print("Available spots:");
   Serial.println(availableSpots);
@@ -266,8 +260,6 @@ void updateLCD()
   
   Serial.println(availableSpots - extraCars);
  */
-
-
 }
 
 int getAvailableSpots() {
