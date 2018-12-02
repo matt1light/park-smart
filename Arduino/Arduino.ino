@@ -14,7 +14,7 @@
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
 #define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
-#define DEBUGJSON 0 // Set to 1 to have JSON encoding/decoding information printed to serial
+#define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
 #define REQUESTDELAY 5000 // Time between requests made to the server. Does not account for processing time
@@ -129,7 +129,7 @@ void setup()
 
   initDisplayState();
 
-  setRowColour(0, YELLOW);
+  //setRowColour(1, YELLOW);
 
   setupEthernet();
   //int connected = attemptConnection();
@@ -140,6 +140,7 @@ void setup()
   //else {
     //throwFatalError("Could not connect to the server");
   //}
+  //throwFatalError("False alarm");
 }
 
 void loop()
@@ -260,12 +261,13 @@ void updateLCD()
   //Display the number of available cars
   int availableSpots = getAvailableSpots();
   lcd.print(availableSpots);
+  /*
   Serial.print("Available spots:");
   Serial.println(availableSpots);
   Serial.print("Extra Cars:");
   Serial.println(extraCars);
   Serial.println(availableSpots);
-
+  */
 }
 
 int getAvailableSpots() {
@@ -307,16 +309,24 @@ void initDisplayState() {
 }
 
 void throwFatalError(char* errorMsg) {
+  /*
   for (int i=0; i<NUMROWS; i++){
     //currentDisplay.lightState[i] = YELLOW;
     setRowColour(i, YELLOW);
   }
+  */
+ 
+  
   currentDisplay.emptySpots = 9999;
   updateLightState();
   updateLCD();
+  digitalWrite(YELLOW2, HIGH);
+  digitalWrite(GREEN1, HIGH);
   Serial.println("FATAL ERROR OCCURRED, ABORTING");
   Serial.print("Error: ");
   Serial.println(errorMsg);
   Serial.println("Program terminating. Please restart the board and try again.");
-  while (1) {} // Kill the program. Or at least put it in eternal limbo.
+  while (1) {
+ 
+  } // Kill the program. Or at least put it in eternal limbo.
 }

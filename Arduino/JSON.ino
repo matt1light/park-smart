@@ -57,6 +57,7 @@ void deserialize(char* json){
     currentDisplay.emptySpots = signState["num_available_spots"];
     //Serial.write(currentDisplay.emptySpots);
     //signState.prettyPrintTo(Serial);
+    Serial.print("Root: ");
     root.prettyPrintTo(Serial);
     updateLightState();
     updateLCD();
@@ -102,7 +103,7 @@ int findChar(char target){
     }
     index++;
   }
-  return -1 // Target character was not found within the buffer
+  return -1; // Target character was not found within the buffer
 }
 
 // Convert a 3-digit HTTP error code stored in a char array into an int.

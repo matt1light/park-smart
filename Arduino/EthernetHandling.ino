@@ -4,7 +4,7 @@
 // Partially adapted from the WebClient sample program.
 
 #define NUMROWS 3
-#define OUTPUTID 1
+#define OUTPUTID 2
 
 #define TARGETPATH "/displayState/?output="
 
@@ -26,7 +26,7 @@ byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 // 10.0.0.43 should be this device's static IP
 #define CLIENTIP 10,0,0,43
 IPAddress ip(10, 0, 0, 43);
-int port = 7000;
+int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
