@@ -63,6 +63,7 @@ void deserialize(char* json){
   }
 }
 
+// Find the JSON in the body of an HTTP message stored in messageBuffer, and save it to jsonBuffer.
 int extractJSONFromMessage(void){
   int startPos = findChar('{');
   int endPos = findChar('}');
@@ -104,11 +105,13 @@ int findChar(char target){
   return -1 // Target character was not found within the buffer
 }
 
-// Convert a 3-digit HTTP error code stored in a char array into an int
+// Convert a 3-digit HTTP error code stored in a char array into an int.
 short errorToInt(void){
   return (100* charToDigit(errorBuffer[0]) + 10*charToDigit(errorBuffer[1]) + charToDigit(errorBuffer[2]));
 }
 
+// Convert a char encoded as an ASCII value into its numerical value.
+// i.e. '3' will be converted to 0x03.
 char charToDigit(char in){
   if(in >= 48 && in <= 57){
     return in - '0'; // 0 is the first digit in the ASCII table
