@@ -29,3 +29,20 @@ class ImageProcessorServerImageAI(ImageProcessorServer):
     def get_car_coordinates_calibrate(image_path):
         return getCarAndMotorcycleCoordsFromImageResnet(image_path)
 
+class ImageProcessorServerExternalImageAI(ImageProcessorServer):
+    @staticmethod
+    def get_car_coordinates(image_path):
+        ip_address = IMAGE_PROCESSING_SERVER_IP
+        photo = open(image_path, 'rb')
+        response = requests.post("http://" + ip_address + "/car_coordinates/", files={"photo": photo})
+        coordinates = response.json()['coords']
+        return coordinates
+
+    @staticmethod
+    def get_car_coordinates_calibrate(image_path):
+        ip_address = IMAGE_PROCESSING_SERVER_IP
+        photo = open(image_path, 'rb')
+        response = requests.post("http://" + ip_address + "/car_coordinates/", files={"photo": photo})
+        coordinates = response.json()['coords']
+        return coordinates
+

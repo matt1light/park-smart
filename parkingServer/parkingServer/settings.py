@@ -112,6 +112,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+IMAGE_PROCESSING_SERVER_IP='localhost:2000'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/

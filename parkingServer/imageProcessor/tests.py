@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from .models import ImageProcessor
 from mainModels.models import Spot, Sector, SectorSpot, LotState
-from .ImageProcessorServer import ImageProcessorServerImageAI, ImageProcessorServerVisionAPI
+from .ImageProcessorServer import ImageProcessorServerImageAI, ImageProcessorServerVisionAPI, ImageProcessorServerExternalImageAI
 
 # Create your tests here.
 
@@ -43,7 +43,7 @@ class ImageProcessorUnitTests(TestCase):
                 'full': True
             },
         ]
-        server = ImageProcessorServerImageAI()
+        server = ImageProcessorServerExternalImageAI()
         self.imageProcessor = ImageProcessor(server)
         return
 
