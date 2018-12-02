@@ -4,13 +4,13 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from .models import ImageProcessor
 from mainModels.models import Spot, Sector, SectorSpot, LotState
-from .ImageProcessorServer import ImageProcessorServerImageAI
+from .ImageProcessorServer import ImageProcessorServerImageAI, ImageProcessorServerVisionAPI, ImageProcessorServerExternalImageAI
 
 # Create your tests here.
 
 # Test that the imageprocessor can process an image based on a sector
 class ImageProcessorUnitTests(TestCase):
-    fixtures=['../test_resources/fixtures/data']
+    fixtures=['../test_resources/fixtures/data.json']
 
     def setUp(self):
         # add image to database
@@ -43,7 +43,7 @@ class ImageProcessorUnitTests(TestCase):
                 'full': True
             },
         ]
-        server = ImageProcessorServerImageAI()
+        server = ImageProcessorServerExternalImageAI()
         self.imageProcessor = ImageProcessor(server)
         return
 
@@ -52,9 +52,9 @@ class ImageProcessorUnitTests(TestCase):
         sector = Sector.objects.create(lot_state=LotState.objects.get(pk=1), x_index=0, y_index=0)
         # test2 has a picture with 5 cars thus should add 4 sector spots
         expected_number_of_spots = 5
-        image_name = "../test_resources/test_pics/e2esituations/full-doc-20.jpg"
+        image_name = "../test_resources/test_pics/e2esituations/fullish.jpg"
         self.imageProcessor.calibrate_sector(image_name, sector)
-        new_sector_spots = SectorSpot.objects.all()
+        new_sector_spots = SectorSpot.objects.filter(sector=sector)
 
         # assert that there have been spots added to the database table
         self.assertEqual(len(new_sector_spots), expected_number_of_spots)

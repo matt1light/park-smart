@@ -6,6 +6,7 @@ const int displayStateSize = (JSON_OBJECT_SIZE(2) + // current and max cars
                              JSON_ARRAY_SIZE(NUMROWS) + // lightState array
                              JSON_OBJECT_SIZE(1)); // pointer to lightState array
 
+/*
 // As of now this function goes unused but is being kept.                        
 JsonObject serialize(struct DisplayState currDS){
   // Create a buffer to store the JSON object in
@@ -25,7 +26,7 @@ JsonObject serialize(struct DisplayState currDS){
   #endif
   //return root;
 }
-
+*/
 
 // Decode a JSON-formatted string and update the current displayState to match it
 void deserialize(char* json){
@@ -48,16 +49,21 @@ void deserialize(char* json){
 
   else { // The request is valid
     JsonArray& displayState = root["displayState"];
+    JsonArray& signState = root["signState"];
     for(int i=0; i<NUMROWS; i++){
       currentDisplay.lightState[i] = displayState["num_available_spots"][i];
     }
-    currentDisplay.emptySpots = root["num_available_spots"];
-
+   
+    currentDisplay.emptySpots = signState["num_available_spots"];
+    //Serial.write(currentDisplay.emptySpots);
+    //signState.prettyPrintTo(Serial);
+    root.prettyPrintTo(Serial);
     updateLightState();
-    updateLCD(currentDisplay.emptySpots);
+    updateLCD();
   }
 }
 
+// Find the JSON in the body of an HTTP message stored in messageBuffer, and save it to jsonBuffer.
 int extractJSONFromMessage(void){
   int startPos = findChar('{');
   int endPos = findChar('}');
@@ -72,6 +78,7 @@ int extractJSONFromMessage(void){
   #endif
 }
 
+// Find the error code from an HTTP message stored in messageBuffer, and save it to errorBuffer.
 int extractErrorFromMessage(void){
   // The HTTP response header always starts with the protocol version, a space, then the error code.
   int startPos = findChar(' ') + 1; // Look for the first space; the next character is the first digit of the error code
@@ -83,29 +90,28 @@ int extractErrorFromMessage(void){
   Serial.println();
 }
 
+
 // Find the first instance of a given character in the messageBuffer, and return its position in the buffer.
 // The position is zero-indexed; if the character is the first in the array, its position is 0.
-
 int findChar(char target){
   int index = 0;
   
-  while(1){
-    if(index >= MSGBUFFERSIZE-1){ // Reached the end of the buffer; > for sanity
-      return -1; // Nothing was found
-    }
-    
-    else if(messageBuffer[index] == target){
+  while(index >= MSGBUFFERSIZE-1){
+    if(messageBuffer[index] == target){
       return index;
     }
     index++;
   }
+  return -1 // Target character was not found within the buffer
 }
 
-// Convert a 3-digit HTTP error code stored in a char array into an int
-int errorToInt(void){
+// Convert a 3-digit HTTP error code stored in a char array into an int.
+short errorToInt(void){
   return (100* charToDigit(errorBuffer[0]) + 10*charToDigit(errorBuffer[1]) + charToDigit(errorBuffer[2]));
 }
 
+// Convert a char encoded as an ASCII value into its numerical value.
+// i.e. '3' will be converted to 0x03.
 char charToDigit(char in){
   if(in >= 48 && in <= 57){
     return in - '0'; // 0 is the first digit in the ASCII table
