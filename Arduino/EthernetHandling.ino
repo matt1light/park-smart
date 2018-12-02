@@ -21,7 +21,7 @@
 
 // A6:8F:4E:6E:F5:B0; this is a valid but entirely arbitrary MAC address.
 // The shield does not come with a preset MAC so one needs to be set.
-byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
+const byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 
 // 10.0.0.43 should be this device's static IP
 #define CLIENTIP 10,0,0,43
@@ -119,6 +119,7 @@ int readIncomingBytes(void) {
     client.read(messageBuffer, len);
     #if DEBUGNETWORK
         Serial.write(messageBuffer, len);
+        Serial.println();
     #endif
     return 1;
   }

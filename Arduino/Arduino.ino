@@ -36,6 +36,13 @@ char loops = 0;
 // HARDWARE SETUP
 //----------------------------------------------------------------------------
 
+double d1, d2;//distance values, one for each ultrasonic sensor
+
+char dTrig = 5;//Max triggering detected distance
+
+bool car; //state variable if car is at parking lot entrance or not
+
+
 //LCD Pin Setup
 #define rs 4
 #define en 5
@@ -65,13 +72,14 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 // Struct to represent the system's display state
 struct DisplayState {
   char lightState[NUMROWS];
-  int emptySpots;
+  short emptySpots;
 };
 
 DisplayState currentDisplay;
 
+short numCars = 0;
 // on timer finish decrease exit
- auto timer= timer_create_default();
+auto timer= timer_create_default();
 
 //----------------------------------------------------------------------------
 // STATE VARIABLES
@@ -85,11 +93,11 @@ bool car; //state variable if car is at parking lot entrance or not
 
 
 //Arrray for Lights
-uint8_t yellowLED[NUMROWS] = {YELLOW0, YELLOW1};
-uint8_t greenLED[NUMROWS] = {GREEN0, GREEN1};
+char yellowLED[NUMROWS] = {YELLOW0, YELLOW1};
+char greenLED[NUMROWS] = {GREEN0, GREEN1};
 
 bool carFlag = false;
-int extraCars = 0;
+short extraCars = 0;
 const long ENTRANCE_DELAY = (long)1000 * 60 * 2; // 1 second * 1 minute * 2 = 2 minutes
 
 //testing bool
@@ -97,10 +105,10 @@ bool isTesting = false;
 
 // Buffer that incoming data will be written to.
 // This will be read from when deserializing, or written to when serializing.
-#define MSGBUFFERSIZE 250
+#define MSGBUFFERSIZE 300
 byte messageBuffer[MSGBUFFERSIZE];
 
-#define JSONBUFFERSIZE 120
+#define JSONBUFFERSIZE 100
 char jsonBuffer[JSONBUFFERSIZE];
 char errorBuffer[3]; // HTTP error codes are only ever 3 digits long
 

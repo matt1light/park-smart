@@ -2,8 +2,8 @@
 
 ////Ultrasonic initial settings
 ////Initialize Ultrasonic Sensors and the pins it uses
-#define trigPin1 A4//trigger pin for ultrasonic sensor 1 connected to pin A5
-#define echoPin1 A5//echo Pin for ultrasonic sensor 1 connected to pin A4
+#define trigPin1 A5//trigger pin for ultrasonic sensor 1 connected to pin A5
+#define echoPin1 A4//echo Pin for ultrasonic sensor 1 connected to pin A4
 #define trigPin2 2//trigger pin for ultrasonic sensor 2 connected to pin 2
 #define echoPin2 3//echo Pin for ultrasonic sensor 2 connected to pin 3
 
