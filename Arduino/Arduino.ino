@@ -161,13 +161,6 @@ void loop()
   
   car = isCar(); //test if car is there or not
 
-  if (car)
-  {
-    lcd.setCursor(0, 1);
-    updateLCD();
-  }
-  if (car && !carFlag)
-  {
   if (car && !carFlag) //If there is a car and there was not one before
   {   
     carFlag = true; //Register that there is a car currently here
