@@ -1,14 +1,7 @@
 #include <timer.h>
-#include <LinkedList.h>
 #include <Event.h>
-//#include <Timer.h>
-
-
 #include <ArduinoJson.h>
-
 #include <LiquidCrystal.h>
-
-
 
 //----------------------------------------------------------------------------
 // CONFIGURATION
@@ -31,7 +24,7 @@ char loops = 0;
 // made that would be run on startup, fetch the config (output ID, number of
 // rows, etc).
 #ifndef NUMROWS
-  #define NUMROWS 3
+  #define NUMROWS 2
 #endif
 
 #ifndef OUTPUTID
@@ -42,14 +35,6 @@ char loops = 0;
 //----------------------------------------------------------------------------
 // HARDWARE SETUP
 //----------------------------------------------------------------------------
-
-
-double d1, d2;//distance values, one for each ultrasonic sensor
-
-double dTrig = 5;//Max triggering detected distance
-
-bool car; //state variable if car is at parking lot entrance or not
-
 
 //LCD Pin Setup
 #define rs 4
@@ -85,14 +70,19 @@ struct DisplayState {
 
 DisplayState currentDisplay;
 
-int numCars = 0;
-
 // on timer finish decrease exit
  auto timer= timer_create_default();
 
 //----------------------------------------------------------------------------
 // STATE VARIABLES
 //----------------------------------------------------------------------------
+
+double d1, d2;//distance values, one for each ultrasonic sensor
+
+double dTrig = 5;//Max triggering detected distance
+
+bool car; //state variable if car is at parking lot entrance or not
+
 
 //Arrray for Lights
 uint8_t yellowLED[NUMROWS] = {YELLOW0, YELLOW1};
@@ -170,25 +160,18 @@ void loop()
   
   car = isCar(); //test if car is there or not
 
-  if (car)
-  {
-    lcd.setCursor(0, 1);
-    updateLCD();
-  }
-  if (car && !carFlag)
-  {
+  if (car && !carFlag) //If there is a car and there was not one before
+  {   
+    carFlag = true; //Register that there is a car currently here
+    carEntersLot(); 
+    
 #if DEBUGHARDWARE
     Serial.println("There is a car");
     Serial.println(carFlag);
 #endif
 
-    carFlag = true;
-
-    carEntersLot();
-    lcd.setCursor(0, 1);
-
   }
-  else if (!car)
+  else if (!car) //If there is not a car
   {
 #if DEBUGHARDWARE
     Serial.println("There is not a car");
@@ -261,22 +244,23 @@ void updateLightState()
 void updateLCD()
 {
   lcd.clear();
+  lcd.setCursor(0,0);
   lcd.print("Available spots:");
   lcd.setCursor(0,1);
   
   //Display the number of available cars
-
   int availableSpots = getAvailableSpots();
   
   lcd.print(availableSpots);
   /*
+
   Serial.print("Available spots:");
   Serial.println(availableSpots);
   Serial.print("Extra Cars:");
   Serial.println(extraCars);
   Serial.println(availableSpots - extraCars);
-  */
 
+ */
 
 }
 
@@ -293,21 +277,17 @@ int getAvailableSpots() {
 void carEntersLot()
 {
   extraCars += 1;
+  updateLCD();
   // starts 2 minute timer
   timer.tick();
   timer.at(ENTRANCE_DELAY, removeExtraCar);
+  updateLCD();
 }
 
 void removeExtraCar()
 {
   extraCars -= 1;
 }
-
-//void getNewStateFromServer()
-//{
-//    makeGetRequest()
-//    readIncomingBytes()
-//}
 
 // Create dummy values for the current displayState
 void initDisplayState() {
