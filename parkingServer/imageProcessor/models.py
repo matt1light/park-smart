@@ -16,7 +16,7 @@ class ImageProcessor(models.Model):
         managed = False
 
     # constructs a new image processor with a specified server to handle the ObjectRecognition
-    def __init__(self, server:ImageProcessorServer):
+    def __init__(self, server: ImageProcessorServer):
         self.server = server
 
     # Creates spots based on the identified cars in an image and adds them to a specified sector
