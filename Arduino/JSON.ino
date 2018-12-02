@@ -77,6 +77,7 @@ int extractJSONFromMessage(void){
   #endif
 }
 
+// Find the error code from an HTTP message stored in messageBuffer, and save it to errorBuffer.
 int extractErrorFromMessage(void){
   // The HTTP response header always starts with the protocol version, a space, then the error code.
   int startPos = findChar(' ') + 1; // Look for the first space; the next character is the first digit of the error code
@@ -88,26 +89,23 @@ int extractErrorFromMessage(void){
   Serial.println();
 }
 
+
 // Find the first instance of a given character in the messageBuffer, and return its position in the buffer.
 // The position is zero-indexed; if the character is the first in the array, its position is 0.
-
 int findChar(char target){
   int index = 0;
   
-  while(1){
-    if(index >= MSGBUFFERSIZE-1){ // Reached the end of the buffer; > for sanity
-      return -1; // Nothing was found
-    }
-    
-    else if(messageBuffer[index] == target){
+  while(index >= MSGBUFFERSIZE-1){
+    if(messageBuffer[index] == target){
       return index;
     }
     index++;
   }
+  return -1 // Target character was not found within the buffer
 }
 
 // Convert a 3-digit HTTP error code stored in a char array into an int
-int errorToInt(void){
+short errorToInt(void){
   return (100* charToDigit(errorBuffer[0]) + 10*charToDigit(errorBuffer[1]) + charToDigit(errorBuffer[2]));
 }
 
