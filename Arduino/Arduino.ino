@@ -39,14 +39,6 @@ char loops = 0;
 // HARDWARE SETUP
 //----------------------------------------------------------------------------
 
-
-double d1, d2;//distance values, one for each ultrasonic sensor
-
-double dTrig = 5;//Max triggering detected distance
-
-bool car; //state variable if car is at parking lot entrance or not
-
-
 //LCD Pin Setup
 #define rs 4
 #define en 5
@@ -89,6 +81,13 @@ int numCars = 0;
 //----------------------------------------------------------------------------
 // STATE VARIABLES
 //----------------------------------------------------------------------------
+
+double d1, d2;//distance values, one for each ultrasonic sensor
+
+double dTrig = 5;//Max triggering detected distance
+
+bool car; //state variable if car is at parking lot entrance or not
+
 
 //Arrray for Lights
 uint8_t yellowLED[NUMROWS] = {YELLOW0, YELLOW1};
