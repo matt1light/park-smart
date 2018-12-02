@@ -25,8 +25,9 @@ class ImageProcessor(models.Model):
         print("\nCalibrating sector: #" + str(sector.pk))
         # get coordinates for new spots
         new_coords = self.server.get_car_coordinates(image_name)
+        cleaned_coordinates = self.__eliminate_duplicates(new_coords)
         # for each spot create a SectorSpot and add the coordinates
-        for new_spot_coords in new_coords:
+        for new_spot_coords in cleaned_coordinates:
             print("\n.")
             # create a spot with sectorspot id
             spot = Spot.objects.create(active=True, full=False)
@@ -107,3 +108,40 @@ class ImageProcessor(models.Model):
         union = spot_area + detected_area - intersection
         percentage = intersection/union
         return percentage
+
+    def __calculate_overlap_raw(self, coord1, coord2):
+        left1 = coord1[0]
+        left2 = coord2[0]
+
+
+        top1 = coord1[1]
+        top2 = coord2[1]
+
+        right1 = coord1[2]
+        right2 = coord2[2]
+
+        bottom1 = coord1[3]
+        bottom2 = coord2[3]
+
+        intersection = max(0, min(right1, right2) - max(left1, left2)) * max(0, min(bottom1, bottom2) - max(top1, top2))
+
+        coord1_area = (right1 - left1)*(bottom1 - top1)
+        coord2_area = (right2 - left2)*(bottom2 - top2)
+
+        union = coord1_area + coord2_area - intersection
+        percentage = intersection/union
+        return percentage
+
+    def __eliminate_duplicates(self, coordinates):
+        # for each item in the array
+        i = 0
+        while(i < len(coordinates) - 1):
+            j = i + 1
+            while(j < len(coordinates)):
+                if self.__calculate_overlap_raw(coordinates[i], coordinates[j]) > 0.7:
+                    coordinates.pop(j)
+                else:
+                    j+=1
+            i += 1
+        return coordinates
+
