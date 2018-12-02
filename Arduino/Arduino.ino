@@ -73,8 +73,6 @@ struct DisplayState {
 
 DisplayState currentDisplay;
 
-int numCars = 0;
-
 // on timer finish decrease exit
  auto timer= timer_create_default();
 
