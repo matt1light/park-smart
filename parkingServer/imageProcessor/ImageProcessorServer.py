@@ -3,6 +3,7 @@ from .ImageAI import getCoordsFromImageResnet, getCoordsFromImageResnetCalibrate
 from .visionAPI import localize_objects
 from parkingServer.settings import IMAGE_PROCESSING_SERVER_IP
 import requests
+import pdb
 
 class ImageProcessorServer():
 
