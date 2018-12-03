@@ -11,7 +11,8 @@
 // Decode a JSON-formatted string and update the current displayState to match it
 void deserialize(char* json){
   // Create a buffer to store the JSON object in
-  DynamicJsonBuffer buf(DISPLAYSTATESIZE);
+  //DynamicJsonBuffer buf(DISPLAYSTATESIZE);
+  StaticJsonBuffer<DISPLAYSTATESIZE> buf;
   JsonObject& root = buf.parseObject(json);
 
   if(root.containsKey("error")){ // There was an error from the server

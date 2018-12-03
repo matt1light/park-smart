@@ -9,9 +9,9 @@
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
 
-#define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
+#define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
 
-#define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
+#define DEBUGJSON 0 // Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
 #define REQUESTDELAY 20000 // Time between requests made to the server. Does not account for processing time
@@ -61,7 +61,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #define GREEN1 A3
 
 #ifndef CONNECTION_SUCCESS
-#define CONNECTION_SUCCESS 1
+  #define CONNECTION_SUCCESS 1
 #endif
 
 //colour definitions to be passed to light state
@@ -92,14 +92,14 @@ char greenLED[NUMROWS] = {GREEN0, GREEN1};
 
 bool carFlag = false;
 short extraCars = 0;
-const long ENTRANCE_DELAY = (long)1000 * 60 * 0.1; // 1 second * 1 minute * 2 = 2 minutes
+const long ENTRANCE_DELAY = (long)1000 * 60 * 2; // 1 second * 1 minute * 2 = 2 minutes
 
 //testing bool
 bool isTesting = false;
 
 // Buffer that incoming data will be written to.
 // This will be read from when deserializing, or written to when serializing.
-#define MSGBUFFERSIZE 300
+#define MSGBUFFERSIZE 130
 byte messageBuffer[MSGBUFFERSIZE];
 
 #define JSONBUFFERSIZE 100
@@ -155,7 +155,8 @@ void loop()
 
   if (bytesAvailable()) {
     Serial.println("bytes available");
-    readIncomingBytes();
+    //readIncomingBytes();
+    readBytesHacky();
     extractJSONFromMessage();
     deserialize(jsonBuffer);
   }

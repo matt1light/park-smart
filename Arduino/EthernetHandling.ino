@@ -115,6 +115,22 @@ char bytesAvailable(void){
     return 0;
   }
 }
+
+void readNBytes(char n){
+  client.read(messageBuffer, n);
+}
+
+void wasteNBytes(char n){
+  for(int i=0; i<=n; i++){
+    client.read();
+  }
+}
+
+int readBytesHacky(void){
+  wasteNBytes(120);
+  readIncomingBytes();
+}
+
 // Read some bytes from the incoming stream.
 // If there is an incoming message, save it.
 int readIncomingBytes(void) {
