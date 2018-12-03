@@ -7,11 +7,11 @@
 // CONFIGURATION
 //----------------------------------------------------------------------------
 
-#define DEBUGHARDWARE 1 // Set to 1 to have hardware and displayState information printed to serial
+#define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
 
-#define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
+#define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
 
-#define DEBUGJSON 0 // Set to 1 to have JSON encoding/decoding information printed to serial
+#define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
 #define REQUESTDELAY 20000 // Time between requests made to the server. Does not account for processing time
@@ -24,7 +24,7 @@ char loops = 0;
 // made that would be run on startup, fetch the config (output ID, number of
 // rows, etc).
 #ifndef NUMROWS
-  #define NUMROWS 2
+  #define NUMROWS 3
 #endif
 
 #ifndef OUTPUTID
@@ -134,21 +134,17 @@ void setup()
     makeGetRequest();
   }
   else {
+    Serial.println("Could not connect to the server");
     //throwFatalError("Could not connect to the server");
   }
 
 }
 
 void loop()
-{
-
-  Serial.print("Extra cars: ");
-  Serial.println(extraCars);
-  
+{ 
   if (loops >= LOOPITERATIONS) {
     loops = 0;
     // It's time to make a request from the server
-
     // Close the previous connection
     closeConnection();
     // Make a new connection
@@ -157,13 +153,25 @@ void loop()
     makeGetRequest();
   }
 
-  if (readIncomingBytes()) {
-    extractJSONFromMessage();
-    deserialize(jsonBuffer);
+  if (bytesAvailable()) {
+    Serial.println("bytes available");
+    readIncomingBytes();
+    //extractJSONFromMessage();
+    //deserialize(jsonBuffer);
   }
 
+  checkForCars();
 
-  
+  //delay for the car test
+  delay(WAIT); //using predetermined time, in milliseconds, delay after each measurement and return
+  loops++;
+}
+
+//----------------------------------------------------------------------------
+// OTHER METHODS
+//----------------------------------------------------------------------------
+
+void checkForCars(){
   car = isCar(); //test if car is there or not
 
   if (car && !carFlag) //If there is a car and there was not one before
@@ -171,24 +179,21 @@ void loop()
     carFlag = true; //Register that there is a car currently here
     carEntersLot(); 
     
-#if DEBUGHARDWARE
+    #if DEBUGHARDWARE
     Serial.println("There is a car");
     Serial.println(carFlag);
-#endif
+    #endif
 
   }
   else if (!car) //If there is not a car
   {
-#if DEBUGHARDWARE
+    #if DEBUGHARDWARE
     Serial.println("There is not a car");
     Serial.println(carFlag);
-#endif
+    #endif
     carFlag = false;
   }
 
-  //delay for the car test
-  delay(WAIT); //using predetermined time, in milliseconds, delay after each measurement and return
-  loops++;
 }
 
 bool isCar()
@@ -285,9 +290,7 @@ int getAvailableSpots() {
   }
 }
 
-void carEntersLot()
-{
-  Serial.println("Adding extra car");
+void carEntersLot(){
   extraCars += 1;
   updateLCD();
   // starts 2 minute timer
@@ -297,7 +300,6 @@ void carEntersLot()
 
 void removeExtraCar()
 {
-  Serial.println("Removing extra car");
   extraCars -= 1;
   updateLCD();
 }
