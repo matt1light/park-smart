@@ -9,7 +9,7 @@
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
 
-#define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
+#define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
 
 #define DEBUGJSON 1// Set to 1 to have JSON encoding/decoding information printed to serial
 
@@ -61,7 +61,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #define GREEN1 A3
 
 #ifndef CONNECTION_SUCCESS
-#define CONNECTION_SUCCESS 1
+  #define CONNECTION_SUCCESS 1
 #endif
 
 //colour definitions to be passed to light state
@@ -75,10 +75,11 @@ struct DisplayState {
   short emptySpots;
 };
 
+// Declare our DisplayState
 DisplayState currentDisplay;
 
-short numCars = 0;
-// on timer finish decrease exit
+
+// Create a timer object
 auto timer= timer_create_default();
 
 //----------------------------------------------------------------------------
@@ -103,7 +104,6 @@ bool isTesting = false;
 char messageBuffer[MSGBUFFERSIZE];
 
 #define JSONBUFFERSIZE 100
-//char jsonBuffer[JSONBUFFERSIZE];
 char errorBuffer[3]; // HTTP error codes are only ever 3 digits long
 
 //----------------------------------------------------------------------------
@@ -120,28 +120,37 @@ void setup()
   //Initialize lcd interface and set dimensions
   lcd.begin(16, 2);
 
+  // Set the LED pins to operate as outputs
   pinMode(YELLOW0, OUTPUT);
   pinMode(GREEN0, OUTPUT);
   pinMode(YELLOW1, OUTPUT);
   pinMode(GREEN1, OUTPUT);
 
-
+  // Fill the display state with placeholder values until
+  // the first request is unpacked.
   initDisplayState();
 
+  // Setup the Ethernet shield
   setupEthernet();
+
+  // Attempt to make an inital connection to the server.
+  // If successful, make a GET request to populate the
+  // display state.
   int connected = attemptConnection();
   if (connected == CONNECTION_SUCCESS) {
     makeGetRequest();
   }
   else {
     Serial.println("Could not connect to the server");
-    //throwFatalError("Could not connect to the server");
   }
-
 }
 
 void loop()
 { 
+  // If there is incoming data:
+  // Read it,
+  // Separate the JSON body from the header,
+  // Parse the JSON and update the display state.
   if (bytesAvailable()) {
     readIncomingBytes();
     delay(1000);
@@ -150,9 +159,10 @@ void loop()
     deserialize(messageBuffer);
   }
 
-  
-  timer.tick();
-  
+  // If a set interval has expired, make a new GET request
+  // to the server.
+  // NB: This is not done with a timer object, in order
+  // to the very sparse memory available.
   if (loops >= LOOPITERATIONS) {
     loops = 0;
     // It's time to make a request from the server
@@ -164,10 +174,15 @@ void loop()
     makeGetRequest();
   }
 
+  // Check the ultrasonic sensors for whether there is a car present at the entrance.
   checkForCars();
 
-  //delay for the car test
-  delay(WAIT); //using predetermined time, in milliseconds, delay after each measurement and return
+  // Increment the timer
+  timer.tick();
+
+  
+  //using predetermined time, in milliseconds, delay after each measurement and return
+  delay(WAIT); 
   loops++;
 }
 
@@ -197,11 +212,9 @@ void checkForCars(){
     #endif
     carFlag = false;
   }
-
-  Serial.print("Extra cars: ");
-  Serial.println(extraCars);
 }
 
+// Test whether a car is present between the two ultrasonic sensors.
 bool isCar()
 {
   if (isTesting) {
@@ -231,6 +244,7 @@ bool isCar()
   return false;
 }
 
+// Change the output of the LEDs for a given row.
 void setRowColour(int row, int colour)
 {
   if (colour == GREEN)//Light to be set to Green
@@ -250,6 +264,7 @@ void setRowColour(int row, int colour)
   }
 }
 
+// Update the LEDs for all rows in the lot, based on the current lightState.
 void updateLightState()
 {
   for (int i = 0; i < NUMROWS; i++)
@@ -258,6 +273,7 @@ void updateLightState()
   }
 }
 
+// Refresh the LCD to reflect an update in the number of available spots.
 void updateLCD()
 {
   lcd.clear();
@@ -265,12 +281,15 @@ void updateLCD()
   lcd.print("Available spots:");
   lcd.setCursor(0,1);
   
-  //Display the number of available cars
+  // Display the number of available cars
   int availableSpots = getAvailableSpots();
   
   lcd.print(availableSpots);
 }
 
+// Determine the number of free spots available.
+// For this purpose, the number of cars that have entered the lot but are
+// "floating", having not yet parked, count as having occupied a spot.
 int getAvailableSpots() {
   int availableSpots = currentDisplay.emptySpots;
   if ((availableSpots - extraCars) < 0) {
@@ -281,6 +300,8 @@ int getAvailableSpots() {
   }
 }
 
+// A car has entered the lot; increment the tally of "floating" extra
+// cars, and update the LCD accordingly.
 void carEntersLot(){
   extraCars += 1;
   updateLCD();
@@ -288,6 +309,8 @@ void carEntersLot(){
   timer.in(ENTRANCE_DELAY, removeExtraCar);
 }
 
+// The timer has elapsed, so decrement the tally of "floating" cars
+// and update the LCD accordingly
 void removeExtraCar()
 {
   Serial.println("Removing car");
@@ -303,28 +326,7 @@ void initDisplayState() {
   currentDisplay.emptySpots = 0;
 }
 
-void throwFatalError(char* errorMsg) {
-  /*
-  for (int i=0; i<NUMROWS; i++){
-    currentDisplay.lightState[i] = YELLOW;
-  }
-  */
- 
-  
-  currentDisplay.emptySpots = 9999;
-  updateLightState();
-  updateLCD();
-
-  Serial.println("FATAL ERROR OCCURRED, ABORTING");
-  Serial.print("Error: ");
-  Serial.println(errorMsg);
-  Serial.println("Program terminating. Please restart the board and try again.");
-
-  while (1) {
- 
-  } // Kill the program. Or at least put it in eternal limbo.
-}
-
+// Print the current LightState to serial for debugging.
 void printLightState(){
   for(int i=0; i<NUMROWS; i++){
     Serial.print("State of row ");

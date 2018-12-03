@@ -4,7 +4,7 @@
 // Partially adapted from the WebClient sample program.
 
 #define NUMROWS 2
-#define OUTPUTID 2
+#define OUTPUTID 1
 
 #define TARGETPATH "/displayState/?output="
 
@@ -16,6 +16,7 @@
 #define CONNECTION_FAILURE_TRUNCATED -3
 #define CONNECTION_FAILURE_INVALID_RESPONSE -4
 
+// The number of connection attempts to make before aborting
 #define MAXCONNECTIONATTEMPTS 3
 
 
@@ -74,7 +75,7 @@ int attemptConnection() {
             Serial.println(port);
       #endif
 
-      return 1; // Connection succeeded, break
+      return CONNECTION_SUCCESS; // Connection succeeded, break
     }
 
     else {
@@ -107,6 +108,7 @@ void makeGetRequest(void) {
 
 }
 
+// Check whether there are bytes waiting in the incoming stream.
 char bytesAvailable(void){
   if (client.available() > 0){
     return 1;
@@ -115,6 +117,7 @@ char bytesAvailable(void){
     return 0;
   }
 }
+
 // Read some bytes from the incoming stream.
 // If there is an incoming message, save it.
 int readIncomingBytes(void) {
@@ -132,11 +135,13 @@ int readIncomingBytes(void) {
   }
 
   else {
-    // Do nothing
+    // This method should not be called if there are no bytes,
+    // but here is handling anyway.
     return 0;
   }
 }
 
+// Close the client's connection to the server.
 void closeConnection(void) {
   //#if DEBUGNETWORK
   Serial.println("Closing connection");

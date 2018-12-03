@@ -34,11 +34,6 @@ void deserialize(char* json){
 
     currentDisplay.emptySpots = root["signState"]["num_available_spots"];
     
-     
-
-    //root.printTo(Serial);
-    //Serial.println();
-    
     updateLightState();
     updateLCD();
   }
@@ -54,8 +49,6 @@ int extractJSONFromMessage(void){
    if(startPos >= 0 && endPos >= 0){
     memcpy(jsonBuffer, &messageBuffer[startPos], len);
     memcpy(messageBuffer, jsonBuffer, len);
-    //Serial.write(messageBuffer, len);
-    //Serial.println();
    }
 }
 
@@ -88,6 +81,8 @@ short findChar(char target){
   }
 }
 
+// Find the final instance of a given character in the messageBuffer, and return its position in the buffer.
+// The position is zero-indexed; if the character is the first in the array, its position is 0.
 short findLastChar(char target){
   short index = 0;
   short pos = -1;
@@ -118,6 +113,8 @@ char charToDigit(char in){
   }
 }
 
+// Convert a single numerical digit into its corresponding ASCII value
+// i.e. 0x03 will become '3'.
 char digitToChar(char in){
   return in + '0';
 }
