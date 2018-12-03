@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from mainModels.models import Sector
+from imageProcessor.models import ImageProcessor
+from imageProcessor.ImageProcessorServer import ImageProcessorServerImageAI
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -23,3 +26,9 @@ urlpatterns = [
     url(r'^', include('webApp.urls'))
 ]
 
+# server = ImageProcessorServerImageAI()
+# imageProcessor = ImageProcessor(server)
+# sector = Sector.objects.get(pk=1)
+# image_name = "camera_pictures/image0_2GxLloW.jpg"
+#
+# imageProcessor.calibrate_sector(image_name, sector)

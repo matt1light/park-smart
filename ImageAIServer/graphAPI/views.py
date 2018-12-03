@@ -1,9 +1,6 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
-from .ImageAI import getCoordsFromImageResnet
+from django.http import JsonResponse
+from .ImageAI import getCoordsFromImageResnet, getCoordsFromImageResnetCalibrate
 from rest_framework.views import APIView
-import pdb
-from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 class ImageProcessorView(APIView):
@@ -16,3 +13,12 @@ class ImageProcessorView(APIView):
         return JsonResponse(data)
 
 
+# Create your views here.
+class ImageProcessorCalibrationView(APIView):
+    authentication_classes = []
+    def post(self, request):
+        photo = request.FILES.get('photo')
+        photo_path = photo.temporary_file_path()
+        coords = getCoordsFromImageResnetCalibrate(photo_path)
+        data = {'coords': coords}
+        return JsonResponse(data)

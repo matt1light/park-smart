@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from .ImageAI import getCoordsFromImageResnet, getCarAndMotorcycleCoordsFromImageResnet
+from .ImageAI import getCoordsFromImageResnet, getCoordsFromImageResnetCalibrate
 from .visionAPI import localize_objects
 from parkingServer.settings import IMAGE_PROCESSING_SERVER_IP
 import requests
@@ -29,7 +29,7 @@ class ImageProcessorServerImageAI(ImageProcessorServer):
         return getCoordsFromImageResnet(image_path)
     @staticmethod
     def get_car_coordinates_calibrate(image_path):
-        return getCarAndMotorcycleCoordsFromImageResnet(image_path)
+        return getCoordsFromImageResnetCalibrate(image_path)
 
 class ImageProcessorServerExternalImageAI(ImageProcessorServer):
     @staticmethod
@@ -44,7 +44,7 @@ class ImageProcessorServerExternalImageAI(ImageProcessorServer):
     def get_car_coordinates_calibrate(image_path):
         ip_address = IMAGE_PROCESSING_SERVER_IP
         photo = open(image_path, 'rb')
-        response = requests.post("http://" + ip_address + "/car_coordinates/", files={"photo": photo})
+        response = requests.post("http://" + ip_address + "/car_coordinates_calibrate/", files={"photo": photo})
         coordinates = response.json()['coords']
         return coordinates
 

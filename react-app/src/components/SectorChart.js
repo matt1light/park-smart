@@ -1,14 +1,14 @@
 import * as d3 from 'd3'
 
-function createSector(node, height, width, sector_spots, id){
+function createSector(node, width, height, sector_spots, id){
     // get the maximum x in the data
-    const xMax = 3
+    const xMax = 2000
     // get the maximum y in the data
-    const yMax = 6
+    const yMax = 1250
 
     const xScale = d3.scaleLinear().domain([0, xMax]).range([0, width])
     const yScale = d3.scaleLinear().domain([0, yMax]).range([0, height])
-    const colourScale = d3.scaleOrdinal().domain(['avalable','full','inactive']).range(['green', 'red', 'grey'])
+    const colourScale = d3.scaleOrdinal().domain(['available','full','inactive']).range(['green', 'red', 'grey'])
 
     // enter
     node.selectAll('rect')
@@ -28,8 +28,8 @@ function createSector(node, height, width, sector_spots, id){
                 .style('fill', (d) => colourScale(getSpotState(d.spot)))
                 .attr('x', (d) => xScale(getX(d.imageCoordinates)))
                 .attr('y', (d) => yScale(getY(d.imageCoordinates)))
-                .attr('width', xScale(1))
-                .attr('height', yScale(1))
+                .attr('width', (d) => xScale(d.imageCoordinates.right - d.imageCoordinates.left))
+                .attr('height', (d) => yScale(d.imageCoordinates.bottom - d.imageCoordinates.top))
 }
 function getSpotState(spot){
         if(!spot.active){
@@ -39,7 +39,7 @@ function getSpotState(spot){
             return 'full'
         }
         else {
-            return 'avaliable'
+            return 'available'
         }
     }
 

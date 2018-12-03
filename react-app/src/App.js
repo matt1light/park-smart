@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import LotChart from './components/LotChart.js'
 import SectorQuery from './components/SectorQuery'
 import {ApolloProvider} from "react-apollo"
 
