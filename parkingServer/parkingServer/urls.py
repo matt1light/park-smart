@@ -29,6 +29,6 @@ urlpatterns = [
 server = ImageProcessorServerImageAI()
 imageProcessor = ImageProcessor(server)
 sector = Sector.objects.get(pk=1)
-image_name = "camera_pictures/Image0_Tga0N1G.jpg"
+image_name = "camera_pictures/image0_Tga0N1G.jpg"
 
 imageProcessor.calibrate_sector(image_name, sector)
