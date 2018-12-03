@@ -6,27 +6,6 @@ const int displayStateSize = (JSON_OBJECT_SIZE(2) + // current and max cars
                              JSON_ARRAY_SIZE(NUMROWS) + // lightState array
                              JSON_OBJECT_SIZE(1)); // pointer to lightState array
 
-/*
-// As of now this function goes unused but is being kept.                        
-JsonObject serialize(struct DisplayState currDS){
-  // Create a buffer to store the JSON object in
-  DynamicJsonBuffer jb(displayStateSize);
-  // Create the JsonObject that elements will be added to
-  JsonObject &root = jb.createObject();
-  
-  JsonArray &lightState = root.createNestedArray("displayState");
-  // The number of rows is variable, so use a loop
-  for(int i=0; i<NUMROWS; i++){
-    lightState.add(currDS.lightState[i]);
-  }
-  root["num_available_spots"] = currDS.emptySpots;
-  #if DEBUGJSON  
-  root.printTo(Serial);
-  Serial.println();
-  #endif
-  //return root;
-}
-*/
 
 // Decode a JSON-formatted string and update the current displayState to match it
 void deserialize(char* json){
