@@ -26,10 +26,18 @@ void deserialize(char* json){
     Serial.println(error);
     
   }
-
   else { // The request is valid
 
-    root.prettyPrintTo(Serial);
+    for(int i=0; i<NUMROWS; i++){
+      currentDisplay.lightState[i]= root["lightState"][i];
+    }
+
+    currentDisplay.emptySpots = root["signState"]["num_available_spots"];
+    
+     
+
+    //root.printTo(Serial);
+    //Serial.println();
     
     updateLightState();
     updateLCD();
@@ -46,7 +54,8 @@ int extractJSONFromMessage(void){
    if(startPos >= 0 && endPos >= 0){
     memcpy(jsonBuffer, &messageBuffer[startPos], len);
     memcpy(messageBuffer, jsonBuffer, len);
-    Serial.write(messageBuffer, len);
+    //Serial.write(messageBuffer, len);
+    //Serial.println();
    }
 }
 
@@ -107,4 +116,8 @@ char charToDigit(char in){
     Serial.print("Character is not a digit");
     return -1;
   }
+}
+
+char digitToChar(char in){
+  return in + '0';
 }

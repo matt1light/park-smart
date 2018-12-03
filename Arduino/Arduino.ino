@@ -9,7 +9,7 @@
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
 
-#define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
+#define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
 
 #define DEBUGJSON 1// Set to 1 to have JSON encoding/decoding information printed to serial
 
@@ -24,7 +24,7 @@ char loops = 0;
 // made that would be run on startup, fetch the config (output ID, number of
 // rows, etc).
 #ifndef NUMROWS
-  #define NUMROWS 3
+  #define NUMROWS 2
 #endif
 
 #ifndef OUTPUTID
@@ -65,7 +65,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #endif
 
 //colour definitions to be passed to light state
-#define OFF 0
+#define OFF 3
 #define GREEN 1
 #define YELLOW 2
 
@@ -92,7 +92,7 @@ char greenLED[NUMROWS] = {GREEN0, GREEN1};
 
 bool carFlag = false;
 short extraCars = 0;
-const long ENTRANCE_DELAY = (long)1000 * 60 * 0.1; // 1 second * 1 minute * 2 = 2 minutes
+const long ENTRANCE_DELAY = (long)1000 * 20; // 1 second * 1 minute * 2 = 20 seconds
 
 //testing bool
 bool isTesting = false;
@@ -143,13 +143,15 @@ void setup()
 void loop()
 { 
   if (bytesAvailable()) {
-    Serial.println("bytes available");
     readIncomingBytes();
     delay(1000);
     extractJSONFromMessage();
     delay(1000);
     deserialize(messageBuffer);
   }
+
+  
+  timer.tick();
   
   if (loops >= LOOPITERATIONS) {
     loops = 0;
@@ -161,8 +163,6 @@ void loop()
     // Make the request
     makeGetRequest();
   }
-
-  
 
   checkForCars();
 
@@ -198,6 +198,8 @@ void checkForCars(){
     carFlag = false;
   }
 
+  Serial.print("Extra cars: ");
+  Serial.println(extraCars);
 }
 
 bool isCar()
@@ -260,28 +262,13 @@ void updateLCD()
 {
   lcd.clear();
   lcd.setCursor(0,0);
-  //lcd.print("Available spots:");
-  lcd.print("Extra cars:");
+  lcd.print("Available spots:");
   lcd.setCursor(0,1);
   
   //Display the number of available cars
-  //int availableSpots = getAvailableSpots();
-  int availableSpots = 33;
+  int availableSpots = getAvailableSpots();
   
-  //lcd.print(availableSpots);
-  Serial.println(extraCars);
-
-  lcd.print(extraCars);
-  /*
-
-  Serial.print("Available spots:");
-  Serial.println(availableSpots);
-  Serial.print("Extra Cars:");
-  Serial.println(extraCars);
-  Serial.println(availableSpots - extraCars);
-
- */
-
+  lcd.print(availableSpots);
 }
 
 int getAvailableSpots() {
@@ -298,12 +285,12 @@ void carEntersLot(){
   extraCars += 1;
   updateLCD();
   // starts 2 minute timer
-  timer.tick();
   timer.in(ENTRANCE_DELAY, removeExtraCar);
 }
 
 void removeExtraCar()
 {
+  Serial.println("Removing car");
   extraCars -= 1;
   updateLCD();
 }
@@ -311,7 +298,7 @@ void removeExtraCar()
 // Create dummy values for the current displayState
 void initDisplayState() {
   for (int i = 0; i < NUMROWS; i++) {
-    currentDisplay.lightState[i] = 0;
+    currentDisplay.lightState[i] = 1;
   }
   currentDisplay.emptySpots = 0;
 }
@@ -336,4 +323,13 @@ void throwFatalError(char* errorMsg) {
   while (1) {
  
   } // Kill the program. Or at least put it in eternal limbo.
+}
+
+void printLightState(){
+  for(int i=0; i<NUMROWS; i++){
+    Serial.print("State of row ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(digitToChar(currentDisplay.lightState[i]));
+  }
 }

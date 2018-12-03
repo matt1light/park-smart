@@ -120,8 +120,6 @@ char bytesAvailable(void){
 int readIncomingBytes(void) {
   // Check how much data is incoming
   int len = client.available();
-  Serial.print("Bytes available: ");
-  Serial.println(len);
 
   // Only do anything if there is data to process
   if (len > 0) {
