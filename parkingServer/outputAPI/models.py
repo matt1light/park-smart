@@ -1,6 +1,4 @@
-from django.db import models
-
-from mainModels.models import ArduinoOutput
+from mainModels.models import ArduinoOutput, Spot
 
 # Create your models here.
 
@@ -36,6 +34,11 @@ class DisplayState(object):
 
             available += available_spots.count()
             active += active_spots.count()
+
+        additional_active_spots = Spot.objects.filter(row=None).exclude(sector_spot=None).count()
+
+
+        active += additional_active_spots
 
         self.signState = {
             "num_available_spots": available,

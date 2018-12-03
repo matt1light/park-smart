@@ -1,30 +1,13 @@
 from __future__ import unicode_literals
 
-from rest_framework.exceptions import ValidationError
-from rest_framework import generics, viewsets
-from rest_framework.exceptions import ValidationError
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework import generics
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from mainModels.models import Image, Sector
-from .serializer import ImageSerializer, ImageCollectionSerializer, ImageResourceSerializer
+from .serializer import ImageResourceSerializer
 from imageProcessor.ImageProcessorServer import ImageProcessorServerImageAI, ImageProcessorServerExternalImageAI
 from imageProcessor.models import ImageProcessor
 from parkingServer.settings import IMAGE_PROCESSING_SERVER_IP
-import pdb
-import json
-
-# Create your views here.
-
-# class CreateView(viewsets.ModelViewSet):
-#     model = Image
-#     parser_classes = (JSONParser)
-#     serializer_class = ImageSerializer
-#
-#     def perform_create(self, serializer):
-#         print(self.request.data)
-#         print(self.request._files)
-#         serializer.save()
-
 
 class CreateView(generics.ListCreateAPIView):
 

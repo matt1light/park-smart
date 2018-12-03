@@ -8,6 +8,14 @@
     }
   },
   {
+    "model": "mainModels.arduinoOutput",
+    "pk": 1,
+    "fields":{
+      "parking_lot": 1,
+      "ip_address": "10.0.0.43"
+    }
+  },
+  {
     "model": "mainModels.output",
     "pk": 1,
     "fields":{

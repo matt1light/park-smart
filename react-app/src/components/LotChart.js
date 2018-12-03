@@ -68,7 +68,6 @@ class LotChart extends Component {
 
 var createLot = (node, props, state) =>{
     // these constants need to be replaced
-    console.log(props.data)
     const xMax = 10
     const yMax = 10
 
@@ -112,11 +111,13 @@ var createLot = (node, props, state) =>{
     // update sectors
     var sectorsSvgs = d3.select(node).selectAll('svg')
                 .data(props.data)
-                .call(createSector, xScale(1), yScale(1), (d) => d.sectorSpots, (d) => d.pk)
+                .call(createSector, xScale(1.9), yScale(1.1), (d) => d.sectorSpots, (d) => d.pk)
+                .attr("stroke-width", 1)
+                .attr("stroke", "blue")
                 .attr("x", (d)=> xScale(d.xIndex))
                 .attr("y", (d) => yScale(d.yIndex))
-                .attr("width", () => xScale(1))
-                .attr("height", () => yScale(1))
+                .attr("width", () => xScale(1.9))
+                .attr("height", () => yScale(1.1))
                 // this is allowing the sectors to be dragged
                 .call(d3.drag()
                     .on("start", dragstarted)

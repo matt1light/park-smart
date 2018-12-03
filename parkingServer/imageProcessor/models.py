@@ -26,6 +26,10 @@ class ImageProcessor(models.Model):
         # get coordinates for new spots
         new_coords = self.server.get_car_coordinates_calibrate(image_name)
         cleaned_coordinates = self.__eliminate_duplicates(new_coords)
+        sector_spots = sector.sector_spots.all()
+        if sector_spots.exists():
+            # Raw delete with the convenience of using Django QuerySet
+            sector_spots.delete()
         # for each spot create a SectorSpot and add the coordinates
         for new_spot_coords in cleaned_coordinates:
             print("\n.")
@@ -65,13 +69,14 @@ class ImageProcessor(models.Model):
             spot = sector_spot.spot
             for coord in detected_coords:
                 # if the coordinates intersect by more than the MIN_OVERLAP
-                if self.__calculate_overlap_percentage(sector_spot.image_coordinates, coord) >= self.MIN_OVERLAP and spot.full==False:
+                if self.__calculate_overlap_percentage(sector_spot.image_coordinates, coord) >= self.MIN_OVERLAP:
                     # update the spot to full and save it
-                    print("New car found in \n\tsector: " + str(sector.pk) + "\n\tspot: " + str(spot.pk))
-                    spot.full = True
-                    spot.last_park = timezone.now()
-                    spot.save(update_fields=["last_park", "full"])
                     new_car_in_spot = True
+            if new_car_in_spot and not spot.full:
+                print("New car found in \n\tsector: " + str(sector.pk) + "\n\tspot: " + str(spot.pk))
+                spot.full = True
+                spot.last_park = timezone.now()
+                spot.save(update_fields=["last_park", "full"])
             # if the spot is empty in the picture but not in the database update the database entry
             if not new_car_in_spot and spot.full:
                 print("Car left spot in \n\tsector:" + str(sector.pk) + "\n\tspot: " + str(spot.pk))
@@ -143,7 +148,7 @@ class ImageProcessor(models.Model):
         while(i < len(coordinates) - 1):
             j = i + 1
             while(j < len(coordinates)):
-                if self.__calculate_overlap_raw(coordinates[i], coordinates[j]) > 0.7:
+                if self.__calculate_overlap_raw(coordinates[i], coordinates[j]) > 0.6:
                     coordinates.pop(j)
                 else:
                     j+=1

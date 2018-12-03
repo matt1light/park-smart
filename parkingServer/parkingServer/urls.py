@@ -18,7 +18,6 @@ from django.contrib import admin
 from mainModels.models import Sector
 from imageProcessor.models import ImageProcessor
 from imageProcessor.ImageProcessorServer import ImageProcessorServerImageAI
-import pdb
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -30,6 +29,6 @@ urlpatterns = [
 # server = ImageProcessorServerImageAI()
 # imageProcessor = ImageProcessor(server)
 # sector = Sector.objects.get(pk=1)
-# image_name = "../test_resources/test_pics/calibration1-4cars.jpg"
+# image_name = "camera_pictures/image0_2GxLloW.jpg"
+#
 # imageProcessor.calibrate_sector(image_name, sector)
-# pdb.set_trace()
