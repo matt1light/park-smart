@@ -1,5 +1,3 @@
-from django.db import models
-
 from mainModels.models import ArduinoOutput, Spot
 
 # Create your models here.

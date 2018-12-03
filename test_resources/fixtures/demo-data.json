@@ -16,6 +16,13 @@
     }
   },
   {
+    "model": "mainModels.output",
+    "pk": 1,
+    "fields":{
+      "parking_lot": 1
+    }
+  },
+  {
     "model": "mainModels.lotState",
     "pk": 1,
     "fields":{
