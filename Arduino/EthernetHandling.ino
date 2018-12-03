@@ -91,8 +91,7 @@ int attemptConnection() {
 }
 
 
-// Perform a GET request for a given endpoint
-// TODO: Make this take a char* array?
+// Perform a GET request for the displayState endpoint
 void makeGetRequest(void) {
 #if DEBUGNETWORK
   Serial.println("Trying a Get request");
@@ -108,18 +107,28 @@ void makeGetRequest(void) {
 
 }
 
+char bytesAvailable(void){
+  if (client.available() > 0){
+    return 1;
+  }
+  else{
+    return 0;
+  }
+}
 // Read some bytes from the incoming stream.
 // If there is an incoming message, save it.
 int readIncomingBytes(void) {
   // Check how much data is incoming
   int len = client.available();
+  Serial.print("Bytes available: ");
+  Serial.println(len);
 
   // Only do anything if there is data to process
   if (len > 0) {
     client.read(messageBuffer, len);
     #if DEBUGNETWORK
-        Serial.write(messageBuffer, len);
-        Serial.println();
+       Serial.write(messageBuffer, len);
+       Serial.println();
     #endif
     return 1;
   }
