@@ -24,7 +24,7 @@ class ImageProcessor(models.Model):
     def calibrate_sector(self, image_name, sector):
         print("\nCalibrating sector: #" + str(sector.pk))
         # get coordinates for new spots
-        new_coords = self.server.get_car_coordinates(image_name)
+        new_coords = self.server.get_car_coordinates_calibrate(image_name)
         cleaned_coordinates = self.__eliminate_duplicates(new_coords)
         # for each spot create a SectorSpot and add the coordinates
         for new_spot_coords in cleaned_coordinates:
@@ -61,7 +61,7 @@ class ImageProcessor(models.Model):
         # for each coordinate in the detected coordinates
         for sector_spot in sector.sector_spots.all():
             # compare to the possible coordinates
-            spot_full = False
+            new_car_in_spot = False
             spot = sector_spot.spot
             for coord in detected_coords:
                 # if the coordinates intersect by more than the MIN_OVERLAP
@@ -125,12 +125,17 @@ class ImageProcessor(models.Model):
 
         intersection = max(0, min(right1, right2) - max(left1, left2)) * max(0, min(bottom1, bottom2) - max(top1, top2))
 
-        coord1_area = (right1 - left1)*(bottom1 - top1)
-        coord2_area = (right2 - left2)*(bottom2 - top2)
+        coord1_area = self.__coord_area(coord1)
+        coord2_area = self.__coord_area(coord2)
 
         union = coord1_area + coord2_area - intersection
         percentage = intersection/union
         return percentage
+
+    def __coord_area(self, coord):
+        return (coord[2] - coord[0])*(coord[3] - coord[1])
+
+
 
     def __eliminate_duplicates(self, coordinates):
         # for each item in the array

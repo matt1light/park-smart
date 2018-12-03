@@ -10,6 +10,7 @@ import {GET_SECTORS_QUERY, UPDATE_SECTOR_LOCATION} from './GraphQL'
 
 import * as d3 from 'd3'
 
+
 const resolution = 50
 
 class LotChart extends Component {

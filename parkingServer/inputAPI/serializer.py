@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from mainModels.models import Sector, Image
+from rest_framework.exceptions import ValidationError
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,8 +15,11 @@ class ImageResourceSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         sector = Sector.objects.filter(cameraID = validated_data['cameraID']).first()
-        image = Image.objects.create(sector=sector, photo=validated_data['photo'], time_taken=validated_data['time_taken'])
-        return image
+        if sector == None:
+            raise ValidationError()
+        else:
+            image = Image.objects.create(sector=sector, photo=validated_data['photo'], time_taken=validated_data['time_taken'])
+            return image
 
 class ImageCollectionSerializer(serializers.Serializer):
     images = serializers.CharField()

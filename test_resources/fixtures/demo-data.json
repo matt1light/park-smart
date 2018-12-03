@@ -1,0 +1,52 @@
+[
+  {
+    "model": "mainModels.parkingLot",
+    "pk": 1,
+    "fields":{
+      "name": "test_lot",
+      "description": "this is a test lot"
+    }
+  },
+  {
+    "model": "mainModels.output",
+    "pk": 1,
+    "fields":{
+      "parking_lot": 1
+    }
+  },
+  {
+    "model": "mainModels.lotState",
+    "pk": 1,
+    "fields":{
+      "parking_lot": 1,
+      "active": "True",
+      "parking_lot": 1
+    }
+  },
+  {
+    "model": "mainModels.row",
+    "pk": 1,
+    "fields":{
+      "lot_state": 1,
+      "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.row",
+    "pk": 2,
+    "fields":{
+      "lot_state": 1,
+      "active": "True"
+    }
+  },
+  {
+    "model": "mainModels.sector",
+    "pk": 1,
+    "fields":{
+      "lot_state": 1,
+      "x_index": 1,
+      "y_index": 1,
+      "cameraID": "1.0"
+    }
+  }
+]

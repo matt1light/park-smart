@@ -1,11 +1,16 @@
 from __future__ import unicode_literals
 
+from rest_framework.exceptions import ValidationError
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from mainModels.models import Image, Sector
 from .serializer import ImageSerializer, ImageCollectionSerializer, ImageResourceSerializer
+from imageProcessor.ImageProcessorServer import ImageProcessorServerImageAI, ImageProcessorServerExternalImageAI
+from imageProcessor.models import ImageProcessor
+from parkingServer.settings import IMAGE_PROCESSING_SERVER_IP
+import pdb
 import json
 
 # Create your views here.
@@ -29,52 +34,12 @@ class CreateView(generics.ListCreateAPIView):
     serializer_class = ImageResourceSerializer
 
     def perform_create(self, serializer):
-        serializer.create(self.request.data)
-
-class MultiImage(generics.ListCreateAPIView):
-    queryset = Image.objects.all()
-
-    parser_classes = (FormParser, MultiPartParser,)
-    serializer_class = ImageCollectionSerializer
-
-    def perform_create(self, serializer):
-        # data_string = str(self.request.data['images']).replace("\'", "\"")
-        images = self.request.POST.getlist("images")
-        files = self.request._files
-        for str_image in images:
-            image = json.loads(str_image.replace("\'", "\""))
-            photo_name = image["photo"]
-            try:
-                photo = files.get(photo_name)
-            except Exception as e:
-                raise ValidationError(str(e))
-
-            sector = image['cameraID']
-            time_taken = image['time_taken']
-
-            data = {
-                'sector': sector,
-                'time_taken': time_taken,
-                'photo': photo
-            }
-            serial = ImageSerializer(data=data)
-            if serial.is_valid():
-                print(serial.save())
-            else:
-                raise ValidationError("One or more images failed validation")
+        instance = serializer.create(self.request.data)
+        if not IMAGE_PROCESSING_SERVER_IP:
+            server = ImageProcessorServerImageAI()
+        else:
+            server = ImageProcessorServerExternalImageAI()
+        processor = ImageProcessor(server)
+        processor.update_sector_from_image(instance)
 
 
-        # serializer.save()
-
-# class CreateMultipleView():
-#
-#     queryset = Image.objects.all()
-#
-#     parser_classes = (FormParser, MultiPartParser,)
-#     serializer_class = ImageSerializer
-#
-#     for image in request['images']:
-#         # find the sector by cameraID and add image to the sector
-#         sector = Sector.objects.filter(camera=image['camera']).first()
-#         # create a new image based on that camera id
-#         Image.create(time_taken=image['time_taken'], photo=image['photo'], sector=sector)
