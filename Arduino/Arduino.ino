@@ -15,8 +15,11 @@
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
 #define REQUESTDELAY 20000 // Time between requests made to the server. Does not account for processing time
+#define TIMERDELAY 6000
 #define LOOPITERATIONS (REQUESTDELAY / WAIT) // How many times loop() should run before another request should be sent
-char loops = 0;
+#define TIMERITERATIONS (TIMERDELAY/WAIT)
+char requestLoops = 0;
+int timerLoops = 0;
 
 
 // Currently hardcoded.
@@ -79,7 +82,7 @@ DisplayState currentDisplay;
 
 short numCars = 0;
 // on timer finish decrease exit
-auto timer= timer_create_default();
+//auto timer= timer_create_default();
 
 //----------------------------------------------------------------------------
 // STATE VARIABLES
@@ -142,8 +145,8 @@ void setup()
 
 void loop()
 { 
-  if (loops >= LOOPITERATIONS) {
-    loops = 0;
+  if (requestLoops >= LOOPITERATIONS) {
+    requestLoops = 0;
     // It's time to make a request from the server
     // Close the previous connection
     closeConnection();
@@ -151,6 +154,11 @@ void loop()
     attemptConnection();
     // Make the request
     makeGetRequest();
+  }
+
+  if (timerLoops >= TIMERITERATIONS){
+    timerLoops = 0;
+    removeExtraCar();
   }
 
   if (bytesAvailable()) {
@@ -164,7 +172,8 @@ void loop()
 
   //delay for the car test
   delay(WAIT); //using predetermined time, in milliseconds, delay after each measurement and return
-  loops++;
+  requestLoops++;
+  timerLoops++;
 }
 
 //----------------------------------------------------------------------------
@@ -265,6 +274,7 @@ void updateLCD()
   int availableSpots = 33;
   
   //lcd.print(availableSpots);
+  Serial.print("Extra cars: ");
   Serial.println(extraCars);
 
   lcd.print(extraCars);
@@ -294,8 +304,8 @@ void carEntersLot(){
   extraCars += 1;
   updateLCD();
   // starts 2 minute timer
-  timer.tick();
-  timer.in(ENTRANCE_DELAY, removeExtraCar);
+  //timer.tick();
+  //timer.in(ENTRANCE_DELAY, removeExtraCar);
 }
 
 void removeExtraCar()
