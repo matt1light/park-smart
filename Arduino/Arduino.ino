@@ -156,8 +156,8 @@ void loop()
   if (bytesAvailable()) {
     Serial.println("bytes available");
     readIncomingBytes();
-    //extractJSONFromMessage();
-    //deserialize(jsonBuffer);
+    extractJSONFromMessage();
+    deserialize(jsonBuffer);
   }
 
   checkForCars();

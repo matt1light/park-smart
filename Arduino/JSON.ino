@@ -2,15 +2,16 @@
 // Derivation: there are as many ints in the lightState array as there are rows being tracked,
 // and as 2 ints in the screenState array: current and max cars.
 // Furthermore, there are 2 pointers, one for each of the arrays.
-const int displayStateSize = (JSON_OBJECT_SIZE(2) + // current and max cars
+/*const int displayStateSize = (JSON_OBJECT_SIZE(2) + // current and max cars
                              JSON_ARRAY_SIZE(NUMROWS) + // lightState array
                              JSON_OBJECT_SIZE(1)); // pointer to lightState array
-
+*/
+#define DISPLAYSTATESIZE JSON_OBJECT_SIZE(2) + JSON_ARRAY_SIZE(NUMROWS) + JSON_OBJECT_SIZE(1)
 
 // Decode a JSON-formatted string and update the current displayState to match it
 void deserialize(char* json){
   // Create a buffer to store the JSON object in
-  DynamicJsonBuffer buf(displayStateSize);
+  DynamicJsonBuffer buf(DISPLAYSTATESIZE);
   JsonObject& root = buf.parseObject(json);
 
   if(root.containsKey("error")){ // There was an error from the server
