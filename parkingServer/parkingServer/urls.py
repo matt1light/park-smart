@@ -18,7 +18,6 @@ from django.contrib import admin
 from mainModels.models import Sector
 from imageProcessor.models import ImageProcessor
 from imageProcessor.ImageProcessorServer import ImageProcessorServerImageAI
-import pdb
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

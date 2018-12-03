@@ -68,7 +68,6 @@ class LotChart extends Component {
 
 var createLot = (node, props, state) =>{
     // these constants need to be replaced
-    console.log(props.data)
     const xMax = 10
     const yMax = 10
 
