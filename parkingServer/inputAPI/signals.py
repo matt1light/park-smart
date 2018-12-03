@@ -7,7 +7,7 @@ from parkingServer.settings import IMAGE_PROCESSING_SERVER_IP
 import pdb
 
 @receiver(post_save, sender=Image)
-def update_spots_on_image_save(sender, instance, **kwargs):
+def update_spots_on_image_save(sender, instance, **kwargs)
     if not IMAGE_PROCESSING_SERVER_IP:
         server = ImageProcessorServerImageAI()
     else:

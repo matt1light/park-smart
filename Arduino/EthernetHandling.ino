@@ -3,8 +3,8 @@
 
 // Partially adapted from the WebClient sample program.
 
-#define NUMROWS 3
-#define OUTPUTID 1
+#define NUMROWS 2
+#define OUTPUTID 2
 
 #define TARGETPATH "/displayState/?output="
 
@@ -21,12 +21,12 @@
 
 // A6:8F:4E:6E:F5:B0; this is a valid but entirely arbitrary MAC address.
 // The shield does not come with a preset MAC so one needs to be set.
-byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
+const byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
 
 // 10.0.0.43 should be this device's static IP
 #define CLIENTIP 10,0,0,43
 IPAddress ip(10, 0, 0, 43);
-int port = 7000;
+int port = 8000;
 
 // Define a server to connect to by IP address
 // 10.0.0.41 should be the Server Pi
@@ -91,8 +91,7 @@ int attemptConnection() {
 }
 
 
-// Perform a GET request for a given endpoint
-// TODO: Make this take a char* array?
+// Perform a GET request for the displayState endpoint
 void makeGetRequest(void) {
 #if DEBUGNETWORK
   Serial.println("Trying a Get request");
@@ -108,6 +107,14 @@ void makeGetRequest(void) {
 
 }
 
+char bytesAvailable(void){
+  if (client.available() > 0){
+    return 1;
+  }
+  else{
+    return 0;
+  }
+}
 // Read some bytes from the incoming stream.
 // If there is an incoming message, save it.
 int readIncomingBytes(void) {
@@ -118,7 +125,8 @@ int readIncomingBytes(void) {
   if (len > 0) {
     client.read(messageBuffer, len);
     #if DEBUGNETWORK
-        Serial.write(messageBuffer, len);
+       Serial.write(messageBuffer, len);
+       Serial.println();
     #endif
     return 1;
   }

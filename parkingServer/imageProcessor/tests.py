@@ -5,6 +5,7 @@ from django.test import TestCase
 from .models import ImageProcessor
 from mainModels.models import Spot, Sector, SectorSpot, LotState
 from .ImageProcessorServer import ImageProcessorServerImageAI, ImageProcessorServerVisionAPI, ImageProcessorServerExternalImageAI
+import pdb
 
 # Create your tests here.
 
@@ -43,7 +44,7 @@ class ImageProcessorUnitTests(TestCase):
                 'full': True
             },
         ]
-        server = ImageProcessorServerExternalImageAI()
+        server = ImageProcessorServerImageAI()
         self.imageProcessor = ImageProcessor(server)
         return
 

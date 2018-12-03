@@ -2,37 +2,17 @@
 // Derivation: there are as many ints in the lightState array as there are rows being tracked,
 // and as 2 ints in the screenState array: current and max cars.
 // Furthermore, there are 2 pointers, one for each of the arrays.
-const int displayStateSize = (JSON_OBJECT_SIZE(2) + // current and max cars
+/*const int displayStateSize = (JSON_OBJECT_SIZE(2) + // current and max cars
                              JSON_ARRAY_SIZE(NUMROWS) + // lightState array
                              JSON_OBJECT_SIZE(1)); // pointer to lightState array
-
-/*
-// As of now this function goes unused but is being kept.                        
-JsonObject serialize(struct DisplayState currDS){
-  // Create a buffer to store the JSON object in
-  DynamicJsonBuffer jb(displayStateSize);
-  // Create the JsonObject that elements will be added to
-  JsonObject &root = jb.createObject();
-  
-  JsonArray &lightState = root.createNestedArray("displayState");
-  // The number of rows is variable, so use a loop
-  for(int i=0; i<NUMROWS; i++){
-    lightState.add(currDS.lightState[i]);
-  }
-  root["num_available_spots"] = currDS.emptySpots;
-  #if DEBUGJSON  
-  root.printTo(Serial);
-  Serial.println();
-  #endif
-  //return root;
-}
 */
+#define DISPLAYSTATESIZE JSON_OBJECT_SIZE(2) + JSON_ARRAY_SIZE(NUMROWS) + JSON_OBJECT_SIZE(1)
 
 // Decode a JSON-formatted string and update the current displayState to match it
 void deserialize(char* json){
   // Create a buffer to store the JSON object in
-  DynamicJsonBuffer jsonBuffer(displayStateSize);
-  JsonObject& root = jsonBuffer.parseObject(json);
+  DynamicJsonBuffer buf(DISPLAYSTATESIZE);
+  JsonObject& root = buf.parseObject(json);
 
   if(root.containsKey("error")){ // There was an error from the server
     const char* error = root.get<const char*> ("error");
@@ -46,18 +26,19 @@ void deserialize(char* json){
     Serial.println(error);
     
   }
-
   else { // The request is valid
-    JsonArray& displayState = root["displayState"];
-    JsonArray& signState = root["signState"];
+
     for(int i=0; i<NUMROWS; i++){
-      currentDisplay.lightState[i] = displayState["num_available_spots"][i];
+      currentDisplay.lightState[i]= root["lightState"][i];
     }
-   
-    currentDisplay.emptySpots = signState["num_available_spots"];
-    //Serial.write(currentDisplay.emptySpots);
-    //signState.prettyPrintTo(Serial);
-    root.prettyPrintTo(Serial);
+
+    currentDisplay.emptySpots = root["signState"]["num_available_spots"];
+    
+     
+
+    //root.printTo(Serial);
+    //Serial.println();
+    
     updateLightState();
     updateLCD();
   }
@@ -65,17 +46,17 @@ void deserialize(char* json){
 
 // Find the JSON in the body of an HTTP message stored in messageBuffer, and save it to jsonBuffer.
 int extractJSONFromMessage(void){
-  int startPos = findChar('{');
-  int endPos = findChar('}');
-  int len = (endPos - startPos) + 1;
+  char jsonBuffer[JSONBUFFERSIZE];
+  short startPos = findChar('{');
+  short endPos = findLastChar('}');
+  short len = (endPos - startPos) + 1;
 
-  memcpy(jsonBuffer, &messageBuffer[startPos], len);
-  
-  #if DEBUGJSON
-  Serial.println("JSON message: ");
-  Serial.write(jsonBuffer);
-  Serial.println();
-  #endif
+   if(startPos >= 0 && endPos >= 0){
+    memcpy(jsonBuffer, &messageBuffer[startPos], len);
+    memcpy(messageBuffer, jsonBuffer, len);
+    //Serial.write(messageBuffer, len);
+    //Serial.println();
+   }
 }
 
 // Find the error code from an HTTP message stored in messageBuffer, and save it to errorBuffer.
@@ -93,16 +74,31 @@ int extractErrorFromMessage(void){
 
 // Find the first instance of a given character in the messageBuffer, and return its position in the buffer.
 // The position is zero-indexed; if the character is the first in the array, its position is 0.
-int findChar(char target){
-  int index = 0;
+short findChar(char target){
+  short index = 0;
   
-  while(index >= MSGBUFFERSIZE-1){
-    if(messageBuffer[index] == target){
+  while(1){
+    if(index >= MSGBUFFERSIZE){
+      return -1; // Target character was not found within the buffer
+    }
+    else if(messageBuffer[index] == target){
       return index;
     }
     index++;
   }
-  return -1 // Target character was not found within the buffer
+}
+
+short findLastChar(char target){
+  short index = 0;
+  short pos = -1;
+
+  while(index <= MSGBUFFERSIZE){
+    if(messageBuffer[index] == target){
+      pos = index;
+    }
+    index++;
+  }
+  return pos;
 }
 
 // Convert a 3-digit HTTP error code stored in a char array into an int.
@@ -120,4 +116,8 @@ char charToDigit(char in){
     Serial.print("Character is not a digit");
     return -1;
   }
+}
+
+char digitToChar(char in){
+  return in + '0';
 }

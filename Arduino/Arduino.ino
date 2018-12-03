@@ -1,23 +1,20 @@
-#include <LinkedList.h>
+#include <timer.h>
 #include <Event.h>
-#include <Timer.h>
-
 #include <ArduinoJson.h>
-
 #include <LiquidCrystal.h>
-
-
 
 //----------------------------------------------------------------------------
 // CONFIGURATION
 //----------------------------------------------------------------------------
 
 #define DEBUGHARDWARE 0 // Set to 1 to have hardware and displayState information printed to serial
+
 #define DEBUGNETWORK 0 // Set to 1 to have networking information printed to serial
-#define DEBUGJSON 0 // Set to 1 to have JSON encoding/decoding information printed to serial
+
+#define DEBUGJSON 1// Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
-#define REQUESTDELAY 5000 // Time between requests made to the server. Does not account for processing time
+#define REQUESTDELAY 20000 // Time between requests made to the server. Does not account for processing time
 #define LOOPITERATIONS (REQUESTDELAY / WAIT) // How many times loop() should run before another request should be sent
 char loops = 0;
 
@@ -27,7 +24,7 @@ char loops = 0;
 // made that would be run on startup, fetch the config (output ID, number of
 // rows, etc).
 #ifndef NUMROWS
-  #define NUMROWS 3
+  #define NUMROWS 2
 #endif
 
 #ifndef OUTPUTID
@@ -39,61 +36,63 @@ char loops = 0;
 // HARDWARE SETUP
 //----------------------------------------------------------------------------
 
-
 double d1, d2;//distance values, one for each ultrasonic sensor
 
-double dTrig = 5;//Max triggering detected distance
+char dTrig = 5;//Max triggering detected distance
 
 bool car; //state variable if car is at parking lot entrance or not
 
 
 //LCD Pin Setup
-#define rs 7
-#define en 6
-#define d4 5
-#define d5 4
-#define d6 3
-#define d7 2
+#define rs 4
+#define en 5
+#define d4 6
+#define d5 7
+#define d6 8
+#define d7 9
 
 //LCD Setup
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 ////LED setup
-#define YELLOW1 A0
-#define GREEN1 A1
-#define YELLOW2 A2
-#define GREEN2 A3
+#define YELLOW0 A0
+#define GREEN0 A1
+#define YELLOW1 A2
+#define GREEN1 A3
 
 #ifndef CONNECTION_SUCCESS
 #define CONNECTION_SUCCESS 1
 #endif
 
 //colour definitions to be passed to light state
-#define OFF 0
+#define OFF 3
 #define GREEN 1
 #define YELLOW 2
 
 // Struct to represent the system's display state
 struct DisplayState {
   char lightState[NUMROWS];
-  int emptySpots;
+  short emptySpots;
 };
 
 DisplayState currentDisplay;
 
-int numCars = 0;
+short numCars = 0;
+// on timer finish decrease exit
+auto timer= timer_create_default();
 
 //----------------------------------------------------------------------------
 // STATE VARIABLES
 //----------------------------------------------------------------------------
 
+
 //Arrray for Lights
-uint8_t yellowLED[NUMROWS] = {YELLOW1, YELLOW2};
-uint8_t greenLED[NUMROWS] = {GREEN1, GREEN2};
+char yellowLED[NUMROWS] = {YELLOW0, YELLOW1};
+char greenLED[NUMROWS] = {GREEN0, GREEN1};
 
 bool carFlag = false;
-int extraCars = 0;
-const long ENTRANCE_DELAY = (long)1000 * 60 * 2; // 1 second * 1 minute * 2 = 2 minutes
+short extraCars = 0;
+const long ENTRANCE_DELAY = (long)1000 * 20; // 1 second * 1 minute * 2 = 20 seconds
 
 //testing bool
 bool isTesting = false;
@@ -101,10 +100,10 @@ bool isTesting = false;
 // Buffer that incoming data will be written to.
 // This will be read from when deserializing, or written to when serializing.
 #define MSGBUFFERSIZE 300
-byte messageBuffer[MSGBUFFERSIZE];
+char messageBuffer[MSGBUFFERSIZE];
 
-#define JSONBUFFERSIZE 200
-char jsonBuffer[JSONBUFFERSIZE];
+#define JSONBUFFERSIZE 100
+//char jsonBuffer[JSONBUFFERSIZE];
 char errorBuffer[3]; // HTTP error codes are only ever 3 digits long
 
 //----------------------------------------------------------------------------
@@ -120,79 +119,87 @@ void setup()
 
   //Initialize lcd interface and set dimensions
   lcd.begin(16, 2);
-  lcd.print("Free spots:");
 
+  pinMode(YELLOW0, OUTPUT);
+  pinMode(GREEN0, OUTPUT);
   pinMode(YELLOW1, OUTPUT);
   pinMode(GREEN1, OUTPUT);
-  pinMode(YELLOW2, OUTPUT);
-  pinMode(GREEN2, OUTPUT);
+
 
   initDisplayState();
 
-  setRowColour(0, YELLOW);
-
   setupEthernet();
-  //int connected = attemptConnection();
-  //if (connected == CONNECTION_SUCCESS) {
-    
-    //makeGetRequest();
-  //}
-  //else {
+  int connected = attemptConnection();
+  if (connected == CONNECTION_SUCCESS) {
+    makeGetRequest();
+  }
+  else {
+    Serial.println("Could not connect to the server");
     //throwFatalError("Could not connect to the server");
-  //}
+  }
+
 }
 
 void loop()
-{
+{ 
+  if (bytesAvailable()) {
+    readIncomingBytes();
+    delay(1000);
+    extractJSONFromMessage();
+    delay(1000);
+    deserialize(messageBuffer);
+  }
+
+  
+  timer.tick();
   
   if (loops >= LOOPITERATIONS) {
     loops = 0;
     // It's time to make a request from the server
-    if(attemptConnection()){
-      makeGetRequest();
-    }
+    // Close the previous connection
+    closeConnection();
+    // Make a new connection
+    attemptConnection();
+    // Make the request
+    makeGetRequest();
   }
 
-  if (readIncomingBytes()) {
-    //closeConnection();
-    extractJSONFromMessage();
-    deserialize(jsonBuffer);
-   
-  }
-
-  
-  car = isCar(); //test if car is there or not
-
-  if (car)
-  {
-    
-    updateLCD();
-  }
-  if (car && !carFlag)
-  {
-  #if DEBUGHARDWARE
-    Serial.println("There is a car");
-    Serial.println(carFlag);
-  #endif
-
-    carFlag = true;
-
-    carEntersLot();
-    //lcd.setCursor(0, 1);
-
-  }
-  else if (!car)
-  {
-    #if DEBUGHARDWARE
-      Serial.println("There is not a car");
-      Serial.println(carFlag);
-    #endif
-    carFlag = false;
-  }
+  checkForCars();
 
   //delay for the car test
   delay(WAIT); //using predetermined time, in milliseconds, delay after each measurement and return
   loops++;
+}
+
+//----------------------------------------------------------------------------
+// OTHER METHODS
+//----------------------------------------------------------------------------
+
+void checkForCars(){
+  car = isCar(); //test if car is there or not
+
+  if (car && !carFlag) //If there is a car and there was not one before
+  {   
+    carFlag = true; //Register that there is a car currently here
+    carEntersLot(); 
+    
+    #if DEBUGHARDWARE
+    Serial.println("There is a car");
+    Serial.println(carFlag);
+    #endif
+
+  }
+  else if (!car) //If there is not a car
+  {
+    #if DEBUGHARDWARE
+    Serial.println("There is not a car");
+    Serial.println(carFlag);
+    #endif
+    carFlag = false;
+  }
+
+  Serial.print("Extra cars: ");
+  Serial.println(extraCars);
 }
 
 bool isCar()
@@ -207,12 +214,13 @@ bool isCar()
     //if not testing, run with regular file
     d1 = getDistance(1);
     d2 = getDistance(2);
+
     #if DEBUGHARDWARE
-    Serial.print("Sensor 1: ");
-    Serial.println(d1);
-    Serial.print("Sensor 2: ");
-    Serial.println(d2);
-    #endif
+     // Serial.print("Sensor 1: ");
+      //Serial.println(d1);
+      //Serial.print("Sensor 2: ");
+      //Serial.println(d2);
+     #endif
   }
   //compare the distance detected by each ultrasonic sensor and compare it to the predetermined maximum
   if (d1 <= dTrig && d2 <= dTrig)
@@ -253,24 +261,19 @@ void updateLightState()
 void updateLCD()
 {
   lcd.clear();
-  lcd.setCursor(0, 0);
+  lcd.setCursor(0,0);
   lcd.print("Available spots:");
-  lcd.setCursor(0,2);
+  lcd.setCursor(0,1);
   
   //Display the number of available cars
   int availableSpots = getAvailableSpots();
+  
   lcd.print(availableSpots);
-  Serial.print("Available spots:");
-  Serial.println(availableSpots);
-  Serial.print("Extra Cars:");
-  Serial.println(extraCars);
-  Serial.println(availableSpots);
-
 }
 
 int getAvailableSpots() {
   int availableSpots = currentDisplay.emptySpots;
-  if (availableSpots - extraCars < 0) {
+  if ((availableSpots - extraCars) < 0) {
     return 0;
   }
   else {
@@ -278,45 +281,55 @@ int getAvailableSpots() {
   }
 }
 
-void carEntersLot()
-{
+void carEntersLot(){
   extraCars += 1;
+  updateLCD();
   // starts 2 minute timer
-  // on timer finish decrease ext
-  Timer t;
-  int timer_event_id = t.after(ENTRANCE_DELAY, removeExtraCar, 0);
+  timer.in(ENTRANCE_DELAY, removeExtraCar);
 }
 
 void removeExtraCar()
 {
+  Serial.println("Removing car");
   extraCars -= 1;
+  updateLCD();
 }
-
-//void getNewStateFromServer()
-//{
-//    makeGetRequest()
-//    readIncomingBytes()
-//}
 
 // Create dummy values for the current displayState
 void initDisplayState() {
   for (int i = 0; i < NUMROWS; i++) {
-    currentDisplay.lightState[i] = 0;
+    currentDisplay.lightState[i] = 1;
   }
   currentDisplay.emptySpots = 0;
 }
 
 void throwFatalError(char* errorMsg) {
+  /*
   for (int i=0; i<NUMROWS; i++){
-    //currentDisplay.lightState[i] = YELLOW;
-    setRowColour(i, YELLOW);
+    currentDisplay.lightState[i] = YELLOW;
   }
+  */
+ 
+  
   currentDisplay.emptySpots = 9999;
   updateLightState();
   updateLCD();
+
   Serial.println("FATAL ERROR OCCURRED, ABORTING");
   Serial.print("Error: ");
   Serial.println(errorMsg);
   Serial.println("Program terminating. Please restart the board and try again.");
-  while (1) {} // Kill the program. Or at least put it in eternal limbo.
+
+  while (1) {
+ 
+  } // Kill the program. Or at least put it in eternal limbo.
+}
+
+void printLightState(){
+  for(int i=0; i<NUMROWS; i++){
+    Serial.print("State of row ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(digitToChar(currentDisplay.lightState[i]));
+  }
 }

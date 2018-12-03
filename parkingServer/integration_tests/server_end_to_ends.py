@@ -46,6 +46,7 @@ class ImageInDisplayOut(TestCase):
 
         Image.objects.create(sector=self.sector1, time_taken=timezone.now(), photo=file)
         sector = Sector.objects.filter(pk=self.sector1.pk)
+        pdb.set_trace()
 
         self.sector1.refresh_from_db()
         for sector_spot in self.sector1.sector_spots.all():

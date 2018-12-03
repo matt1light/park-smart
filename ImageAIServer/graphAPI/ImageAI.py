@@ -31,6 +31,7 @@ def getCoordsFromImageResnet(image_name):
     detector.setModelTypeAsRetinaNet()
     detector.setModelPath( os.path.join(execution_path , "resnet50_coco_best_v2.0.1.h5"))
     detector.loadModel()
+    pdb.set_trace()
 
     custom_objects = detector.CustomObjects(car=True, motorcycle=True, cell_phone=True, bus=True, truck=True, parking_meter=True, mouse=True, bowl=True, suitcase=True)
     detections = detector.detectCustomObjectsFromImage(custom_objects=custom_objects, input_image=os.path.join(execution_path ,image_name), output_image_path=os.path.join(execution_path, image_name[:-4] + "_processed.jpg"), minimum_percentage_probability=MIN_PROBABILITY)
