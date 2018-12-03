@@ -8,10 +8,11 @@
     }
   },
   {
-    "model": "mainModels.output",
+    "model": "mainModels.arduinoOutput",
     "pk": 1,
     "fields":{
-      "parking_lot": 1
+      "parking_lot": 1,
+      "ip_address": "10.0.0.43"
     }
   },
   {

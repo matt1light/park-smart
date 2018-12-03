@@ -7,7 +7,7 @@ import ApolloClient, { gql } from "apollo-boost"
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 
 const client = new ApolloClient({
-    uri: "http://localhost:7000/graphql",
+    uri: "http://localhost:8000/graphql",
 })
 
 ReactDOM.render(<App client={client} />, document.getElementById('root'));

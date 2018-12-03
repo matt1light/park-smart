@@ -8,7 +8,6 @@ import pdb
 
 @receiver(post_save, sender=Image)
 def update_spots_on_image_save(sender, instance, **kwargs):
-    pdb.set_trace()
     if not IMAGE_PROCESSING_SERVER_IP:
         server = ImageProcessorServerImageAI()
     else:

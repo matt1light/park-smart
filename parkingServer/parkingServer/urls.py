@@ -27,9 +27,9 @@ urlpatterns = [
     url(r'^', include('webApp.urls'))
 ]
 
-# server = ImageProcessorServerImageAI()
-# imageProcessor = ImageProcessor(server)
-# sector = Sector.objects.get(pk=1)
-# image_name = "../test_resources/test_pics/calibration1-4cars.jpg"
-# imageProcessor.calibrate_sector(image_name, sector)
-# pdb.set_trace()
+server = ImageProcessorServerImageAI()
+imageProcessor = ImageProcessor(server)
+sector = Sector.objects.get(pk=1)
+image_name = "camera_pictures/image0_2GxLloW.jpg"
+
+imageProcessor.calibrate_sector(image_name, sector)
