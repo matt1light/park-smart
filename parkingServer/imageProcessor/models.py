@@ -24,7 +24,7 @@ class ImageProcessor(models.Model):
     def calibrate_sector(self, image_name, sector):
         print("\nCalibrating sector: #" + str(sector.pk))
         # get coordinates for new spots
-        new_coords = self.server.get_car_coordinates_calibrate(image_name)
+        new_coords = self.server.get_car_coordinates(image_name)
         cleaned_coordinates = self.__eliminate_duplicates(new_coords)
         sector_spots = sector.sector_spots.all()
         if sector_spots.exists():
