@@ -43,16 +43,11 @@ int extractJSONFromMessage(void){
   short endPos = findLastChar('}');
   short len = (endPos - startPos) + 1;
 
-  memcpy(jsonBuffer, &messageBuffer[startPos], len);
-
-  memcpy(messageBuffer, jsonBuffer, len);
-  
-  #if DEBUGJSON
-  Serial.println("JSON message: ");
-  Serial.write(jsonBuffer);
-  Serial.println();
-  #endif
-  
+   if(startPos >= 0 && endPos >= 0){
+    memcpy(jsonBuffer, &messageBuffer[startPos], len);
+    memcpy(messageBuffer, jsonBuffer, len);
+    Serial.write(messageBuffer, len);
+   }
 }
 
 // Find the error code from an HTTP message stored in messageBuffer, and save it to errorBuffer.
@@ -88,7 +83,7 @@ short findLastChar(char target){
   short index = 0;
   short pos = -1;
 
-  while(index >= MSGBUFFERSIZE){
+  while(index <= MSGBUFFERSIZE){
     if(messageBuffer[index] == target){
       pos = index;
     }

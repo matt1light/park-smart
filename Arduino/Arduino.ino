@@ -100,7 +100,7 @@ bool isTesting = false;
 // Buffer that incoming data will be written to.
 // This will be read from when deserializing, or written to when serializing.
 #define MSGBUFFERSIZE 300
-byte messageBuffer[MSGBUFFERSIZE];
+char messageBuffer[MSGBUFFERSIZE];
 
 #define JSONBUFFERSIZE 100
 //char jsonBuffer[JSONBUFFERSIZE];
