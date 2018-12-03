@@ -38,11 +38,14 @@ void deserialize(char* json){
 
 // Find the JSON in the body of an HTTP message stored in messageBuffer, and save it to jsonBuffer.
 int extractJSONFromMessage(void){
+  char jsonBuffer[JSONBUFFERSIZE];
   short startPos = findChar('{');
   short endPos = findLastChar('}');
   short len = (endPos - startPos) + 1;
 
   memcpy(jsonBuffer, &messageBuffer[startPos], len);
+
+  memcpy(messageBuffer, jsonBuffer, len);
   
   #if DEBUGJSON
   Serial.println("JSON message: ");

@@ -3,7 +3,7 @@
 
 // Partially adapted from the WebClient sample program.
 
-#define NUMROWS 3
+#define NUMROWS 2
 #define OUTPUTID 2
 
 #define TARGETPATH "/displayState/?output="

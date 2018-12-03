@@ -11,7 +11,7 @@
 
 #define DEBUGNETWORK 1 // Set to 1 to have networking information printed to serial
 
-#define DEBUGJSON 1 // Set to 1 to have JSON encoding/decoding information printed to serial
+#define DEBUGJSON 1// Set to 1 to have JSON encoding/decoding information printed to serial
 
 #define WAIT 2000 //delay frequency of ultrasonic sensor readings in milliseconds
 #define REQUESTDELAY 20000 // Time between requests made to the server. Does not account for processing time
@@ -103,7 +103,7 @@ bool isTesting = false;
 byte messageBuffer[MSGBUFFERSIZE];
 
 #define JSONBUFFERSIZE 100
-char jsonBuffer[JSONBUFFERSIZE];
+//char jsonBuffer[JSONBUFFERSIZE];
 char errorBuffer[3]; // HTTP error codes are only ever 3 digits long
 
 //----------------------------------------------------------------------------
@@ -142,6 +142,15 @@ void setup()
 
 void loop()
 { 
+  if (bytesAvailable()) {
+    Serial.println("bytes available");
+    readIncomingBytes();
+    delay(1000);
+    extractJSONFromMessage();
+    delay(1000);
+    deserialize(messageBuffer);
+  }
+  
   if (loops >= LOOPITERATIONS) {
     loops = 0;
     // It's time to make a request from the server
@@ -153,12 +162,7 @@ void loop()
     makeGetRequest();
   }
 
-  if (bytesAvailable()) {
-    Serial.println("bytes available");
-    readIncomingBytes();
-    extractJSONFromMessage();
-    deserialize(jsonBuffer);
-  }
+  
 
   checkForCars();
 
