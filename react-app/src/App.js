@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
+import LotChart from './components/LotChart.js'
 import SectorQuery from './components/SectorQuery'
 import {ApolloProvider} from "react-apollo"
-import TabContainer from "./components/TabContainer"
 
 const test_sector_spots = [
                     {
@@ -120,7 +120,6 @@ class App extends Component {
         <ApolloProvider client={this.props.client}>
             <div className="App">
                 <div>
-                    <TabContainer></TabContainer>
                     <SectorQuery></SectorQuery>
                 </div>
             </div>

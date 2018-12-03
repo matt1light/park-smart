@@ -5,12 +5,13 @@ from django.test import TestCase
 from .models import ImageProcessor
 from mainModels.models import Spot, Sector, SectorSpot, LotState
 from .ImageProcessorServer import ImageProcessorServerImageAI, ImageProcessorServerVisionAPI, ImageProcessorServerExternalImageAI
+import pdb
 
 # Create your tests here.
 
 # Test that the imageprocessor can process an image based on a sector
 class ImageProcessorUnitTests(TestCase):
-    fixtures=['../test_resources/fixtures/data.json']
+    fixtures=['../test_resources/fixtures/demo-data.json']
 
     def setUp(self):
         # add image to database
@@ -43,16 +44,16 @@ class ImageProcessorUnitTests(TestCase):
                 'full': True
             },
         ]
-        server = ImageProcessorServerExternalImageAI()
+        server = ImageProcessorServerImageAI()
         self.imageProcessor = ImageProcessor(server)
         return
 
     def test_calibrate(self):
         # create new sector object
-        sector = Sector.objects.create(lot_state=LotState.objects.get(pk=1), x_index=0, y_index=0)
+        sector = Sector.objects.get(pk=1)
         # test2 has a picture with 5 cars thus should add 4 sector spots
         expected_number_of_spots = 5
-        image_name = "../test_resources/test_pics/e2esituations/fullish.jpg"
+        image_name = "../test_resources/test_pics/calibration1-4cars.jpg"
         self.imageProcessor.calibrate_sector(image_name, sector)
         new_sector_spots = SectorSpot.objects.filter(sector=sector)
 
