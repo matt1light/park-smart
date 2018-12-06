@@ -3,9 +3,25 @@
 
 // Partially adapted from the WebClient sample program.
 
+//----------------------------------------------------------------------------
+// SYSTEM CONFIGURATION
+//----------------------------------------------------------------------------
+
 #define NUMROWS 2
 #define OUTPUTID 1
 
+// A6:8F:4E:6E:F5:B0; this is a valid but entirely arbitrary MAC address.
+// The shield does not come with a preset MAC so one needs to be set.
+const byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
+
+// 10.0.0.43 should be this device's static IP
+#define CLIENTIP 10,0,0,43
+
+// Define a server to connect to by IP address
+// 10.0.0.41 should be the Server Pi
+#define SERVERIP 10,0,0,41
+
+// The server endpoint from which to pull 
 #define TARGETPATH "/displayState/?output="
 
 // Connection status codes
@@ -19,24 +35,20 @@
 // The number of connection attempts to make before aborting
 #define MAXCONNECTIONATTEMPTS 3
 
+// Define the client and server IP addresses, and the port number.
+IPAddress ip(CLIENTIP);
+IPAddress server(SERVERIP);
+int port = PORT;
 
-// A6:8F:4E:6E:F5:B0; this is a valid but entirely arbitrary MAC address.
-// The shield does not come with a preset MAC so one needs to be set.
-const byte mac[] = {0xA6, 0x8F, 0x4E, 0x6E, 0xF5, 0xB0};
-
-// 10.0.0.43 should be this device's static IP
-#define CLIENTIP 10,0,0,43
-IPAddress ip(10, 0, 0, 43);
-int port = 8000;
-
-// Define a server to connect to by IP address
-// 10.0.0.41 should be the Server Pi
-//#define SERVERIP 10,0,0,41
-IPAddress server(10, 0, 0, 41);
 
 // Declare the client
 EthernetClient client;
 
+//----------------------------------------------------------------------------
+// METHODS
+//----------------------------------------------------------------------------
+
+// Initialize the Ethernet shield, assigning its IP and MAC address.
 void setupEthernet(void) {
   // Set up the Arduino with a static IP.
   // Note that DHCP is possible, but not used for this project,
@@ -44,8 +56,11 @@ void setupEthernet(void) {
   #if DEBUGNETWORK
     Serial.println("Attempting to initialize Ethernet with static IP");
   #endif
+  
   Ethernet.begin(mac, ip);
+  // Wait a short time before proceeding, to give the shield time to setup.
   delay(2000);
+  
   #if DEBUGNETWORK
     Serial.print("IP address is ");
     Serial.println(Ethernet.localIP());
@@ -53,7 +68,8 @@ void setupEthernet(void) {
 }
 
 // Attempt to initialize the connection between this machine and the server.
-int attemptConnection() {
+// Return: 1 if the connection was successful, -1 otherwise.
+signed char attemptConnection() {
   for (int i = 0; i < MAXCONNECTIONATTEMPTS; i++) {
     // client.connect() returns an error code
     // 1=success, -1=timeout, -2=invalid server, -3=truncated, -4=invalid response
@@ -105,10 +121,10 @@ void makeGetRequest(void) {
   client.println("Host: 10.0.0.41:8000");
   client.println("Cache-Control: no-cache");
   client.println();
-
 }
 
 // Check whether there are bytes waiting in the incoming stream.
+// Return: 1 if there are bytes waiting, 0 otherwise.
 char bytesAvailable(void){
   if (client.available() > 0){
     return 1;
@@ -143,8 +159,8 @@ int readIncomingBytes(void) {
 
 // Close the client's connection to the server.
 void closeConnection(void) {
-  //#if DEBUGNETWORK
+  #if DEBUGNETWORK
   Serial.println("Closing connection");
-  //#endif
+  #endif
   client.stop();
 }

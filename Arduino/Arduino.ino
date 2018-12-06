@@ -138,7 +138,7 @@ void setup()
   // display state.
   int connected = attemptConnection();
   if (connected == CONNECTION_SUCCESS) {
-    makeGetRequest();
+    //makeGetRequest();
   }
   else {
     Serial.println("Could not connect to the server");
@@ -321,9 +321,11 @@ void removeExtraCar()
 // Create dummy values for the current displayState
 void initDisplayState() {
   for (int i = 0; i < NUMROWS; i++) {
-    currentDisplay.lightState[i] = 1;
+    currentDisplay.lightState[i] = 2;
   }
-  currentDisplay.emptySpots = 0;
+  currentDisplay.emptySpots = 999;
+  updateLCD();
+  updateLightState();
 }
 
 // Print the current LightState to serial for debugging.

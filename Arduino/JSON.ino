@@ -33,14 +33,22 @@ void deserialize(char* json){
     }
 
     currentDisplay.emptySpots = root["signState"]["num_available_spots"];
-    
+
+    #if DEBUGJSON
+      root.printTo(Serial);
+      Serial.println();
+      printLightState();
+    #endif 
+
+    // Update the hardware
     updateLightState();
     updateLCD();
+    
   }
 }
 
 // Find the JSON in the body of an HTTP message stored in messageBuffer, and save it to jsonBuffer.
-int extractJSONFromMessage(void){
+void extractJSONFromMessage(void){
   char jsonBuffer[JSONBUFFERSIZE];
   short startPos = findChar('{');
   short endPos = findLastChar('}');
@@ -49,11 +57,13 @@ int extractJSONFromMessage(void){
    if(startPos >= 0 && endPos >= 0){
     memcpy(jsonBuffer, &messageBuffer[startPos], len);
     memcpy(messageBuffer, jsonBuffer, len);
+    //Serial.write(messageBuffer, len);
+    //Serial.println();
    }
 }
 
 // Find the error code from an HTTP message stored in messageBuffer, and save it to errorBuffer.
-int extractErrorFromMessage(void){
+void extractErrorFromMessage(void){
   // The HTTP response header always starts with the protocol version, a space, then the error code.
   int startPos = findChar(' ') + 1; // Look for the first space; the next character is the first digit of the error code
   int len = 3;
@@ -81,12 +91,15 @@ short findChar(char target){
   }
 }
 
-// Find the final instance of a given character in the messageBuffer, and return its position in the buffer.
+
+// Find the last instance of a given character in the messageBuffer, and return its position in the buffer.
 // The position is zero-indexed; if the character is the first in the array, its position is 0.
+// Return: The position of the character, if found. -1 otherwise.
 short findLastChar(char target){
   short index = 0;
   short pos = -1;
 
+  // Iterate over the entire buffer
   while(index <= MSGBUFFERSIZE){
     if(messageBuffer[index] == target){
       pos = index;
@@ -97,6 +110,7 @@ short findLastChar(char target){
 }
 
 // Convert a 3-digit HTTP error code stored in a char array into an int.
+// Return: the numberical value of the error code
 short errorToInt(void){
   return (100* charToDigit(errorBuffer[0]) + 10*charToDigit(errorBuffer[1]) + charToDigit(errorBuffer[2]));
 }
@@ -113,8 +127,8 @@ char charToDigit(char in){
   }
 }
 
-// Convert a single numerical digit into its corresponding ASCII value
-// i.e. 0x03 will become '3'.
+// Convert an integer value into an ASCII character.
+// i.e. 0x03 will be converted to '3'
 char digitToChar(char in){
   return in + '0';
 }
