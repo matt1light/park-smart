@@ -62,9 +62,13 @@ gedit parkingServer/settings.py
 ## modify the IMAGE_PROCESSING_SERVER_IP to be the IP and port of the image processing server
 
 Arduino:
-## Hardware diagrams are shown below
-![alt text](https://raw.githubusercontent.com//matt1light/monday-group4/arduino_hardware.png)
+## Hardware diagrams are shown at https://github.com/matt1light/monday-group4/arduino_hardware.png
+## ensure to properly attach all components to the correct pins or the module will not work
 
+# download the arduino IDE https://www.arduino.cc/en/Main/Software
+# open the file EthernetHandling.ino
+# change the line #define SERVERIP 10,0,0,41 to the ip address of the parking Server
+# compile and flash the program onto the arduino
 
 CameraHub:
 ## a picam attatched to a raspberry pi is required for this module
