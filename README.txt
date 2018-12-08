@@ -63,7 +63,7 @@ gedit parkingServer/settings.py
 
 Arduino:
 ## Hardware diagrams are shown below
-
+![alt text](https://raw.githubusercontent.com//matt1light/monday-group4/arduino_hardware.png)
 
 
 CameraHub:
